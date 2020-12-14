@@ -135,8 +135,10 @@ Voidfunction:
     ;
 
 Nonvoidfunction:
-    FUNC VOID Whitespace? PARAMS LeftBrace RETURN VAR RightBrace
+    FUNC VOID Whitespace? PARAMS LeftBrace RETURN RETURNTYPES RightBrace
     ;
+
+Functioncall:
 
 fragment MAIN: 'main';
 
@@ -149,6 +151,14 @@ fragment RETURN: 'return';
 fragment PARAMS:
     LeftParen Whitespace? RightParen
     |LeftParen (VARTYPE VAR Whitespace? ','? Whitespace?) RightParen
+    ;
+
+fragment RETURNTYPES:
+    VAR
+    | Functioncall
+    | IntegerLiteral||BooleanLiteral||FloatingLiteral //idk how to do this
+    | EQUATION
+    ;
 
 // Input output stuff
 Inputfunction:
@@ -158,7 +168,7 @@ Inputfunction:
 Outputfunction:
     PRINT LeftParen STRING RightParen Semi //print("Blah blah blah")
     | PRINT LeftParen (STRING Whitespace '+'VAR('+' Whitespace)?)+ STRING* RightParen Semi //print("Blahblah" +blah); | print("Blahblah" +blah+ "Blahblah" +blah); | print("Blahblah" +blah+ "Blahblah");
-    | //complicated prints with equations
+    | PRINT LeftParen (STRING? Whitespace? EQUATION) RightParen Semi//complicated prints with equations
     ;
 
 fragment SCAN: 'scan';
