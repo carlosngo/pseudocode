@@ -156,7 +156,9 @@ fragment PARAMS:
 fragment RETURNTYPES:
     VAR
     | Functioncall
-    | IntegerLiteral||BooleanLiteral||FloatingLiteral //idk how to do this
+    | IntegerLiteral
+    | BooleanLiteral
+    | FloatingLiteral
     | EQUATION
     ;
 
