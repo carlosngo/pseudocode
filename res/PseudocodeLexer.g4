@@ -1,6 +1,5 @@
-lexer grammar Pseudocode;
+lexer grammar PseudocodeLexer;
 
-// Keywords
 Else: 'else';
 
 For: 'for';
@@ -75,26 +74,19 @@ BlockComment: '/*' .*? '*/' -> skip;
 
 LineComment: '//' ~ [\r\n]* -> skip;
 
-Main: 'main';
-
-Void: 'void';
-
-Func: 'func';
-
-Scan: 'scan';
-
-Print: 'print' ;
-
 // Data Types and Structures
 
 IntegerLiteral:
-    DecimalLiteral Integersuffix?;
+    DecimalLiteral Integersuffix?
+    | OctalLiteral Integersuffix?
+    | HexadecimalLiteral Integersuffix?
+    | BinaryLiteral Integersuffix?;
 
 BooleanLiteral: False_ | True_;
 
 FloatingLiteral:
-    Fractionalconstant Floatingsuffix?
-    | Digitsequence Floatingsuffix?;
+    Fractionalconstant Exponentpart? Floatingsuffix?
+    | Digitsequence Exponentpart Floatingsuffix?;
 
 // Integer business
 
@@ -106,6 +98,14 @@ Integersuffix:
 
 DecimalLiteral: NONZERODIGIT ('\''? DIGIT)*;
 
+OctalLiteral: '0' ('\''? OCTALDIGIT)*;
+
+HexadecimalLiteral: ('0x' | '0X') HEXADECIMALDIGIT (
+        '\''? HEXADECIMALDIGIT
+    )*;
+
+BinaryLiteral: ('0b' | '0B') BINARYDIGIT ('\''? BINARYDIGIT)*;
+
 fragment Unsignedsuffix: [uU];
 
 fragment Longsuffix: [lL];
@@ -113,6 +113,12 @@ fragment Longsuffix: [lL];
 fragment Longlongsuffix: 'll' | 'LL';
 
 fragment NONZERODIGIT: [1-9];
+
+fragment OCTALDIGIT: [0-7];
+
+fragment HEXADECIMALDIGIT: [0-9a-fA-F];
+
+fragment BINARYDIGIT: [01];
 
 // Boolean business
 
@@ -125,22 +131,16 @@ fragment Fractionalconstant:
     Digitsequence? '.' Digitsequence
     | Digitsequence '.';
 
+fragment Exponentpart:
+    'e' SIGN? Digitsequence
+    | 'E' SIGN? Digitsequence;
+
 fragment Floatingsuffix: [flFL];
 
 fragment Digitsequence: DIGIT ('\''? DIGIT)*;
 
 fragment SIGN: [+-];
 
-// ID
-
-Identifier:
-//	Identifiernondigit | Identifier Identifiernondigit | Identifier DIGIT
-	Identifiernondigit (Identifiernondigit | DIGIT)*;
-
-fragment Identifiernondigit: NONDIGIT;
+// Digits
 
 fragment DIGIT: [0-9];
-
-fragment NONDIGIT: [a-zA-Z_];
-
-
