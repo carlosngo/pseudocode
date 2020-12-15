@@ -1,4 +1,4 @@
-grammar Pseudocode;
+lexer grammar Pseudocode;
 
 Else: 'else';
 
@@ -130,8 +130,6 @@ Main: 'main';
 Void: 'void';
 
 Func: 'func';
-
-Returning: 'return';
 
 Scan: 'scan';
 
