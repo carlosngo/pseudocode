@@ -1,5 +1,6 @@
 lexer grammar Pseudocode;
 
+// Keywords
 Else: 'else';
 
 For: 'for';
@@ -74,6 +75,16 @@ BlockComment: '/*' .*? '*/' -> skip;
 
 LineComment: '//' ~ [\r\n]* -> skip;
 
+Main: 'main';
+
+Void: 'void';
+
+Func: 'func';
+
+Scan: 'scan';
+
+Print: 'print' ;
+
 // Data Types and Structures
 
 IntegerLiteral:
@@ -123,18 +134,6 @@ fragment SIGN: [+-];
 // Digits
 
 fragment DIGIT: [0-9];
-
-// Function stuff
-Main: 'main';
-
-Void: 'void';
-
-Func: 'func';
-
-Scan: 'scan';
-
-Print: 'print' ;
-
 
 
 //Entryfunction:
