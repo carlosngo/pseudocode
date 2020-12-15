@@ -125,61 +125,64 @@ fragment SIGN: [+-];
 fragment DIGIT: [0-9];
 
 // Function stuff
+Main: 'main';
 
-Entryfunction:
-    MAIN Whitespace? PARAMS LeftBrace RightBrace
-    ;
+Void: 'void';
 
-Voidfunction:
-    FUNC VOID Whitespace? FUNCNAME PARAMS LeftBrace RightBrace
-    ;
+Func: 'func';
 
-Nonvoidfunction:
-    FUNC VARTYPE Whitespace? FUNCNAME PARAMS LeftBrace RETURN RETURNTYPES RightBrace
-    ;
+Returning: 'return';
 
-Functioncall:
-    FUNCNAME PARAMS Semi
-    | VAR Equal FUNCNAME PARAMS Semi
-    | VARTYPE VAR Equal FUNCNAME PARAMS Semi
-    ;
+Scan: 'scan';
 
-fragment FUNCNAME:
-    VAR
-    ;
-fragment MAIN: 'main';
+Print: 'print' ;
 
-fragment VOID: 'void';
 
-fragment FUNC: 'func';
 
-fragment RETURN: 'return';
+//Entryfunction:
+//    MAIN Whitespace? PARAMS LeftBrace RightBrace
+//    ;
 
-fragment PARAMS:
-    LeftParen Whitespace? RightParen
-    |LeftParen (VARTYPE VAR Whitespace? ','? Whitespace?) RightParen
-    ;
+//Voidfunction:
+//    FUNC VOID Whitespace? FUNCNAME PARAMS LeftBrace RightBrace
+//    ;
+//
+//Nonvoidfunction:
+//    FUNC VARTYPE Whitespace? FUNCNAME PARAMS LeftBrace RETURN RETURNTYPES RightBrace
+//    ;
+//
+//Functioncall:
+//    FUNCNAME PARAMS Semi
+//    | VAR Equal FUNCNAME PARAMS Semi
+//    | VARTYPE VAR Equal FUNCNAME PARAMS Semi
+//    ;
+//
+//fragment FUNCNAME:
+//    VAR
+//    ;
 
-fragment RETURNTYPES:
-    VAR
-    | Functioncall
-    | IntegerLiteral
-    | BooleanLiteral
-    | FloatingLiteral
-    | EQUATION
-    ;
+//fragment PARAMS:
+//    LeftParen Whitespace? RightParen
+//    |LeftParen (VARTYPE VAR Whitespace? ','? Whitespace?) RightParen
+//    ;
+//
+//fragment RETURNTYPES:
+//    VAR
+//    | Functioncall
+//    | IntegerLiteral
+//    | BooleanLiteral
+//    | FloatingLiteral
+//    | EQUATION
+//    ;
 
 // Input output stuff
-Inputfunction:
-    SCAN LeftParen STRING ',' VAR RightParen Semi //scan("Blahblah", blah);
-    ;
+//Inputfunction:
+//    SCAN LeftParen STRING ',' VAR RightParen Semi //scan("Blahblah", blah);
+//    ;
+//
+//Outputfunction:
+//    PRINT LeftParen STRING RightParen Semi //print("Blah blah blah")
+//    | PRINT LeftParen (STRING Whitespace '+'VAR('+' Whitespace)?)+ STRING* RightParen Semi //print("Blahblah" +blah); | print("Blahblah" +blah+ "Blahblah" +blah); | print("Blahblah" +blah+ "Blahblah");
+//    | PRINT LeftParen (STRING? Whitespace? '+' EQUATION '+'?)+ RightParen Semi//complicated prints with equations
+//    ;
 
-Outputfunction:
-    PRINT LeftParen STRING RightParen Semi //print("Blah blah blah")
-    | PRINT LeftParen (STRING Whitespace '+'VAR('+' Whitespace)?)+ STRING* RightParen Semi //print("Blahblah" +blah); | print("Blahblah" +blah+ "Blahblah" +blah); | print("Blahblah" +blah+ "Blahblah");
-    | PRINT LeftParen (STRING? Whitespace? '+' EQUATION '+'?)+ RightParen Semi//complicated prints with equations
-    ;
-
-fragment SCAN: 'scan';
-
-fragment PRINT: 'print' ;
