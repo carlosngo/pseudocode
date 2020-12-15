@@ -131,8 +131,16 @@ fragment Digitsequence: DIGIT ('\''? DIGIT)*;
 
 fragment SIGN: [+-];
 
-// Digits
+// ID
+
+Identifier:
+//	Identifiernondigit | Identifier Identifiernondigit | Identifier DIGIT
+	Identifiernondigit (Identifiernondigit | DIGIT)*;
+
+fragment Identifiernondigit: NONDIGIT;
 
 fragment DIGIT: [0-9];
+
+fragment NONDIGIT: [a-zA-Z_];
 
 
