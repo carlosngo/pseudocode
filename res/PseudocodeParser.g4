@@ -6,17 +6,62 @@ primaryExpression:
 	literal+
 	| This
 	| LeftParen expression RightParen
-	| idExpression
-	| lambdaExpression;
+	| Identifier;
+
+expression: assignmentExpression (Comma assignmentExpression)*;
+
+assignmentExpression:
+	logicalOrExpression assignmentOperator initializerClause;
+
+logicalOrExpression:
+	logicalAndExpression (OrOr logicalAndExpression)*;
+
+logicalAndExpression:
+	equalityExpression (AndAnd equalityExpression)*;
 
 equalityExpression:
 	relationalExpression (
 		(Equal | NotEqual) relationalExpression
 	)*;
 
-assignmentExpression:
-	conditionalExpression
-	| logicalOrExpression assignmentOperator initializerClause;
+relationalExpression:
+	additiveExpression (
+		(Less | Greater | LessEqual | GreaterEqual) additiveExpression
+	)*;
+
+additiveExpression:
+	multiplicativeExpression (
+		(Plus | Minus) multiplicativeExpression
+	)*;
+
+multiplicativeExpression:
+	unaryExpression
+    | multiplicativeExpression (
+		(Star | Div | Mod) multiplicativeExpression
+	)*;
+
+unaryExpression:
+	postfixExpression
+	| (PlusPlus | MinusMinus | unaryOperator) unaryExpression;
+
+postfixExpression:
+	primaryExpression
+	| postfixExpression LeftBracket (expression | bracedInitList) RightBracket // arrays?
+	| postfixExpression LeftParen expressionList? RightParen
+	| postfixExpression (PlusPlus | MinusMinus);
+
+initializerClause: assignmentExpression | bracedInitList;
+
+initializerList:
+	initializerClause (
+		Comma initializerClause
+	)*;
+
+expressionList: initializerList;
+
+bracedInitList: LeftBrace (initializerList Comma?)? RightBrace;
+
+unaryOperator: Plus | Minus | Not;
 
 assignmentOperator:
 	Assign
@@ -24,14 +69,7 @@ assignmentOperator:
 	| DivAssign
 	| ModAssign
 	| PlusAssign
-	| MinusAssign
-	| RightShiftAssign
-	| LeftShiftAssign
-	| AndAssign
-	| XorAssign
-	| OrAssign;
-
-expression: assignmentExpression (Comma assignmentExpression)*;
+	| MinusAssign;
 
 literal:
 	IntegerLiteral
@@ -41,5 +79,4 @@ literal:
 	| BooleanLiteral
 	| PointerLiteral
 	| UserDefinedLiteral;
-
 
