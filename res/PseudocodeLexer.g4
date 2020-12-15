@@ -1,4 +1,4 @@
-grammar Pseudocode;
+lexer grammar PseudocodeLexer;
 
 Else: 'else';
 
