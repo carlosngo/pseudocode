@@ -1,0 +1,41 @@
+#inputFilePane{
+    background: #BFD9D7;
+    border: 7px solid #51979B;
+    box-sizing: border-box;
+}
+
+#inputScrollPane{
+    background: #F2FCFB;
+}
+
+#errorsScrollPane{
+    background: #22393D;
+}
+
+.Label{
+    font-family: "Courier Prime";
+    font-style: normal;
+    font-weight: normal;
+
+    color: #000000;
+}
+
+#consoleLabel{
+    color: #FFFFFF;
+}
+
+#compileButton{
+    background: #F2FCFB;
+    border: 3px solid #51979B;
+    box-sizing: border-box;
+    border-radius: 3px;
+
+    font-family: "Courier Prime";
+    color: #000000;
+
+}
+
+#inputFileField{
+    background: #FFFFFF;
+    border-radius: 3px;
+}

@@ -1,15 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.comc/fxml"
-            fx:id="idMainPane"
-            fx:controller="gui.MainView"
-            prefHeight="400.0" prefWidth="600.0">
-
+<AnchorPane id="mainPane" maxHeight="600" maxWidth="400" minHeight="600" minWidth="400" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <GridPane id="bodyPane" layoutX="0" layoutY="0" prefHeight="600" prefWidth="400">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="378.0" minHeight="10.0" prefHeight="346.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="191.0" minHeight="10.0" prefHeight="54.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <ScrollPane id="inputScrollPane" prefHeight="200.0" prefWidth="200.0" GridPane.rowSpan="2">
+               <content>
+                  <Pane id="inputPane1" prefHeight="467.0" prefWidth="200.0">
+                     <children>
+                        <Label id="inputContentsLabel" layoutX="48.0" layoutY="14.0" text="Input contents here" />
+                     </children>
+                  </Pane>
+               </content>
+            </ScrollPane>
+            <ScrollPane id="errorsScrollPane" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowSpan="2">
+               <content>
+                  <Pane id="errorsPane1" prefHeight="467.0" prefWidth="200.0">
+                     <children>
+                        <Label id="consoleLabel" layoutX="52.0" layoutY="14.0" text="Syntax errors here" />
+                     </children></Pane>
+               </content>
+            </ScrollPane>
+            <Pane id="inputFilePane" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="2">
+               <children>
+                  <Label id="inputFileLabel" layoutX="132.0" layoutY="23.0" text="Paste input file path here:" />
+                  <TextField id="inputFileField" layoutX="125.0" layoutY="49.0" />
+                  <Button id="compileButton" layoutX="170.0" layoutY="84.0" mnemonicParsing="false" text="Compile" />
+               </children>
+            </Pane>
+         </children>
+      </GridPane>
+   </children>
 </AnchorPane>
