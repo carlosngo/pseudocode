@@ -4,11 +4,11 @@
     box-sizing: border-box;
 }
 
-#inputScrollPane{
+#inputPane1{
     background: #F2FCFB;
 }
 
-#errorsScrollPane{
+#errorsPane1{
     background: #22393D;
 }
 
