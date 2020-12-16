@@ -10,8 +10,8 @@ CharacterLiteral:
 	('u' | 'U' | 'L')? '\'' Cchar+ '\'';
 
 FloatingLiteral:
-	Fractionalconstant Exponentpart? Floatingsuffix?
-	| Digitsequence Exponentpart Floatingsuffix?;
+	Fractionalconstant Exponentpart? Floatingsuffix
+	| Digitsequence Exponentpart Floatingsuffix;
 
 StringLiteral:
 	Encodingprefix? '"' Schar* '"'
@@ -294,6 +294,14 @@ Up: 'up' Whitespace TO;
 
 Down: 'down' Whitespace TO;
 
+// OTHER KEYWORDS
+
+Scan: 'scan';
+
+Print: 'print';
+
+Function: 'func';
+
 fragment TO: 'to';
 
 fragment Hexquad:
@@ -303,11 +311,11 @@ fragment Universalcharactername:
 	'\\u' Hexquad
 	| '\\U' Hexquad Hexquad;
 
-Identifier:
+Identifier: NONDIGIT '[' NONDIGIT DIGIT ']'*;
 	/*
 	 Identifiernondigit | Identifier Identifiernondigit | Identifier DIGIT
 	 */
-	Identifiernondigit (Identifiernondigit | DIGIT)*;
+	//Identifiernondigit (Identifiernondigit | DIGIT)*;
 
 fragment Identifiernondigit: NONDIGIT | Universalcharactername;
 
