@@ -300,6 +300,8 @@ Scan: 'scan';
 
 Print: 'print';
 
+Then: 'then';
+
 Function: 'func';
 
 fragment TO: 'to';
