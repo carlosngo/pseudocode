@@ -1,6 +1,10 @@
 parser grammar PseudocodeParser;
 
-import PseudocodeLexer;
+options {
+	tokenVocab = PseudocodeLexer;
+}
+
+// Expressions
 
 primaryExpression:
 	literal+
@@ -35,9 +39,8 @@ additiveExpression:
 	)*;
 
 multiplicativeExpression:
-	unaryExpression
-    | multiplicativeExpression (
-		(Star | Div | Mod) multiplicativeExpression
+	unaryExpression (
+		(Star | Div | Mod) unaryExpression
 	)*;
 
 unaryExpression:
@@ -50,16 +53,9 @@ postfixExpression:
 	| postfixExpression LeftParen expressionList? RightParen
 	| postfixExpression (PlusPlus | MinusMinus);
 
-initializerClause: assignmentExpression | bracedInitList;
-
-initializerList:
-	initializerClause (
-		Comma initializerClause
-	)*;
+constantExpression: logicalOrExpression;
 
 expressionList: initializerList;
-
-bracedInitList: LeftBrace (initializerList Comma?)? RightBrace;
 
 unaryOperator: Plus | Minus | Not;
 
@@ -80,3 +76,120 @@ literal:
 	| PointerLiteral
 	| UserDefinedLiteral;
 
+constSeq: Const+;
+
+// Statements
+
+statement:
+    expressionStatement
+    | compoundStatement
+    | selectionStatement
+    | iterationStatement
+	| simpleDeclaration;
+
+expressionStatement: expression? Semi;
+
+// Compound Statement Start
+
+compoundStatement: LeftBrace statementSeq? RightBrace;
+
+statementSeq: statement+;
+
+// Compound Statement End
+
+// Conditional Start
+
+selectionStatement:
+	If LeftParen condition RightParen statement (Else statement)?;
+
+condition:
+	expression
+	| declSpecifierSeq declarator (
+		Assign initializerClause
+		| bracedInitList
+	);
+
+// Conditional End
+
+// Iteration Start
+
+iterationStatement:
+	While LeftParen condition RightParen statement
+	| Do statement While LeftParen expression RightParen Semi
+	| For LeftParen (
+		forInitStatement condition? Semi expression?
+	) RightParen statement;
+
+forInitStatement: expressionStatement | simpleDeclaration;
+
+// Iteration End
+
+// Declaration Start
+
+simpleDeclaration:
+	declSpecifierSeq? initDeclaratorList? Semi;
+
+declSpecifierSeq: declSpecifier+;
+
+declSpecifier:
+    Char
+	| Bool
+	| Short
+	| Int
+	| Long
+	| Signed
+	| Unsigned
+	| Float
+	| Double
+	| Void
+	| Auto
+    | Const;
+
+declarator:
+	Identifier
+	| declarator (
+		parametersAndQualifiers
+		| LeftBracket constantExpression? RightBracket
+	);
+
+// Declaration End
+
+// Initialization Start
+
+initDeclaratorList: initDeclarator (Comma initDeclarator)*;
+
+initDeclarator: declarator initializer?;
+
+initializer:
+	braceOrEqualInitializer
+	| LeftParen expressionList RightParen;
+
+braceOrEqualInitializer:
+	Assign initializerClause
+	| bracedInitList;
+
+initializerClause: assignmentExpression | bracedInitList;
+
+initializerList:
+	initializerClause (
+		Comma initializerClause
+	)*;
+
+bracedInitList: LeftBrace (initializerList Comma?)? RightBrace;
+
+// Parameters Start
+
+parametersAndQualifiers:
+	LeftParen parameterDeclarationClause? RightParen;
+
+parameterDeclarationClause:
+	parameterDeclaration (Comma parameterDeclaration)*;
+
+parameterDeclaration:
+	declSpecifierSeq (
+		declarator (
+			Assign initializerClause
+		)?
+	);
+
+// Parameters End
