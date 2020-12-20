@@ -1,8 +1,10 @@
 parser grammar PseudocodeParser;
 
 options {
-	tokenVocab = PseudocodeLexer;
+	tokenVocab = CPP14Lexer;
 }
+
+init: declarationseq ? EOF;
 
 // Expressions
 
@@ -15,7 +17,8 @@ primaryExpression:
 expression: assignmentExpression (Comma assignmentExpression)*;
 
 assignmentExpression:
-	logicalOrExpression assignmentOperator initializerClause;
+	logicalOrExpression
+	| logicalOrExpression assignmentOperator initializerClause;
 
 logicalOrExpression:
 	logicalAndExpression (OrOr logicalAndExpression)*;
@@ -85,7 +88,15 @@ statement:
     | compoundStatement
     | selectionStatement
     | iterationStatement
+    | jumpStatement
 	| simpleDeclaration;
+
+jumpStatement:
+	(
+		Break
+		| Continue
+		| Return (expression | bracedInitList)?
+	) Semi;
 
 expressionStatement: expression? Semi;
 
@@ -126,6 +137,16 @@ forInitStatement: expressionStatement | simpleDeclaration;
 
 // Declaration Start
 
+declarationseq: declaration+;
+
+declaration:
+	simpleDeclaration
+	| functionDefinition
+	| emptyDeclaration
+	;
+
+emptyDeclaration: Semi;
+
 simpleDeclaration:
 	declSpecifierSeq? initDeclaratorList? Semi;
 
@@ -154,6 +175,13 @@ declarator:
 
 // Declaration End
 
+// Function Start
+
+functionDefinition:
+	declSpecifierSeq? declarator compoundStatement;
+
+// Function End
+
 // Initialization Start
 
 initDeclaratorList: initDeclarator (Comma initDeclarator)*;
@@ -176,6 +204,8 @@ initializerList:
 	)*;
 
 bracedInitList: LeftBrace (initializerList Comma?)? RightBrace;
+
+// Initialization End
 
 // Parameters Start
 

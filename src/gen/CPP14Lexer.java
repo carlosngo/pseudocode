@@ -1,4 +1,4 @@
-// Generated from C:/Users/lycan/Documents/GitHub/pseudocode/res\CPP14Lexer.g4 by ANTLR 4.9
+// Generated from D:/Documents/La Salle/CMPILER/pseudocode/res\CPP14Lexer.g4 by ANTLR 4.9
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
