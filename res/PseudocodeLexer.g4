@@ -313,11 +313,11 @@ fragment Universalcharactername:
 	'\\u' Hexquad
 	| '\\U' Hexquad Hexquad;
 
-Identifier: NONDIGIT '[' NONDIGIT DIGIT ']'*;
+Identifier:
 	/*
 	 Identifiernondigit | Identifier Identifiernondigit | Identifier DIGIT
 	 */
-	//Identifiernondigit (Identifiernondigit | DIGIT)*;
+	Identifiernondigit (Identifiernondigit | DIGIT)*;
 
 fragment Identifiernondigit: NONDIGIT | Universalcharactername;
 
