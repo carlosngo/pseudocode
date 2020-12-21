@@ -1,0 +1,43 @@
+#inputFilePane{
+    -fx-background-color: #BFD9D7;
+    -fx-border-width: 7px;
+    -fx-border-style: solid;
+    -fx-border-color: #51979B;
+}
+
+#inputPane1{
+    -fx-background-color: #F2FCFB;
+}
+
+#errorsPane1{
+    -fx-background-color: #22393D;
+}
+
+.Label{
+    -fx-font-family: "Courier Prime";
+    -fx-font-style: normal;
+    -fx-font-weight: normal;
+
+    -fx-text-fill: #000000;
+}
+
+#consoleLabel{
+    -fx-text-fill: #FFFFFF;
+}
+
+#compileButton{
+    -fx-background-color: transparent;
+    -fx-border-width: 3px;
+    -fx-border-style: solid;
+    -fx-border-color: #51979B;
+    -fx-border-radius: 3px;
+
+    -fx-font-family: "Courier Prime";
+    -fx-text-fill: #000000;
+
+}
+
+#inputFileField{
+    -fx-background-color: #FFFFFF;
+    -fx-border-radius: 3px;
+}
