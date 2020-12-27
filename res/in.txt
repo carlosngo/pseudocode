@@ -1,1 +1,149 @@
-int x;
+/*
+* This is a sample program of Pseudocode.  The entry point of the program is main()
+*/
+main() {
+	int i = 0; //single-line declaration
+	int x,y,z = 1; //OPTIONAL: multiple declarations
+	int x = 0, y = 0, z = 1; //OPTIONAL: multiple declarations
+	float fX = 2.0f; //a float declaration must end with an .f notation.
+	constant int MY_CONSTANT = 500; //constant declaration
+		
+//Pseudocode language supports the following data-types: boolean,integer,float, strings,arrays (1D)
+	//Pseudocode language should support the regular expression of a standard variable declaration,
+	//similar to Java, C++.
+	
+	//declaration of boolean variables with false and true values
+	bool false_flag = F; bool true_flag = T;
+
+	//declaration of a string
+	String myString = "Test";
+	
+	//asking for user input is done by scan() statement, where it accepts two parameters,
+	//the display message, and where the value should be stored. When the program encounters
+	//a scan, the execution must pause indefinitely until a user input has been given.
+	scan("Give me a random number: ", i); 
+	
+	
+	//printing and displaying results are done using the print() statement. This is similar
+	//to Java's println method.
+	print("Your number is: " +i);
+	print("X is " +x+ " while Y is " +y);
+	print("Let's add them! Result is: " +(x + y));
+	print("Let's do something complicated! " +((x + y + z) * (x*y))/fX);
+	print("Thank you very much!");
+	
+	//The pseudocode language supports conditional statements in the following manner.
+	if(x == 0) then {
+		print("Hello");
+	} else if(x > 0) then {
+		print("Hello2");
+		
+		if(y + z > ((x*y)/fX)) then {
+			print("Yey!");
+		}
+		else then {
+			print("Nay!");
+		}
+	}
+	else then {
+		print("Hello3");
+	}
+	
+	//The pseudocode language supports while and for-loops for iterative statements
+	int n = 500;
+	
+	//this is similar to Java: while(i <= n). In pseudocode, i gets iterated automatically!
+	while i up to n {
+		print("Yesh!");
+	}
+	
+	i = 0;
+	//If you want to do: while(i < n)
+	while i up to n - 1 {
+		print("Yesh!");
+	}
+	
+	i = 0;
+	//this is similar to Java: while(n >= i). In pseudocode, n decrements automatically!
+	while n down to i {
+		print("Yesh!");
+	}
+	
+	n = 500;
+	//If you want to do: while (n > i)
+	while n down to i + 1 {
+		print("Yesh");
+	}
+	
+	//General formula
+	//while LB up to UB 
+	//while UB down to LB, where UB and LB are represented by simple/complex expressions
+	
+	int n = 500;
+	
+	//This is similar to Java: for(int x = 1; x <= n; x++).
+	for int x = 1 up to n {
+		print("Hello!");
+	}
+	
+	int n = 1;
+	//This is similar to Java: for(int x = 1000; x >= n; x--)
+	for int x = 1000 down to n {
+		print("Hello!");
+	}
+	
+	i = 0;
+	//NOTE: if you use a variable declared outside of for(), then it will be updated after the loop!
+	for i up to n {
+		print("Hello!");
+	}
+	//i = n after the loop
+	
+	//pseudocode language supports nested blocks and proper scoping
+	int a = 0;
+	{
+		print(a); //a can be accessed
+		{
+			int b = 0;
+			print(b);
+			
+			{
+				int c = 0;
+				print(b + c); //c and b can be accessed.
+				print(a + c); //even a can be accessed
+			}
+			
+			print("Cannot access c here!");
+		}
+		
+		print("Cannot access b here!");
+		print("Cannot access c here!");
+	}
+}
+
+//pseudocode language should support functions and recursion!
+func int factorial(int n) {
+	if(n == 1) then {
+		return 1;
+	}
+	else then {
+		return n * factorial(n - 1);
+	}
+}
+
+func void callPrinter(String message) {
+	print(message);
+}
+
+//pseudocode supports 1D arrays
+func int[] append(int[] arr, int arr_size, int x) {
+	int[] newArr = create int[arr_size + 1]; //to allocate an array,  use create
+	
+	//array index starts at 1
+	for i = 1 up to arr_size {
+		newArr[i] = arr[i];
+	}
+	
+	newArr[arr_size + 1] = x;
+	return newArr;
+}

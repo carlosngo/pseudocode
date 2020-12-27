@@ -1,10 +1,10 @@
 parser grammar PseudocodeParser;
 
 options {
-	tokenVocab = CPP14Lexer;
+	tokenVocab = PseudocodeLexer;
 }
 
-init: declarationseq ? EOF;
+init: declarationseq? EOF;
 
 // Expressions
 
@@ -14,7 +14,8 @@ primaryExpression:
 	| LeftParen expression RightParen
 	| Identifier;
 
-expression: assignmentExpression (Comma assignmentExpression)*;
+expression: assignmentExpression;
+//expression: assignmentExpression (Comma assignmentExpression)*;
 
 assignmentExpression:
 	logicalOrExpression
@@ -48,13 +49,17 @@ multiplicativeExpression:
 
 unaryExpression:
 	postfixExpression
-	| (PlusPlus | MinusMinus | unaryOperator) unaryExpression;
+	| (PlusPlus | MinusMinus | unaryOperator) unaryExpression
+	| createExpression;
+
+createExpression:
+    (Create | New) typeSpecifier LeftBracket constantExpression RightBracket;
 
 postfixExpression:
 	primaryExpression
-	| postfixExpression LeftBracket (expression | bracedInitList) RightBracket // arrays?
-	| postfixExpression LeftParen expressionList? RightParen
-	| postfixExpression (PlusPlus | MinusMinus);
+	| Identifier LeftBracket expression RightBracket // arrays?
+	| Identifier LeftParen expressionList? RightParen // function call
+	| Identifier (PlusPlus | MinusMinus);
 
 constantExpression: logicalOrExpression;
 
@@ -79,8 +84,6 @@ literal:
 	| PointerLiteral
 	| UserDefinedLiteral;
 
-constSeq: Const+;
-
 // Statements
 
 statement:
@@ -89,13 +92,21 @@ statement:
     | selectionStatement
     | iterationStatement
     | jumpStatement
+    | printStatement
+    | scanStatement
 	| simpleDeclaration;
+
+printStatement:
+    Print LeftParen constantExpression RightParen;
+
+scanStatement:
+    Scan LeftParen StringLiteral Comma Identifier RightParen;
 
 jumpStatement:
 	(
 		Break
 		| Continue
-		| Return (expression | bracedInitList)?
+		| Return (constantExpression)?
 	) Semi;
 
 expressionStatement: expression? Semi;
@@ -111,27 +122,38 @@ statementSeq: statement+;
 // Conditional Start
 
 selectionStatement:
-	If LeftParen condition RightParen statement (Else statement)?;
+    ifStatement elseIfStatement* elseStatement?;
+
+ifStatement:
+    If LeftParen condition RightParen Then? compoundStatement;
+
+elseIfStatement:
+    Else If LeftParen condition RightParen Then? compoundStatement;
+
+elseStatement:
+    Else Then? compoundStatement;
 
 condition:
-	expression
-	| declSpecifierSeq declarator (
-		Assign initializerClause
-		| bracedInitList
-	);
+	constantExpression;
 
 // Conditional End
 
 // Iteration Start
 
 iterationStatement:
-	While LeftParen condition RightParen statement
-	| Do statement While LeftParen expression RightParen Semi
+    For iterationInit (Up | Down) To constantExpression
+    | While iterationInit (Up | Down) To constantExpression
+	| While LeftParen condition RightParen statement
+	| Do statement While LeftParen condition RightParen Semi
 	| For LeftParen (
 		forInitStatement condition? Semi expression?
 	) RightParen statement;
 
 forInitStatement: expressionStatement | simpleDeclaration;
+
+iterationInit:
+    expression
+    | declSpecifierSeq? initDeclaratorList;
 
 // Iteration End
 
@@ -150,35 +172,38 @@ emptyDeclaration: Semi;
 simpleDeclaration:
 	declSpecifierSeq? initDeclaratorList? Semi;
 
-declSpecifierSeq: declSpecifier+;
+declSpecifierSeq: (Const | Final)? typeSpecifier (LeftBracket RightBracket)?;
 
-declSpecifier:
-    Char
-	| Bool
-	| Short
-	| Int
-	| Long
-	| Signed
-	| Unsigned
-	| Float
-	| Double
-	| Void
-	| Auto
-    | Const;
+typeSpecifier:
+    (
+        Char
+        | Bool
+        | Short
+        | Int
+        | Long
+        | Float
+        | Double
+        | Void
+        | String
+    )
+    ;
 
 declarator:
-	Identifier
-	| declarator (
+	Identifier (
 		parametersAndQualifiers
 		| LeftBracket constantExpression? RightBracket
-	);
+	)?;
 
 // Declaration End
 
 // Function Start
 
 functionDefinition:
-	declSpecifierSeq? declarator compoundStatement;
+    Function? declSpecifierSeq declarator compoundStatement
+    | mainFunction;
+
+mainFunction:
+    Function? declSpecifierSeq? Main LeftParen RightParen compoundStatement;
 
 // Function End
 
@@ -189,21 +214,15 @@ initDeclaratorList: initDeclarator (Comma initDeclarator)*;
 initDeclarator: declarator initializer?;
 
 initializer:
-	braceOrEqualInitializer
-	| LeftParen expressionList RightParen;
+	Assign initializerClause;
 
-braceOrEqualInitializer:
-	Assign initializerClause
-	| bracedInitList;
-
-initializerClause: assignmentExpression | bracedInitList;
+initializerClause: assignmentExpression;
 
 initializerList:
 	initializerClause (
 		Comma initializerClause
 	)*;
 
-bracedInitList: LeftBrace (initializerList Comma?)? RightBrace;
 
 // Initialization End
 

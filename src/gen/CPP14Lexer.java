@@ -1,4 +1,5 @@
 // Generated from D:/Documents/La Salle/CMPILER/pseudocode/res\CPP14Lexer.g4 by ANTLR 4.9
+package gen;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

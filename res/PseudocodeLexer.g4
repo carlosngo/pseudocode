@@ -39,13 +39,13 @@ Alignof: 'alignof';
 
 //Arrays need to support append now
 
-Append: 'append';
+// Append: 'append';
 
 Asm: 'asm';
 
 Auto: 'auto';
 
-Bool: 'bool';
+Bool: 'bool' | 'boolean';
 
 Break: 'break';
 
@@ -61,7 +61,7 @@ Char32: 'char32_t';
 
 Class: 'class';
 
-Const: 'const';
+Const: 'constant';
 
 Constexpr: 'constexpr';
 
@@ -153,6 +153,8 @@ Static: 'static';
 Static_assert: 'static_assert';
 
 Static_cast: 'static_cast';
+
+String: 'String';
 
 Struct: 'struct';
 
@@ -290,9 +292,11 @@ Ellipsis: '...';
 
 // UP TO DOWN TO FOR THE WHILE AND FOR LOOPS
 
-Up: 'up' Whitespace TO;
+Up: 'up';
 
-Down: 'down' Whitespace TO;
+Down: 'down';
+
+To: 'to';
 
 // OTHER KEYWORDS
 
@@ -304,7 +308,7 @@ Then: 'then';
 
 Function: 'func';
 
-fragment TO: 'to';
+Main: 'main';
 
 fragment Hexquad:
 	HEXADECIMALDIGIT HEXADECIMALDIGIT HEXADECIMALDIGIT HEXADECIMALDIGIT;

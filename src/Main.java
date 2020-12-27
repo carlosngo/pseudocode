@@ -26,6 +26,7 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) throws Exception {
+//        CPP14Lexer lexer = new CPP14Lexer(CharStreams.fromFileName("res/in.txt"));
         PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromFileName("res/in.txt"));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         PseudocodeParser parser = new PseudocodeParser(tokens);
