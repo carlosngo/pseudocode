@@ -30,6 +30,8 @@ public class Main extends Application {
         PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromFileName("res/in.txt"));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         PseudocodeParser parser = new PseudocodeParser(tokens);
+        parser.removeErrorListeners();
+        parser.addErrorListener(PseudocodeErrorListener.INSTANCE);
         ParseTree tree = parser.init();
         System.out.println(tree.toStringTree(parser));
 
