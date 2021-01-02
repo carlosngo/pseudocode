@@ -158,16 +158,6 @@ public interface PseudocodeParserListener extends ParseTreeListener {
 	 */
 	void exitExpressionList(PseudocodeParser.ExpressionListContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link PseudocodeParser#unaryOperator}.
-	 * @param ctx the parse tree
-	 */
-	void enterUnaryOperator(PseudocodeParser.UnaryOperatorContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PseudocodeParser#unaryOperator}.
-	 * @param ctx the parse tree
-	 */
-	void exitUnaryOperator(PseudocodeParser.UnaryOperatorContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link PseudocodeParser#assignmentOperator}.
 	 * @param ctx the parse tree
 	 */
@@ -177,6 +167,16 @@ public interface PseudocodeParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAssignmentOperator(PseudocodeParser.AssignmentOperatorContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PseudocodeParser#binaryOperator}.
+	 * @param ctx the parse tree
+	 */
+	void enterBinaryOperator(PseudocodeParser.BinaryOperatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PseudocodeParser#binaryOperator}.
+	 * @param ctx the parse tree
+	 */
+	void exitBinaryOperator(PseudocodeParser.BinaryOperatorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PseudocodeParser#literal}.
 	 * @param ctx the parse tree

@@ -20,7 +20,10 @@ public class PseudocodeErrorListener extends BaseErrorListener {
     {
         Parser parser = (Parser) recognizer;
         Vocabulary vocabulary = parser.getVocabulary();
+        List<Integer> expectedTokens = parser.getExpectedTokens().toList();
+
         System.err.print("syntax error: ");
+
         if (e instanceof FailedPredicateException) {
             System.err.print("Failed predicate exception: " + msg);
         } else if (e instanceof InputMismatchException) {
@@ -32,7 +35,6 @@ public class PseudocodeErrorListener extends BaseErrorListener {
         } else { // recovered successfully
             if (msg.split(" ")[0].equals("missing")) {
                 System.err.print("expected ");
-                List<Integer> expectedTokens = ((Parser)recognizer).getExpectedTokens().toList();
                 if (expectedTokens.size() == 1) {
                     System.err.print(vocabulary.getLiteralName(expectedTokens.get(0)));
                 } else {
@@ -48,6 +50,8 @@ public class PseudocodeErrorListener extends BaseErrorListener {
 
             } else if (msg.split(" ")[0].equals("extraneous")) {
                 System.err.print("redundant \'" + ((Token) offendingSymbol).getText() + "\'");
+            } else {
+                System.err.print(msg);
             }
         }
         System.err.println(" at line " + line);

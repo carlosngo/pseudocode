@@ -9,12 +9,18 @@ init: declarationseq? EOF;
 // Expressions
 
 primaryExpression:
-	literal+
+	literal
 	| This
+	| Identifier
 	| LeftParen expression RightParen
-	| Identifier;
+	| LeftParen expression { notifyErrorListeners("expected closing parenthesis"); }
+	| LeftParen expression RightParen RightParen { notifyErrorListeners("too many closing parentheses"); }
+	| Identifier Identifier+ { notifyErrorListeners("expected double quotes or operators"); }
+	| literal literal+ { notifyErrorListeners("expected double quotes or operators"); }
+	;
 
-expression: assignmentExpression;
+expression: assignmentExpression
+    ;
 //expression: assignmentExpression (Comma assignmentExpression)*;
 
 assignmentExpression:
@@ -22,7 +28,8 @@ assignmentExpression:
 	| logicalOrExpression assignmentOperator initializerClause;
 
 logicalOrExpression:
-	logicalAndExpression (OrOr logicalAndExpression)*;
+	logicalAndExpression (OrOr logicalAndExpression)*
+    ;
 
 logicalAndExpression:
 	equalityExpression (AndAnd equalityExpression)*;
@@ -40,7 +47,11 @@ relationalExpression:
 additiveExpression:
 	multiplicativeExpression (
 		(Plus | Minus) multiplicativeExpression
-	)*;
+	)*
+	| multiplicativeExpression (
+        (Plus | Minus | PlusPlus | MinusMinus) multiplicativeExpression
+    )* { notifyErrorListeners("redundant +"); }
+    ;
 
 multiplicativeExpression:
 	unaryExpression (
@@ -49,8 +60,11 @@ multiplicativeExpression:
 
 unaryExpression:
 	postfixExpression
-	| (PlusPlus | MinusMinus | unaryOperator) unaryExpression
-	| createExpression;
+	| Not unaryExpression
+	| createExpression
+	| binaryOperator+ unaryExpression { notifyErrorListeners("redundant binary operator. Missing operand"); }
+	| unaryExpression binaryOperator+ { notifyErrorListeners("redundant binary operator. Missing operand"); }
+	;
 
 createExpression:
     (Create | New) typeSpecifier LeftBracket constantExpression RightBracket;
@@ -59,13 +73,17 @@ postfixExpression:
 	primaryExpression
 	| Identifier LeftBracket expression RightBracket // arrays?
 	| Identifier LeftParen expressionList? RightParen // function call
-	| Identifier (PlusPlus | MinusMinus);
+	| Identifier (PlusPlus | MinusMinus)
+	| literal LeftParen expressionList? RightParen { notifyErrorListeners("redundant parentheses"); }
+	;
 
-constantExpression: logicalOrExpression;
+
+constantExpression:
+    logicalOrExpression
+    | assignmentExpression { notifyErrorListeners("unexpected assignment operation"); }
+    ;
 
 expressionList: initializerList;
-
-unaryOperator: Plus | Minus | Not;
 
 assignmentOperator:
 	Assign
@@ -74,6 +92,24 @@ assignmentOperator:
 	| ModAssign
 	| PlusAssign
 	| MinusAssign;
+
+binaryOperator:
+    assignmentOperator
+    | Plus
+	| Minus
+	| Star
+	| Div
+	| Mod
+	| Greater
+	| Less
+	| GreaterEqual
+	| Equal
+	| NotEqual
+	| LessEqual
+	| GreaterEqual
+	| AndAnd
+	| OrOr
+    ;
 
 literal:
 	IntegerLiteral
@@ -107,13 +143,18 @@ jumpStatement:
 		Break
 		| Continue
 		| Return (constantExpression)?
-	) Semi;
+	) Semi
+	| Return typeSpecifier Semi { notifyErrorListeners("expected expression as return value"); }
+	;
 
 expressionStatement: expression? Semi;
 
 // Compound Statement Start
 
-compoundStatement: LeftBrace statementSeq? RightBrace;
+compoundStatement: LeftBrace statementSeq? RightBrace
+    | LeftBrace statementSeq? { notifyErrorListeners("expected closing curly brace"); }
+    | LeftBrace statementSeq? RightBrace RightBrace { notifyErrorListeners("too many closing curly braces"); }
+    ;
 
 statementSeq: statement+;
 
@@ -125,16 +166,21 @@ selectionStatement:
     ifStatement elseIfStatement* elseStatement?;
 
 ifStatement:
-    If LeftParen condition RightParen Then? compoundStatement;
+    If LeftParen condition RightParen Then? compoundStatement
+    | If LeftParen condition Then? compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
+    | If LeftParen condition RightParen RightParen Then? compoundStatement { notifyErrorListeners("too many closing parentheses"); };
 
 elseIfStatement:
-    Else If LeftParen condition RightParen Then? compoundStatement;
+    Else If LeftParen condition RightParen Then? compoundStatement
+    | Else If LeftParen condition Then? compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
+    | Else If LeftParen condition RightParen RightParen Then? compoundStatement { notifyErrorListeners("too many closing parentheses"); };
 
 elseStatement:
     Else Then? compoundStatement;
 
 condition:
-	constantExpression;
+	constantExpression
+	;
 
 // Conditional End
 
@@ -216,7 +262,8 @@ initDeclarator: declarator initializer?;
 initializer:
 	Assign initializerClause;
 
-initializerClause: assignmentExpression;
+initializerClause: assignmentExpression
+    ;
 
 initializerList:
 	initializerClause (

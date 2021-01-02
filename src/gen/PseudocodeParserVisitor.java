@@ -101,17 +101,17 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpressionList(PseudocodeParser.ExpressionListContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#unaryOperator}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitUnaryOperator(PseudocodeParser.UnaryOperatorContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#assignmentOperator}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAssignmentOperator(PseudocodeParser.AssignmentOperatorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#binaryOperator}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBinaryOperator(PseudocodeParser.BinaryOperatorContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#literal}.
 	 * @param ctx the parse tree
