@@ -196,18 +196,6 @@ public class PseudocodeParserBaseListener implements PseudocodeParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterUnaryOperator(PseudocodeParser.UnaryOperatorContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitUnaryOperator(PseudocodeParser.UnaryOperatorContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterAssignmentOperator(PseudocodeParser.AssignmentOperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -215,6 +203,18 @@ public class PseudocodeParserBaseListener implements PseudocodeParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitAssignmentOperator(PseudocodeParser.AssignmentOperatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBinaryOperator(PseudocodeParser.BinaryOperatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBinaryOperator(PseudocodeParser.BinaryOperatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
