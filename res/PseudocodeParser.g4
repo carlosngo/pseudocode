@@ -74,7 +74,8 @@ postfixExpression:
 	| Identifier LeftBracket expression RightBracket // arrays?
 	| Identifier LeftParen expressionList? RightParen // function call
 	| Identifier (PlusPlus | MinusMinus)
-	| literal LeftParen expressionList? RightParen { notifyErrorListeners("redundant parentheses"); }
+	| Identifier (LeftParen expressionList? RightParen)+ { notifyErrorListeners("redundant parentheses"); }
+	| literal (LeftParen expressionList? RightParen)+ { notifyErrorListeners("redundant parentheses"); }
 	;
 
 
