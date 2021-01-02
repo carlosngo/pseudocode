@@ -20,7 +20,7 @@
                <content>
                   <Pane id="inputPane1" prefHeight="467.0" prefWidth="200.0">
                      <children>
-                        <Label id="inputContentsLabel" layoutX="48.0" layoutY="14.0" text="Input contents here" />
+                        <Label id="inputContentsLabel" fx:id="inputContentsLabel" layoutX="48.0" layoutY="14.0" text="Input contents here" />
                      </children>
                   </Pane>
                </content>
@@ -29,14 +29,14 @@
                <content>
                   <Pane id="errorsPane1" prefHeight="467.0" prefWidth="200.0">
                      <children>
-                        <Label id="consoleLabel" layoutX="52.0" layoutY="14.0" text="Syntax errors here" />
+                        <Label id="consoleLabel" fx:id="consoleLabel" layoutX="52.0" layoutY="14.0" text="Syntax errors here" />
                      </children></Pane>
                </content>
             </ScrollPane>
             <Pane id="inputFilePane" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="2">
                <children>
                   <Label id="inputFileLabel" layoutX="132.0" layoutY="23.0" text="Paste input file path here:" />
-                  <TextField id="inputFileField" layoutX="125.0" layoutY="49.0" />
+                  <TextField id="inputFileField" fx:id="inputFileField" layoutX="125.0" layoutY="49.0" />
                   <Button id="compileButton" layoutX="170.0" layoutY="84.0" mnemonicParsing="false" text="Compile" />
                </children>
             </Pane>
