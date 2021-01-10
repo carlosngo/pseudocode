@@ -5,6 +5,8 @@ import org.antlr.v4.runtime.misc.IntervalSet;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class PseudocodeErrorListener extends BaseErrorListener {
@@ -18,21 +20,24 @@ public class PseudocodeErrorListener extends BaseErrorListener {
                             String msg,
                             RecognitionException e)
     {
-        Parser parser = (Parser) recognizer;
-        Vocabulary vocabulary = parser.getVocabulary();
-        List<Integer> expectedTokens = parser.getExpectedTokens().toList();
 
         System.err.print("syntax error: ");
 
         if (e instanceof FailedPredicateException) {
             System.err.print("Failed predicate exception: " + msg);
         } else if (e instanceof InputMismatchException) {
-            System.err.print("Input mismatch exception: " + msg);
+            System.err.print("unexpected token '" + e.getOffendingToken().getText() + "'");
         } else if (e instanceof LexerNoViableAltException) {
-            System.err.print("Lexer no viable alt exception: " + msg);
+            Pattern p = Pattern.compile("token recognition error at: \'([^\"]*)\'");
+            Matcher m = p.matcher(msg);
+            m.find();
+            System.err.print("unknown token '" + m.group(1) + "'");
         } else if (e instanceof NoViableAltException) {
-            System.err.print("No viable alt exception: " + msg);
+            System.err.print("unexpected token '" + e.getOffendingToken().getText() + "'");
         } else { // recovered successfully
+            Parser parser = (Parser) recognizer;
+            Vocabulary vocabulary = parser.getVocabulary();
+            List<Integer> expectedTokens = parser.getExpectedTokens().toList();
             if (msg.split(" ")[0].equals("missing")) {
                 System.err.print("expected ");
                 if (expectedTokens.size() == 1) {

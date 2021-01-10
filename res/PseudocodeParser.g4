@@ -4,7 +4,7 @@ options {
 	tokenVocab = PseudocodeLexer;
 }
 
-init: declarationseq? EOF;
+init: (declaration | statement)* EOF;
 
 // Expressions
 
@@ -15,8 +15,7 @@ primaryExpression:
 	| LeftParen expression RightParen
 	| LeftParen expression { notifyErrorListeners("expected closing parenthesis"); }
 	| LeftParen expression RightParen RightParen { notifyErrorListeners("too many closing parentheses"); }
-	| Identifier Identifier+ { notifyErrorListeners("expected double quotes or operators"); }
-	| literal literal+ { notifyErrorListeners("expected double quotes or operators"); }
+	| (Identifier | literal) (Identifier | literal)+ { notifyErrorListeners("expected double quotes or operators"); }
 	;
 
 expression: assignmentExpression
@@ -117,9 +116,7 @@ literal:
 	| CharacterLiteral
 	| FloatingLiteral
 	| StringLiteral
-	| BooleanLiteral
-	| PointerLiteral
-	| UserDefinedLiteral;
+	| BooleanLiteral;
 
 // Statements
 
@@ -145,16 +142,20 @@ jumpStatement:
 		| Continue
 		| Return (constantExpression)?
 	) Semi
-	| Return typeSpecifier Semi { notifyErrorListeners("expected expression as return value"); }
+	| Return badReturn Semi
 	;
+
+badReturn:
+    typeSpecifier  { notifyErrorListeners("expected expression as return value"); }
+    ;
 
 expressionStatement: expression? Semi;
 
 // Compound Statement Start
 
 compoundStatement: LeftBrace statementSeq? RightBrace
-    | LeftBrace statementSeq? { notifyErrorListeners("expected closing curly brace"); }
-    | LeftBrace statementSeq? RightBrace RightBrace { notifyErrorListeners("too many closing curly braces"); }
+    | LeftBrace+ statementSeq? { notifyErrorListeners("expected closing curly brace"); }
+    | LeftBrace statementSeq? RightBrace RightBrace+ { notifyErrorListeners("too many closing curly braces"); }
     ;
 
 statementSeq: statement+;
@@ -239,7 +240,12 @@ declarator:
 	Identifier (
 		parametersAndQualifiers
 		| LeftBracket constantExpression? RightBracket
-	)?;
+	)?
+	| literal (
+        parametersAndQualifiers
+        | LeftBracket constantExpression? RightBracket
+    )? { notifyErrorListeners("expected identifier as declarator"); }
+	;
 
 // Declaration End
 

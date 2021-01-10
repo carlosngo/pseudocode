@@ -1,4 +1,5 @@
 import gui.MainView;
+import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -12,6 +13,7 @@ import javafx.stage.Stage;
 import gen.*;
 
 import java.io.FileInputStream;
+import java.util.Arrays;
 
 
 public class Main extends Application {
@@ -30,9 +32,15 @@ public class Main extends Application {
         PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromFileName("res/in.txt"));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         PseudocodeParser parser = new PseudocodeParser(tokens);
+        lexer.removeErrorListeners();
         parser.removeErrorListeners();
+        lexer.addErrorListener(PseudocodeErrorListener.INSTANCE);
         parser.addErrorListener(PseudocodeErrorListener.INSTANCE);
+        parser.setErrorHandler(new PseudocodeErrorStrategy());
         ParseTree tree = parser.init();
+        TreeViewer viewr = new TreeViewer(Arrays.asList(
+                parser.getRuleNames()), tree);
+        viewr.open();
         System.out.println(tree.toStringTree(parser));
 
         launch(args);

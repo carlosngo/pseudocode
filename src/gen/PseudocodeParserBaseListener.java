@@ -280,6 +280,18 @@ public class PseudocodeParserBaseListener implements PseudocodeParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterBadReturn(PseudocodeParser.BadReturnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBadReturn(PseudocodeParser.BadReturnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterExpressionStatement(PseudocodeParser.ExpressionStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}

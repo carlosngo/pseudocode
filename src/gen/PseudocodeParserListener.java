@@ -228,6 +228,16 @@ public interface PseudocodeParserListener extends ParseTreeListener {
 	 */
 	void exitJumpStatement(PseudocodeParser.JumpStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PseudocodeParser#badReturn}.
+	 * @param ctx the parse tree
+	 */
+	void enterBadReturn(PseudocodeParser.BadReturnContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PseudocodeParser#badReturn}.
+	 * @param ctx the parse tree
+	 */
+	void exitBadReturn(PseudocodeParser.BadReturnContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PseudocodeParser#expressionStatement}.
 	 * @param ctx the parse tree
 	 */
