@@ -424,18 +424,6 @@ public class PseudocodeParserBaseListener implements PseudocodeParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeclarationseq(PseudocodeParser.DeclarationseqContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDeclarationseq(PseudocodeParser.DeclarationseqContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterDeclaration(PseudocodeParser.DeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}

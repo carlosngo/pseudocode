@@ -348,16 +348,6 @@ public interface PseudocodeParserListener extends ParseTreeListener {
 	 */
 	void exitIterationInit(PseudocodeParser.IterationInitContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link PseudocodeParser#declarationseq}.
-	 * @param ctx the parse tree
-	 */
-	void enterDeclarationseq(PseudocodeParser.DeclarationseqContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PseudocodeParser#declarationseq}.
-	 * @param ctx the parse tree
-	 */
-	void exitDeclarationseq(PseudocodeParser.DeclarationseqContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link PseudocodeParser#declaration}.
 	 * @param ctx the parse tree
 	 */

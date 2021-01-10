@@ -28,10 +28,11 @@ public class PseudocodeErrorListener extends BaseErrorListener {
         } else if (e instanceof InputMismatchException) {
             System.err.print("unexpected token '" + e.getOffendingToken().getText() + "'");
         } else if (e instanceof LexerNoViableAltException) {
-            Pattern p = Pattern.compile("token recognition error at: \'([^\"]*)\'");
-            Matcher m = p.matcher(msg);
-            m.find();
-            System.err.print("unknown token '" + m.group(1) + "'");
+            System.err.println(msg);
+//            Pattern p = Pattern.compile("token recognition error at: \'([^\"]*)\'");
+//            Matcher m = p.matcher(msg);
+//            m.find();
+//            System.err.print("unknown token '" + m.group(1) + "'");
         } else if (e instanceof NoViableAltException) {
             System.err.print("unexpected token '" + e.getOffendingToken().getText() + "'");
         } else { // recovered successfully

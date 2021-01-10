@@ -215,12 +215,6 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIterationInit(PseudocodeParser.IterationInitContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#declarationseq}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDeclarationseq(PseudocodeParser.DeclarationseqContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#declaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
