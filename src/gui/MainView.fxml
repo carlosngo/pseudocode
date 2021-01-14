@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane stylesheets="@MainView.css" id="mainPane" maxHeight="600" maxWidth="400" minHeight="600" minWidth="400" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane stylesheets="@MainView.css" fx:controller="gui.MainView" id="mainPane" maxHeight="600" maxWidth="400" minHeight="600" minWidth="400" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <GridPane id="bodyPane" layoutX="0" layoutY="0" prefHeight="600" prefWidth="400">
         <columnConstraints>
@@ -37,7 +37,7 @@
                <children>
                   <Label id="inputFileLabel" layoutX="132.0" layoutY="23.0" text="Paste input file path here:" />
                   <TextField id="inputFileField" fx:id="inputFileField" layoutX="125.0" layoutY="49.0" />
-                  <Button id="compileButton" layoutX="170.0" layoutY="84.0" mnemonicParsing="false" text="Compile" />
+                  <Button id="compileButton" onMouseClicked="#readTextFile" layoutX="170.0" layoutY="84.0" mnemonicParsing="false" text="Compile" />
                </children>
             </Pane>
          </children>
