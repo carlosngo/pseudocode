@@ -388,6 +388,18 @@ public class PseudocodeParserBaseListener implements PseudocodeParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterComparisonOperator(PseudocodeParser.ComparisonOperatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitComparisonOperator(PseudocodeParser.ComparisonOperatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterIterationStatement(PseudocodeParser.IterationStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}

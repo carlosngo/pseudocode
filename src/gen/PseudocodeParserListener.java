@@ -318,6 +318,16 @@ public interface PseudocodeParserListener extends ParseTreeListener {
 	 */
 	void exitCondition(PseudocodeParser.ConditionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PseudocodeParser#comparisonOperator}.
+	 * @param ctx the parse tree
+	 */
+	void enterComparisonOperator(PseudocodeParser.ComparisonOperatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PseudocodeParser#comparisonOperator}.
+	 * @param ctx the parse tree
+	 */
+	void exitComparisonOperator(PseudocodeParser.ComparisonOperatorContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PseudocodeParser#iterationStatement}.
 	 * @param ctx the parse tree
 	 */

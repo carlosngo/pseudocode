@@ -28,11 +28,11 @@ public class PseudocodeErrorListener extends BaseErrorListener {
         } else if (e instanceof InputMismatchException) {
             System.err.print("unexpected token '" + e.getOffendingToken().getText() + "'");
         } else if (e instanceof LexerNoViableAltException) {
-            System.err.println(msg);
-//            Pattern p = Pattern.compile("token recognition error at: \'([^\"]*)\'");
-//            Matcher m = p.matcher(msg);
-//            m.find();
-//            System.err.print("unknown token '" + m.group(1) + "'");
+//            System.err.println(msg);
+            Pattern p = Pattern.compile("token recognition error at: \'([^\"]*)\'");
+            Matcher m = p.matcher(msg);
+            m.find();
+            System.err.print("unknown token '" + m.group(1) + "'");
         } else if (e instanceof NoViableAltException) {
             System.err.print("unexpected token '" + e.getOffendingToken().getText() + "'");
         } else { // recovered successfully
@@ -40,16 +40,26 @@ public class PseudocodeErrorListener extends BaseErrorListener {
             Vocabulary vocabulary = parser.getVocabulary();
             List<Integer> expectedTokens = parser.getExpectedTokens().toList();
             if (msg.split(" ")[0].equals("missing")) {
-                System.err.print("expected ");
+                System.err.print("missing token. expected ");
                 if (expectedTokens.size() == 1) {
-                    System.err.print(vocabulary.getLiteralName(expectedTokens.get(0)));
+                    String name = vocabulary.getLiteralName(expectedTokens.get(0));
+                    if (name == null) {
+                        System.err.print(vocabulary.getSymbolicName(expectedTokens.get(0)));
+                    } else {
+                        System.err.print(name);
+                    }
                 } else {
                     System.err.print("{");
                     for (int i = 0; i < expectedTokens.size(); i++) {
                         if (i > 0) {
                             System.err.print(", ");
                         }
-                        System.err.print(vocabulary.getLiteralName(expectedTokens.get(i)));
+                        String name = vocabulary.getLiteralName(expectedTokens.get(i));
+                        if (name == null) {
+                            System.err.print(vocabulary.getSymbolicName(expectedTokens.get(i)));
+                        } else {
+                            System.err.print(name);
+                        }
                     }
                     System.err.print("}");
                 }

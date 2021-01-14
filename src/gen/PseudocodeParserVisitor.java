@@ -197,6 +197,12 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCondition(PseudocodeParser.ConditionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#comparisonOperator}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComparisonOperator(PseudocodeParser.ComparisonOperatorContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#iterationStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

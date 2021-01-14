@@ -13,8 +13,17 @@ FloatingLiteral:
 	Fractionalconstant Exponentpart? Floatingsuffix
 	| Digitsequence Exponentpart Floatingsuffix;
 
+BadFloatingLiteral:
+    Fractionalconstant Exponentpart?
+    	| Digitsequence Exponentpart;
+
 StringLiteral:
-	Encodingprefix? '"' Schar* '"';
+	Encodingprefix? '"' Schar* '"'
+	;
+
+BadStringLiteral:
+    Encodingprefix? '"' Schar*
+    ;
 
 BooleanLiteral: False_ | True_;
 

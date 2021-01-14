@@ -234,6 +234,13 @@ public class PseudocodeParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitComparisonOperator(PseudocodeParser.ComparisonOperatorContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitIterationStatement(PseudocodeParser.IterationStatementContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
