@@ -22,26 +22,28 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("gui/MainView.fxml"));
         primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 400, 600));
+        primaryStage.setScene(new Scene(root, 1000, 600));
         primaryStage.show();
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 //        CPP14Lexer lexer = new CPP14Lexer(CharStreams.fromFileName("res/in.txt"));
-        PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromFileName("res/in.txt"));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        PseudocodeParser parser = new PseudocodeParser(tokens);
-        lexer.removeErrorListeners();
-        parser.removeErrorListeners();
-        lexer.addErrorListener(PseudocodeErrorListener.INSTANCE);
-        parser.addErrorListener(PseudocodeErrorListener.INSTANCE);
-        parser.setErrorHandler(new PseudocodeErrorStrategy());
-        ParseTree tree = parser.init();
-        TreeViewer viewr = new TreeViewer(Arrays.asList(
-                parser.getRuleNames()), tree);
-        viewr.open();
-        System.out.println(tree.toStringTree(parser));
+//        PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromFileName("res/in.txt"));
+//        System.out.println(CharStreams.fromFileName("res/in.txt"));
+//        CommonTokenStream tokens = new CommonTokenStream(lexer);
+//        PseudocodeParser parser = new PseudocodeParser(tokens);
+//        lexer.removeErrorListeners();
+//        parser.removeErrorListeners();
+//        lexer.addErrorListener(PseudocodeErrorListener.INSTANCE);
+//        parser.addErrorListener(PseudocodeErrorListener.INSTANCE);
+//        parser.setErrorHandler(new PseudocodeErrorStrategy());
+//        ParseTree tree = parser.init();
+//        TreeViewer viewr = new TreeViewer(Arrays.asList(
+//                parser.getRuleNames()), tree);
+//        viewr.open();
+//        System.out.println(tree.toStringTree(parser));
+
 
         launch(args);
     }
