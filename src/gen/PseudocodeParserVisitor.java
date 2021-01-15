@@ -143,6 +143,12 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitJumpStatement(PseudocodeParser.JumpStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#badReturn}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBadReturn(PseudocodeParser.BadReturnContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#expressionStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -191,6 +197,12 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCondition(PseudocodeParser.ConditionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#comparisonOperator}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComparisonOperator(PseudocodeParser.ComparisonOperatorContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#iterationStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -209,11 +221,11 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIterationInit(PseudocodeParser.IterationInitContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#declarationseq}.
+	 * Visit a parse tree produced by {@link PseudocodeParser#badIteration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitDeclarationseq(PseudocodeParser.DeclarationseqContext ctx);
+	T visitBadIteration(PseudocodeParser.BadIterationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#declaration}.
 	 * @param ctx the parse tree
@@ -238,6 +250,12 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitDeclSpecifierSeq(PseudocodeParser.DeclSpecifierSeqContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#badConst}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBadConst(PseudocodeParser.BadConstContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#typeSpecifier}.
 	 * @param ctx the parse tree

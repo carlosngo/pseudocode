@@ -280,6 +280,18 @@ public class PseudocodeParserBaseListener implements PseudocodeParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterBadReturn(PseudocodeParser.BadReturnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBadReturn(PseudocodeParser.BadReturnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterExpressionStatement(PseudocodeParser.ExpressionStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -376,6 +388,18 @@ public class PseudocodeParserBaseListener implements PseudocodeParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterComparisonOperator(PseudocodeParser.ComparisonOperatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitComparisonOperator(PseudocodeParser.ComparisonOperatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterIterationStatement(PseudocodeParser.IterationStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -412,13 +436,13 @@ public class PseudocodeParserBaseListener implements PseudocodeParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeclarationseq(PseudocodeParser.DeclarationseqContext ctx) { }
+	@Override public void enterBadIteration(PseudocodeParser.BadIterationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDeclarationseq(PseudocodeParser.DeclarationseqContext ctx) { }
+	@Override public void exitBadIteration(PseudocodeParser.BadIterationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -467,6 +491,18 @@ public class PseudocodeParserBaseListener implements PseudocodeParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDeclSpecifierSeq(PseudocodeParser.DeclSpecifierSeqContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBadConst(PseudocodeParser.BadConstContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBadConst(PseudocodeParser.BadConstContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

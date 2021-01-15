@@ -5,12 +5,12 @@
     -fx-border-color: #51979B;
 }
 
-#inputPane1{
-    -fx-background-color: #F2FCFB;
+#inputScrollPane{
+    -fx-background: #F2FCFB;
 }
 
-#errorsPane1{
-    -fx-background-color: #22393D;
+#errorsScrollPane{
+    -fx-background: #22393D;
 }
 
 .Label{

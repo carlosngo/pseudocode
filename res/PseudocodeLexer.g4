@@ -13,45 +13,27 @@ FloatingLiteral:
 	Fractionalconstant Exponentpart? Floatingsuffix
 	| Digitsequence Exponentpart Floatingsuffix;
 
+BadFloatingLiteral:
+    Fractionalconstant Exponentpart?
+    	| Digitsequence Exponentpart;
+
 StringLiteral:
 	Encodingprefix? '"' Schar* '"'
-	| Encodingprefix? 'R' Rawstring;
+	;
+
+BadStringLiteral:
+    Encodingprefix? '"' Schar*
+    ;
 
 BooleanLiteral: False_ | True_;
-
-PointerLiteral: Nullptr;
-
-UserDefinedLiteral:
-	UserDefinedIntegerLiteral
-	| UserDefinedFloatingLiteral
-	| UserDefinedStringLiteral
-	| UserDefinedCharacterLiteral;
-
-MultiLineMacro:
-	'#' (~[\n]*? '\\' '\r'? '\n')+ ~ [\n]+ -> channel (HIDDEN);
-
-Directive: '#' ~ [\n]* -> channel (HIDDEN);
-/*Keywords*/
-
-Alignas: 'alignas';
-
-Alignof: 'alignof';
 
 //Arrays need to support append now
 
 // Append: 'append';
 
-Asm: 'asm';
-
-Auto: 'auto';
-
 Bool: 'bool' | 'boolean';
 
 Break: 'break';
-
-Case: 'case';
-
-Catch: 'catch';
 
 Char: 'char';
 
@@ -59,13 +41,9 @@ Char16: 'char16_t';
 
 Char32: 'char32_t';
 
-Class: 'class';
-
 Const: 'constant';
 
-Constexpr: 'constexpr';
-
-Const_cast: 'const_cast';
+Badconst: 'constt';
 
 Continue: 'continue';
 
@@ -73,27 +51,11 @@ Continue: 'continue';
 
 Create: 'create';
 
-Decltype: 'decltype';
-
-Default: 'default';
-
-Delete: 'delete';
-
 Do: 'do';
 
 Double: 'double';
 
-Dynamic_cast: 'dynamic_cast';
-
 Else: 'else';
-
-Enum: 'enum';
-
-Explicit: 'explicit';
-
-Export: 'export';
-
-Extern: 'extern';
 
 //DO NOT RENAME - PYTHON NEEDS True and False
 False_: 'F';
@@ -104,41 +66,13 @@ Float: 'float';
 
 For: 'for';
 
-Friend: 'friend';
-
-Goto: 'goto';
-
 If: 'if';
-
-Inline: 'inline';
 
 Int: 'int';
 
 Long: 'long';
 
-Mutable: 'mutable';
-
-Namespace: 'namespace';
-
 New: 'new';
-
-Noexcept: 'noexcept';
-
-Nullptr: 'nullptr';
-
-Operator: 'operator';
-
-Override: 'override';
-
-Private: 'private';
-
-Protected: 'protected';
-
-Public: 'public';
-
-Register: 'register';
-
-Reinterpret_cast: 'reinterpret_cast';
 
 Return: 'return';
 
@@ -146,52 +80,16 @@ Short: 'short';
 
 Signed: 'signed';
 
-Sizeof: 'sizeof';
-
-Static: 'static';
-
-Static_assert: 'static_assert';
-
-Static_cast: 'static_cast';
-
 String: 'String';
 
-Struct: 'struct';
-
-Switch: 'switch';
-
-Template: 'template';
-
 This: 'this';
-
-Thread_local: 'thread_local';
-
-Throw: 'throw';
 
 //DO NOT RENAME - PYTHON NEEDS True and False
 True_: 'T';
 
-Try: 'try';
-
-Typedef: 'typedef';
-
-Typeid_: 'typeid';
-
-Typename_: 'typename';
-
-Union: 'union';
-
 Unsigned: 'unsigned';
 
-Using: 'using';
-
-Virtual: 'virtual';
-
 Void: 'void';
-
-Volatile: 'volatile';
-
-Wchar: 'wchar_t';
 
 While: 'while';
 /*Operators*/
@@ -224,8 +122,6 @@ And: '&';
 
 Or: '|';
 
-Tilde: '~';
-
 Not: '!' | 'not';
 
 Assign: '=';
@@ -250,10 +146,6 @@ AndAssign: '&=';
 
 OrAssign: '|=';
 
-LeftShiftAssign: '<<=';
-
-RightShiftAssign: '>>=';
-
 Equal: '==';
 
 NotEqual: '!=';
@@ -276,11 +168,7 @@ ArrowStar: '->*';
 
 Arrow: '->';
 
-Question: '?';
-
 Colon: ':';
-
-Doublecolon: '::';
 
 Semi: ';';
 
@@ -310,20 +198,10 @@ Function: 'func';
 
 Main: 'main';
 
-fragment Hexquad:
-	HEXADECIMALDIGIT HEXADECIMALDIGIT HEXADECIMALDIGIT HEXADECIMALDIGIT;
-
-fragment Universalcharactername:
-	'\\u' Hexquad
-	| '\\U' Hexquad Hexquad;
-
 Identifier:
-	/*
-	 Identifiernondigit | Identifier Identifiernondigit | Identifier DIGIT
-	 */
 	Identifiernondigit (Identifiernondigit | DIGIT)*;
 
-fragment Identifiernondigit: NONDIGIT | Universalcharactername;
+fragment Identifiernondigit: NONDIGIT;
 
 fragment NONDIGIT: [a-zA-Z_];
 
@@ -361,8 +239,7 @@ fragment Longlongsuffix: 'll' | 'LL';
 
 fragment Cchar:
 	~ ['\\\r\n]
-	| Escapesequence
-	| Universalcharactername;
+	| Escapesequence;
 
 fragment Escapesequence:
 	Simpleescapesequence
@@ -408,26 +285,7 @@ fragment Encodingprefix: 'u8' | 'u' | 'U' | 'L';
 
 fragment Schar:
 	~ ["\\\r\n]
-	| Escapesequence
-	| Universalcharactername;
-
-fragment Rawstring: '"' ~[\r\n(]* '(' ~[\r\n)]* ')' ~[\r\n"]* '"';
-
-UserDefinedIntegerLiteral:
-	DecimalLiteral Udsuffix
-	| OctalLiteral Udsuffix
-	| HexadecimalLiteral Udsuffix
-	| BinaryLiteral Udsuffix;
-
-UserDefinedFloatingLiteral:
-	Fractionalconstant Exponentpart? Udsuffix
-	| Digitsequence Exponentpart Udsuffix;
-
-UserDefinedStringLiteral: StringLiteral Udsuffix;
-
-UserDefinedCharacterLiteral: CharacterLiteral Udsuffix;
-
-fragment Udsuffix: Identifier;
+	| Escapesequence;
 
 Whitespace: [ \t]+ -> skip;
 

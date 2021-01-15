@@ -1,5 +1,9 @@
 package gui;
 
+import gen.PseudocodeErrorListener;
+import gen.PseudocodeErrorStrategy;
+import gen.PseudocodeLexer;
+import gen.PseudocodeParser;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -8,11 +12,20 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import org.antlr.v4.gui.TreeViewer;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainView {
 
@@ -46,6 +59,7 @@ public class MainView {
     public TextField inputFileField;
 
     private String fulltext;
+    private String errortext;
 
     @FXML
     private void initialize() {
@@ -55,27 +69,36 @@ public class MainView {
     @FXML
     private void readTextFile() {
         String filepath = inputFileField.getText();
-        try(BufferedReader br = new BufferedReader(new FileReader(filepath))) {
-            StringBuilder sb = new StringBuilder();
-            String line = br.readLine();
-
-            while (line != null) {
-                sb.append(line);
-                sb.append(System.lineSeparator());
-                line = br.readLine();
-            }
-            fulltext = sb.toString();
+        CharStream charStream;
+        try {
+            charStream = CharStreams.fromPath(Paths.get(filepath));
+            fulltext = charStream.toString();
             inputContentsLabel.setText(fulltext);
+            PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromFileName("res/in.txt"));
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            PseudocodeParser parser = new PseudocodeParser(tokens);
+            lexer.removeErrorListeners();
+            parser.removeErrorListeners();
+            lexer.addErrorListener(PseudocodeErrorListener.INSTANCE);
+            parser.addErrorListener(PseudocodeErrorListener.INSTANCE);
+            parser.setErrorHandler(new PseudocodeErrorStrategy());
+            ParseTree tree = parser.init();
+            TreeViewer viewr = new TreeViewer(Arrays.asList(
+                    parser.getRuleNames()), tree);
+            viewr.open();
+            System.out.println(tree.toStringTree(parser));
+
+            StringBuilder sb = new StringBuilder();
+            ArrayList<String> errorList = PseudocodeErrorListener.INSTANCE.errorList;
+            for (String error: errorList) {
+                sb.append(error);
+                sb.append("\n");
+            }
+            errortext = sb.toString();
+
+            consoleLabel.setText(errortext);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void checkCode() {
-        // where you put the
-    }
-
-    private void createErrorText() {
-        //
     }
 }
