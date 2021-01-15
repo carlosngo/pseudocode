@@ -16,6 +16,7 @@ primaryExpression:
 	| LeftParen expression { notifyErrorListeners("expected closing parenthesis"); }
 	| LeftParen expression RightParen RightParen { notifyErrorListeners("too many closing parentheses"); }
 	| (Identifier | literal) (Identifier | literal)+ { notifyErrorListeners("expected double quotes or operators"); }
+	| Identifier Identifier Colon IntegerLiteral Not { notifyErrorListeners("expected double quotes or operators"); }
 	;
 
 expression: assignmentExpression
@@ -61,8 +62,8 @@ unaryExpression:
 	postfixExpression
 	| Not unaryExpression
 	| createExpression
-	| binaryOperator+ unaryExpression { notifyErrorListeners("redundant binary operator. Missing operand"); }
-	| unaryExpression binaryOperator+ { notifyErrorListeners("redundant binary operator. Missing operand"); }
+	| binaryOperator unaryExpression { notifyErrorListeners("redundant binary operator: '" + $binaryOperator.text + "'"); }
+	| unaryExpression binaryOperator { notifyErrorListeners("redundant binary operator: '" + $binaryOperator.text + "'"); }
 	;
 
 createExpression:
@@ -74,12 +75,14 @@ postfixExpression:
 	| Identifier LeftParen expressionList? RightParen // function call
 	| Identifier (PlusPlus | MinusMinus)
 	| (Identifier | literal) (LeftParen expressionList? RightParen)+ { notifyErrorListeners("redundant parentheses"); }
+    | Identifier LeftParen LeftParen expressionList? RightParen { notifyErrorListeners("redundant opening parenthesis"); }
+    | Identifier LeftParen expressionList? RightParen RightParen { notifyErrorListeners("redundant closing parenthesis"); }
+    | Identifier LeftParen expressionList? { notifyErrorListeners("expecting closing parenthesis"); }
 	;
 
 
 constantExpression:
     logicalOrExpression
-    | assignmentExpression { notifyErrorListeners("unexpected assignment operation"); }
     ;
 
 expressionList: initializerList;
@@ -108,6 +111,7 @@ binaryOperator:
 	| GreaterEqual
 	| AndAnd
 	| OrOr
+	| Comma
     ;
 
 literal:
@@ -136,18 +140,18 @@ printStatement:
     Print LeftParen constantExpression RightParen Semi
     | Print LeftParen LeftParen+ constantExpression RightParen Semi { notifyErrorListeners("too many open parenthesis"); }
     | Print LeftParen constantExpression RightParen RightParen+ Semi { notifyErrorListeners("too many closing parenthesis"); }
-    | Print constantExpression RightParen+ Semi { notifyErrorListeners("expected open parenthesis"); }
+//    | Print constantExpression RightParen+ Semi { notifyErrorListeners("expected open parenthesis"); }
     | Print LeftParen+ constantExpression Semi { notifyErrorListeners("expected closing parenthesis"); }
-    | Print constantExpression Semi { notifyErrorListeners("expected parentheses"); }
+//    | Print constantExpression Semi { notifyErrorListeners("expected parentheses"); }
     ;
 
 scanStatement:
     Scan LeftParen StringLiteral Comma Identifier RightParen Semi
     | Scan LeftParen LeftParen+ StringLiteral Comma Identifier RightParen Semi { notifyErrorListeners("too many open parenthesis"); }
     | Scan LeftParen StringLiteral Comma Identifier RightParen RightParen+ Semi { notifyErrorListeners("too many closing parenthesis"); }
-    | Scan StringLiteral Comma Identifier RightParen Semi { notifyErrorListeners("expected open parenthesis"); }
+//    | Scan StringLiteral Comma Identifier RightParen Semi { notifyErrorListeners("expected open parenthesis"); }
     | Scan LeftParen StringLiteral Comma Identifier Semi { notifyErrorListeners("expected closing parenthesis"); }
-    | Scan StringLiteral Comma Identifier Semi { notifyErrorListeners("expected parentheses"); }
+//    | Scan StringLiteral Comma Identifier Semi { notifyErrorListeners("expected parentheses"); }
     ;
 
 jumpStatement:
@@ -187,20 +191,20 @@ selectionStatement:
 
 ifStatement:
     If LeftParen condition RightParen Then? compoundStatement
-    | If condition RightParen+ Then? compoundStatement { notifyErrorListeners("expected opening parenthesis"); }
+//    | If condition RightParen+ Then? compoundStatement { notifyErrorListeners("expected opening parenthesis"); }
     | If LeftParen+ condition Then? compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
     | If LeftParen condition RightParen RightParen+ Then? compoundStatement { notifyErrorListeners("too many closing parenthesis"); }
     | If LeftParen LeftParen+ condition RightParen Then? compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
-    | If condition Then? compoundStatement { notifyErrorListeners("expected parentheses"); }
+//    | If condition Then? compoundStatement { notifyErrorListeners("expected parentheses"); }
     ;
 
 elseIfStatement:
     Else If LeftParen condition RightParen Then? compoundStatement
-    | Else If condition RightParen+ Then? compoundStatement { notifyErrorListeners("expected opening parenthesis"); }
+//    | Else If condition RightParen+ Then? compoundStatement { notifyErrorListeners("expected opening parenthesis"); }
     | Else If LeftParen+ condition Then? compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
     | Else If LeftParen condition RightParen RightParen+ Then? compoundStatement { notifyErrorListeners("too many closing parenthesis"); }
     | Else If LeftParen LeftParen+ condition RightParen Then? compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
-    | Else If condition Then? compoundStatement { notifyErrorListeners("expected parentheses"); }
+//    | Else If condition Then? compoundStatement { notifyErrorListeners("expected parentheses"); }
     ;
 
 elseStatement:
@@ -210,7 +214,7 @@ elseStatement:
 condition:
     logicalOrExpression comparisonOperator logicalOrExpression
     | (Identifier | BooleanLiteral) ((OrOr || AndAnd) (Identifier | BooleanLiteral))*
-	| constantExpression {notifyErrorListeners("expected comparison operator"); }
+	| assignmentExpression {notifyErrorListeners("expected comparison operator"); }
 	;
 
 comparisonOperator:
@@ -235,26 +239,26 @@ iterationStatement:
     		forInitStatement condition? Semi expression?
     	) RightParen compoundStatement
 
-    | While iterationInit ((Up | Down) | To) constantExpression compoundStatement { notifyErrorListeners("expected up/down to"); }
-    | While condition compoundStatement { notifyErrorListeners("expected parentheses"); }
-	| While condition RightParen+ compoundStatement { notifyErrorListeners("expected opening parenthesis"); }
+    | While iterationInit badIteration constantExpression compoundStatement
+//    | While condition compoundStatement { notifyErrorListeners("expected parentheses"); }
+//	| While condition RightParen+ compoundStatement { notifyErrorListeners("expected opening parenthesis"); }
 	| While LeftParen+ condition compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
 	| While LeftParen LeftParen+ condition RightParen compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
 	| While LeftParen condition RightParen RightParen+ compoundStatement { notifyErrorListeners("too many closing parenthesis"); }
 
-    | Do compoundStatement While condition Semi { notifyErrorListeners("expected parentheses"); }
-	| Do compoundStatement While condition RightParen+ Semi { notifyErrorListeners("expected opening parenthesis"); }
+//    | Do compoundStatement While condition Semi { notifyErrorListeners("expected parentheses"); }
+//	| Do compoundStatement While condition RightParen+ Semi { notifyErrorListeners("expected opening parenthesis"); }
 	| Do compoundStatement While LeftParen+ condition Semi  { notifyErrorListeners("expected closing parenthesis"); }
 	| Do compoundStatement While LeftParen LeftParen+ condition RightParen Semi { notifyErrorListeners("too many opening parenthesis"); }
 	| Do compoundStatement While LeftParen condition RightParen RightParen+ Semi { notifyErrorListeners("too many closing parenthesis"); }
 
-    | For iterationInit ((Up | Down) | To) constantExpression compoundStatement { notifyErrorListeners("expected up/down to"); }
-    | For (
-        forInitStatement condition? Semi expression?
-    ) compoundStatement { notifyErrorListeners("expected parentheses"); }
-	| For (
-    	forInitStatement condition? Semi expression?
-    ) RightParen+ compoundStatement { notifyErrorListeners("expected opening parenthesis"); }
+    | For iterationInit badIteration constantExpression compoundStatement
+//    | For (
+//        forInitStatement condition? Semi expression?
+//    ) compoundStatement { notifyErrorListeners("expected parentheses"); }
+//	| For (
+//    	forInitStatement condition? Semi expression?
+//    ) RightParen+ compoundStatement { notifyErrorListeners("expected opening parenthesis"); }
     | For LeftParen+ (
     	forInitStatement condition? Semi expression?
     ) compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
@@ -271,6 +275,10 @@ iterationInit:
     expression
     | declSpecifierSeq? initDeclaratorList;
 
+badIteration:
+    (Up | Down) | To  { notifyErrorListeners("expected up/down to"); }
+    | StringLiteral  { notifyErrorListeners("enclosed up to"); }
+    ;
 // Iteration End
 
 // Declaration Start
@@ -287,7 +295,12 @@ simpleDeclaration:
 	declSpecifierSeq? initDeclaratorList? Semi
 	;
 
-declSpecifierSeq: (Const | Final)? typeSpecifier (LeftBracket RightBracket)?;
+declSpecifierSeq:
+    (Const | Final)? typeSpecifier (LeftBracket RightBracket)?
+    | badConst typeSpecifier (LeftBracket RightBracket)? { notifyErrorListeners("misspelled constant declaration, use 'constant'"); }
+    ;
+
+badConst: Badconst;
 
 typeSpecifier:
     (
@@ -312,6 +325,7 @@ declarator:
         parametersAndQualifiers
         // | LeftBracket constantExpression? RightBracket
     )? { notifyErrorListeners("expected identifier as declarator"); }
+	| typeSpecifier { notifyErrorListeners("expected identifier, found data type"); }
 	;
 
 // Declaration End

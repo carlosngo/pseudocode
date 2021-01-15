@@ -436,6 +436,18 @@ public class PseudocodeParserBaseListener implements PseudocodeParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterBadIteration(PseudocodeParser.BadIterationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBadIteration(PseudocodeParser.BadIterationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDeclaration(PseudocodeParser.DeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -479,6 +491,18 @@ public class PseudocodeParserBaseListener implements PseudocodeParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDeclSpecifierSeq(PseudocodeParser.DeclSpecifierSeqContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBadConst(PseudocodeParser.BadConstContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBadConst(PseudocodeParser.BadConstContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -221,6 +221,12 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIterationInit(PseudocodeParser.IterationInitContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#badIteration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBadIteration(PseudocodeParser.BadIterationContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#declaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -244,6 +250,12 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitDeclSpecifierSeq(PseudocodeParser.DeclSpecifierSeqContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#badConst}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBadConst(PseudocodeParser.BadConstContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#typeSpecifier}.
 	 * @param ctx the parse tree

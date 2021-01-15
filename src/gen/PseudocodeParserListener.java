@@ -358,6 +358,16 @@ public interface PseudocodeParserListener extends ParseTreeListener {
 	 */
 	void exitIterationInit(PseudocodeParser.IterationInitContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PseudocodeParser#badIteration}.
+	 * @param ctx the parse tree
+	 */
+	void enterBadIteration(PseudocodeParser.BadIterationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PseudocodeParser#badIteration}.
+	 * @param ctx the parse tree
+	 */
+	void exitBadIteration(PseudocodeParser.BadIterationContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PseudocodeParser#declaration}.
 	 * @param ctx the parse tree
 	 */
@@ -397,6 +407,16 @@ public interface PseudocodeParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDeclSpecifierSeq(PseudocodeParser.DeclSpecifierSeqContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PseudocodeParser#badConst}.
+	 * @param ctx the parse tree
+	 */
+	void enterBadConst(PseudocodeParser.BadConstContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PseudocodeParser#badConst}.
+	 * @param ctx the parse tree
+	 */
+	void exitBadConst(PseudocodeParser.BadConstContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PseudocodeParser#typeSpecifier}.
 	 * @param ctx the parse tree

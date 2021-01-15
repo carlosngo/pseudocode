@@ -43,6 +43,8 @@ Char32: 'char32_t';
 
 Const: 'constant';
 
+Badconst: 'constt';
+
 Continue: 'continue';
 
 //Create to allocate values to an array
