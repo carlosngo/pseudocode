@@ -19,10 +19,10 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("gui/MainView.fxml"));
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("CMPILER PARSER");
         primaryStage.setScene(new Scene(root, 400, 600));
         primaryStage.show();
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
     }
 
     public static void main(String[] args) throws Exception {
