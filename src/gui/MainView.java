@@ -74,7 +74,7 @@ public class MainView {
             charStream = CharStreams.fromPath(Paths.get(filepath));
             fulltext = charStream.toString();
             inputContentsLabel.setText(fulltext);
-            PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromFileName("res/in.txt"));
+            PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromFileName(filepath));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             PseudocodeParser parser = new PseudocodeParser(tokens);
             lexer.removeErrorListeners();
