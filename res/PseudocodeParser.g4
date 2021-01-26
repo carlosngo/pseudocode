@@ -164,14 +164,14 @@ jumpStatement:
 	;
 
 badReturn:
-    typeSpecifier  { notifyErrorListeners("expected expression as return value"); }
+    typeSpecifier  { notifyErrorListeners("expected expression as return storage"); }
     ;
 
 expressionStatement:
     expression? Semi
     ;
 
-// Compound Statement Start
+// Compound statement Start
 
 compoundStatement:
     LeftBrace statementSeq? RightBrace
@@ -182,7 +182,7 @@ compoundStatement:
 
 statementSeq: statement+;
 
-// Compound Statement End
+// Compound statement End
 
 // Conditional Start
 

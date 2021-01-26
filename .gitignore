@@ -1,5 +1,9 @@
 .idea/*
 *.iws
 *.iml
+*.mp4
 out/
 .idea_modules/
+*.jar
+*.interp
+*.tokens
