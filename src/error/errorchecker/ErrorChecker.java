@@ -1,4 +1,4 @@
-package errorchecker;
+package error.errorchecker;
 
 public interface ErrorChecker {
 

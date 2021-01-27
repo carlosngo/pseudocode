@@ -1,6 +1,6 @@
-package exception;
+package error.exception;
 
-public class UndeclaredStorageException extends Exception {
+public class UndeclaredStorageException extends PseudocodeException {
     private final String storageName;
     private final boolean isFunction;
 

@@ -1,8 +1,8 @@
 package storage;
 
-import exception.ConstantReassignmentException;
-import exception.IndexOutOfBoundsException;
-import exception.TypeMismatchException;
+import error.exception.ConstantReassignmentException;
+import error.exception.IndexOutOfBoundsException;
+import error.exception.TypeMismatchException;
 
 public class Array extends Variable {
 
@@ -13,11 +13,11 @@ public class Array extends Variable {
     public Array(boolean isFinal, Type type, String name, int level, int size) {
         super(isFinal, type, name, level);
         try {
-            super.setValue(new Variable[size]);
+            super.setValue(new Object[size]);
         } catch (TypeMismatchException e) {
-            System.err.println("unexpected type mismatch exception in array");
+            System.err.println("unexpected type mismatch error.exception in array");
         } catch (ConstantReassignmentException e) {
-            System.err.println("unexpected constant reassignment exception in array");
+            System.err.println("unexpected constant reassignment error.exception in array");
         }
     }
 
@@ -31,24 +31,24 @@ public class Array extends Variable {
         return array.length;
     }
 
-    public Variable get(int index) throws IndexOutOfBoundsException {
+    public Object get(int index) throws IndexOutOfBoundsException {
         if (index >= getSize() || index < 0) {
             throw new IndexOutOfBoundsException(index, getSize());
         }
-        Variable[] array = (Variable[]) getValue();
+        Object[] array = (Object[]) getValue();
         return array[index];
     }
 
-    public void set(int index, Variable variable)
+    public void set(int index, Object value)
             throws IndexOutOfBoundsException, TypeMismatchException {
         if (index >= getSize() || index < 0) {
             throw new IndexOutOfBoundsException(index, getSize());
         }
-        if (variable.getType() != getType()) {
-            throw new TypeMismatchException(getType(), variable.getType());
+        if (typeOf(value) != getType()) {
+            throw new TypeMismatchException(getType(), typeOf(value));
         }
 
-        Variable[] array = (Variable[]) getValue();
-        array[index] = variable;
+        Object[] array = (Object[]) getValue();
+        array[index] = value;
     }
 }

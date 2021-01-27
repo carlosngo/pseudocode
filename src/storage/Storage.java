@@ -1,9 +1,5 @@
 package storage;
 
-import exception.ConstantReassignmentException;
-import exception.TypeMismatchException;
-import util.Keyword;
-
 public abstract class Storage {
     private final String name;
 

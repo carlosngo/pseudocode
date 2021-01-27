@@ -1,13 +1,11 @@
 package scope;
 
-import exception.StorageRedeclarationException;
-import exception.UndeclaredStorageException;
+import error.exception.StorageRedeclarationException;
+import error.exception.UndeclaredStorageException;
 import storage.Variable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Stack;
 
 public class Scope {
 

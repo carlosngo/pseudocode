@@ -28,8 +28,8 @@ public class PseudocodeErrorListener extends BaseErrorListener {
         //System.err.print("syntax error: ");
 
         if (e instanceof FailedPredicateException) {
-            //System.err.print("Failed predicate exception: " + msg);
-            errorStr = errorStr.concat("Failed predicate exception: " + msg);
+            //System.err.print("Failed predicate error.exception: " + msg);
+            errorStr = errorStr.concat("Failed predicate error.exception: " + msg);
         } else if (e instanceof InputMismatchException) {
 //            System.err.print("unexpected token '" + e.getOffendingToken().getText() + "'");
             errorStr = errorStr.concat("unexpected token '" + e.getOffendingToken().getText() + "'");

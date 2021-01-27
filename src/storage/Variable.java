@@ -1,7 +1,7 @@
 package storage;
 
-import exception.ConstantReassignmentException;
-import exception.TypeMismatchException;
+import error.exception.ConstantReassignmentException;
+import error.exception.TypeMismatchException;
 import util.Keyword;
 
 public class Variable extends Storage {
@@ -19,16 +19,18 @@ public class Variable extends Storage {
 
     private final boolean isFinal;
     private final Type type;
+    private final int level;
     private Object value;
 
-    public Variable(Type type, String name) {
-        this(false, type, name);
+    public Variable(Type type, String name, int level) {
+        this(false, type, name, level);
     }
 
-    public Variable(boolean isFinal, Type type, String name) {
+    public Variable(boolean isFinal, Type type, String name, int level) {
         super(name);
         this.type = type;
         this.isFinal = isFinal;
+        this.level = level;
         value = null;
     }
 
@@ -50,6 +52,10 @@ public class Variable extends Storage {
             throw new ConstantReassignmentException(this);
         }
         this.value = value;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     public static Type parseType(String typeStr) {

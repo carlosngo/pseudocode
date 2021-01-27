@@ -1,6 +1,6 @@
-package exception;
+package error.exception;
 
-public class IndexOutOfBoundsException extends Exception {
+public class IndexOutOfBoundsException extends PseudocodeException {
     private final int index;
     private final int arraySize;
 

@@ -1,9 +1,6 @@
-package exception;
+package error.exception;
 
-import storage.Function;
-import storage.Storage;
-
-public class StorageRedeclarationException extends Exception {
+public class StorageRedeclarationException extends PseudocodeException {
     private final String storageName;
     private final boolean isFunction;
 

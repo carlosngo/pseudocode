@@ -1,9 +1,9 @@
-package exception;
+package error.exception;
 
 import storage.Variable.Type;
 import util.Keyword;
 
-public class TypeMismatchException extends Exception {
+public class TypeMismatchException extends PseudocodeException {
     private final Type expectedType;
     private final Type offendingType;
 
