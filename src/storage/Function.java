@@ -1,12 +1,13 @@
 package storage;
 
+import manager.VariableManager;
 import statement.Statement;
 import statement.compound.CompoundStatement;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-public class Function extends Storage implements CompoundStatement {
+public class Function extends Storage {
     public enum ReturnType {
         CHAR,
         BOOLEAN,
@@ -18,25 +19,37 @@ public class Function extends Storage implements CompoundStatement {
         STRING,
         VOID
     }
-    private ReturnType returnType;
-    private Variable returnValue;
-    private ArrayList<Statement> statements;
-    private LinkedHashMap<String, Variable> parameters;
+    private final ReturnType returnType;
+    private final ArrayList<Statement> statements;
+    private final ArrayList<Variable> parameters;
+    private final VariableManager variableManager;
 
-    public Function(ReturnType returnType, String name) {
+    public Function(ReturnType returnType, String name,
+                    ArrayList<Variable> parameters) {
         super(name);
         this.returnType = returnType;
+        this.parameters = parameters;
         statements = new ArrayList<>();
-        parameters = new LinkedHashMap<>();
+        variableManager = new VariableManager();
+    }
+
+    public ReturnType getReturnType() {
+        return returnType;
+    }
+
+    public ArrayList<Variable> getParameters() {
+        return parameters;
+    }
+
+    public ArrayList<Statement> getStatements() {
+        return statements;
     }
 
     public void addStatement(Statement statement) {
         statements.add(statement);
     }
 
-    public void execute() {
-        for (Statement statement : statements) {
-            statement.execute();
-        }
+    public VariableManager getVariableManager() {
+        return variableManager;
     }
 }
