@@ -1,45 +1,30 @@
 package manager;
 
-import error.exception.ParameterMismatchException;
-import error.exception.UndeclaredStorageException;
-import execution.ExecutionMonitor;
-import gen.PseudocodeParser;
-import notification.NotificationCenter;
-import statement.FunctionCallStatement;
-import storage.Function;
+public class ExecutionManager {
 
-public class ExecutionManager implements Manager {
-    private final ExecutionMonitor executionMonitor;
-    private final FunctionManager functionManager;
-    private final NotificationCenter notificationCenter;
+    private final Object executionGate = new Object();
+    private boolean executionFlag;
 
-    public ExecutionManager(NotificationCenter notificationCenter) {
-        executionMonitor = new ExecutionMonitor();
-        functionManager = new FunctionManager();
-        this.notificationCenter = notificationCenter;
+    public ExecutionManager() {
+        executionFlag = true;
     }
 
-    public ExecutionMonitor getExecutionMonitor() {
-        return executionMonitor;
+    public void tryExecution() throws InterruptedException {
+        synchronized(executionGate) {
+            while (!executionFlag) {
+                executionGate.wait();
+            }
+        }
     }
 
-    public FunctionManager getFunctionManager() {
-        return functionManager;
+    public void stopExecution() {
+        executionFlag = false;
     }
 
-    public NotificationCenter getNotificationCenter() {
-        return notificationCenter;
-    }
-
-    public void execute() {
-        new FunctionCallStatement(
-                this, "main", new PseudocodeParser.ExpressionContext[0])
-                .execute(null);
-    }
-
-    @Override
-    public void reset() {
-        executionMonitor.resumeExecution();
-        functionManager.reset();
+    public void resumeExecution() {
+        synchronized(executionGate) {
+            executionFlag = true;
+            executionGate.notify();
+        }
     }
 }

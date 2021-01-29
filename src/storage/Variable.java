@@ -1,24 +1,14 @@
 package storage;
 
 import error.exception.ConstantReassignmentException;
-import error.exception.TypeMismatchException;
+import error.exception.type.AssignmentException;
+import error.exception.type.TypeMismatchException;
 import util.Keyword;
 
 public class Variable extends Storage {
-    public enum Type {
-        UNKNOWN,
-        CHAR,
-        BOOLEAN,
-        SHORT,
-        INT,
-        LONG,
-        FLOAT,
-        DOUBLE,
-        STRING
-    }
+
 
     private final boolean isFinal;
-    private final Type type;
     private final int level;
     private Object value;
 
@@ -27,14 +17,12 @@ public class Variable extends Storage {
     }
 
     public Variable(boolean isFinal, Type type, String name, int level) {
-        super(name);
-        this.type = type;
+        super(type, name);
         this.isFinal = isFinal;
         this.level = level;
         value = null;
     }
 
-    public Type getType() { return type; }
 
     public boolean isFinal() {
         return isFinal;
@@ -45,8 +33,8 @@ public class Variable extends Storage {
     }
 
     public void setValue(Object value) throws TypeMismatchException, ConstantReassignmentException {
-        if (getType() != Variable.typeOf(value)) {
-            throw new TypeMismatchException(getType(), Variable.typeOf(value));
+        if (getType() != Storage.typeOf(value)) {
+            throw new AssignmentException(getType(), Storage.typeOf(value));
         }
         if (isFinal && getValue() != null) {
             throw new ConstantReassignmentException(this);
@@ -58,48 +46,5 @@ public class Variable extends Storage {
         return level;
     }
 
-    public static Type parseType(String typeStr) {
-        switch (typeStr) {
-            case Keyword.INT:
-                return Type.INT;
-            case Keyword.BOOLEAN:
-                return Type.BOOLEAN;
-            case Keyword.CHAR:
-                return Type.CHAR;
-            case Keyword.SHORT:
-                return Type.SHORT;
-            case Keyword.LONG:
-                return Type.LONG;
-            case Keyword.FLOAT:
-                return Type.FLOAT;
-            case Keyword.DOUBLE:
-                return Type.DOUBLE;
-            case Keyword.STRING:
-                return Type.STRING;
-            default:
-                return Type.UNKNOWN;
-        }
-    }
 
-
-    public static Type typeOf(Object value) {
-        if (value instanceof Character) {
-            return Type.CHAR;
-        } else if (value instanceof Boolean) {
-            return Type.BOOLEAN;
-        } else if (value instanceof Short) {
-            return Type.SHORT;
-        } else if (value instanceof Integer) {
-            return Type.INT;
-        } else if (value instanceof Long) {
-            return Type.LONG;
-        } else if (value instanceof Float) {
-            return Type.FLOAT;
-        } else if (value instanceof Double) {
-            return Type.DOUBLE;
-        } else if (value instanceof String) {
-            return Type.STRING;
-        }
-        return Type.UNKNOWN;
-    }
 }

@@ -1,9 +1,9 @@
 package statement;
 
-import manager.ExecutionManager;
+import manager.ProgramManager;
 
 public class BreakStatement extends Statement {
-    public BreakStatement(ExecutionManager executionManager) {
-        super(executionManager);
+    public BreakStatement(ProgramManager programManager) {
+        super(programManager);
     }
 }

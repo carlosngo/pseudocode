@@ -1,6 +1,6 @@
 package error.exception;
 
-public class StorageRedeclarationException extends PseudocodeException {
+public class StorageRedeclarationException extends CompilationException {
     private final String storageName;
     private final boolean isFunction;
 

@@ -1,13 +1,14 @@
-package error.exception;
+package error.exception.type;
 
-import storage.Variable;
+import error.exception.CompilationException;
+import storage.Storage;
 import util.Keyword;
 
-public class ParameterMismatchException extends PseudocodeException {
-    private Variable.Type expectedType;
-    private Variable.Type offendingType;
+public class ParameterException extends CompilationException {
+    private final Storage.Type expectedType;
+    private final Storage.Type offendingType;
 
-    public ParameterMismatchException(Variable.Type expectedType, Variable.Type offendingType) {
+    public ParameterException(Storage.Type expectedType, Storage.Type offendingType) {
         super("parameter mismatch, " +
                 (expectedType == null
                 ? "too many parameters"
@@ -19,11 +20,11 @@ public class ParameterMismatchException extends PseudocodeException {
         this.offendingType = offendingType;
     }
 
-    public Variable.Type getExpectedType() {
+    public Storage.Type getExpectedType() {
         return expectedType;
     }
 
-    public Variable.Type getOffendingType() {
+    public Storage.Type getOffendingType() {
         return offendingType;
     }
 }

@@ -1,7 +1,12 @@
 package statement.compound;
 
+import manager.ProgramManager;
 import statement.Statement;
 
-public interface CompoundStatement extends Statement {
-    void addStatement(Statement statement);
+public abstract class CompoundStatement extends Statement {
+    public CompoundStatement(ProgramManager programManager) {
+        super(programManager);
+    }
+
+    abstract void addStatement(Statement statement);
 }

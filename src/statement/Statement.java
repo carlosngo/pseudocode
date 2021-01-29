@@ -1,23 +1,22 @@
 package statement;
 
-import error.exception.PseudocodeException;
-import manager.ExecutionManager;
+import manager.ProgramManager;
 import manager.VariableManager;
 
 public abstract class Statement {
-    private final ExecutionManager executionManager;
+    private final ProgramManager programManager;
 
-    public Statement(ExecutionManager executionManager) {
-        this.executionManager = executionManager;
+    public Statement(ProgramManager programManager) {
+        this.programManager = programManager;
     }
 
-    public ExecutionManager getExecutionManager() {
-        return executionManager;
+    public ProgramManager getExecutionManager() {
+        return programManager;
     }
 
     public void execute(VariableManager variableManager) {
         try {
-            executionManager.getExecutionMonitor().tryExecution();
+            programManager.getExecutionManager().tryExecution();
         } catch(InterruptedException e) {
             System.err.println(e.getMessage());
         }

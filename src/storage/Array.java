@@ -2,7 +2,8 @@ package storage;
 
 import error.exception.ConstantReassignmentException;
 import error.exception.IndexOutOfBoundsException;
-import error.exception.TypeMismatchException;
+import error.exception.type.AssignmentException;
+import error.exception.type.TypeMismatchException;
 
 public class Array extends Variable {
 
@@ -45,7 +46,7 @@ public class Array extends Variable {
             throw new IndexOutOfBoundsException(index, getSize());
         }
         if (typeOf(value) != getType()) {
-            throw new TypeMismatchException(getType(), typeOf(value));
+            throw new AssignmentException(getType(), typeOf(value));
         }
 
         Object[] array = (Object[]) getValue();

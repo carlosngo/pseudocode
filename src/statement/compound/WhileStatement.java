@@ -1,6 +1,7 @@
 package statement.compound;
 
 import gen.PseudocodeParser.ConditionContext;
+import manager.VariableManager;
 
 public class WhileStatement extends IterationStatement {
 
@@ -9,7 +10,7 @@ public class WhileStatement extends IterationStatement {
     }
 
     @Override
-    public void execute() {
+    public void execute(VariableManager variableManager) {
 
     }
 }

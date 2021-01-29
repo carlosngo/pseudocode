@@ -1,6 +1,6 @@
 package util;
 
-import storage.Variable.Type;
+import storage.Storage;
 
 public class Keyword {
     public static final String INT = "int";
@@ -15,8 +15,10 @@ public class Keyword {
     public static final String TRUE = "true";
     public static final String FALSE = "false";
 
-    public static String parseKeyword(Type type) {
+    public static String parseKeyword(Storage.Type type) {
         switch (type) {
+            case UNKNOWN:
+                return null;
             case CHAR:
                 return Keyword.CHAR;
             case BOOLEAN:

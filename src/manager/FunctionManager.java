@@ -21,8 +21,13 @@ public class FunctionManager implements Manager {
         return currentFunction;
     }
 
-    public void setCurrentFunction(Function function) {
+    public void enterFunction(Function function) {
         currentFunction = function;
+    }
+
+    public void exitFunction() {
+
+        currentFunction = null;
     }
 
     public Function getFunction(String identifier)

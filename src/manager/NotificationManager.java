@@ -1,10 +1,11 @@
-package notification;
+package manager;
 
+import notification.PseudocodeListener;
 import notification.event.PseudocodeEvent;
 
 import java.util.ArrayList;
 
-public class NotificationCenter {
+public class NotificationManager {
     private ArrayList<PseudocodeListener> listeners;
 
     public void addListener(PseudocodeListener listener) {

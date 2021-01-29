@@ -1,11 +1,7 @@
 package manager;
 
-import error.exception.ConstantReassignmentException;
-import error.exception.IndexOutOfBoundsException;
 import error.exception.StorageRedeclarationException;
-import error.exception.TypeMismatchException;
 import error.exception.UndeclaredStorageException;
-import storage.Array;
 import storage.Variable;
 
 import java.util.HashMap;
