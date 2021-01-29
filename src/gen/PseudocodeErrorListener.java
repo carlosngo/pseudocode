@@ -11,9 +11,6 @@ import java.util.regex.Pattern;
 
 
 public class PseudocodeErrorListener extends BaseErrorListener {
-
-    public static final PseudocodeErrorListener INSTANCE = new PseudocodeErrorListener();
-
     public ArrayList<String> errorList = new ArrayList<>();
 
     @Override

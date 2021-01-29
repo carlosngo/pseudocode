@@ -77,10 +77,11 @@ public class MainView {
             PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromFileName(filepath));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             PseudocodeParser parser = new PseudocodeParser(tokens);
+            PseudocodeErrorListener pseudocodeErrorListener = new PseudocodeErrorListener();
             lexer.removeErrorListeners();
             parser.removeErrorListeners();
-            lexer.addErrorListener(PseudocodeErrorListener.INSTANCE);
-            parser.addErrorListener(PseudocodeErrorListener.INSTANCE);
+            lexer.addErrorListener(pseudocodeErrorListener);
+            parser.addErrorListener(pseudocodeErrorListener);
             parser.setErrorHandler(new PseudocodeErrorStrategy());
             ParseTree tree = parser.init();
             TreeViewer viewr = new TreeViewer(Arrays.asList(
@@ -89,7 +90,7 @@ public class MainView {
             System.out.println(tree.toStringTree(parser));
 
             StringBuilder sb = new StringBuilder();
-            ArrayList<String> errorList = PseudocodeErrorListener.INSTANCE.errorList;
+            ArrayList<String> errorList = pseudocodeErrorListener.errorList;
             for (String error: errorList) {
                 sb.append(error);
                 sb.append("\n");
