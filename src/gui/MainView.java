@@ -5,6 +5,7 @@ import gen.PseudocodeErrorStrategy;
 import gen.PseudocodeLexer;
 import gen.PseudocodeParser;
 import javafx.fxml.FXML;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.GridPane;
@@ -12,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -19,10 +21,8 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.awt.event.ActionEvent;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +55,8 @@ public class MainView {
     public Label inputFileLabel;
     @FXML
     public Button compileButton;
+    @FXML
+    public Button selectFileButton;
     @FXML
     public TextField inputFileField;
 
@@ -100,6 +102,19 @@ public class MainView {
             consoleLabel.setText(errortext);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void selectFile(MouseEvent mouseEvent) {
+        FileChooser fc = new FileChooser();
+        fc.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Text files", "*.txt"));
+        File selectedFile = fc.showOpenDialog(null);
+
+        if(selectedFile!=null){
+            inputFileField.setText(selectedFile.getAbsolutePath());
+        } else {
+            consoleLabel.setText("File Cannot be NULL");
         }
     }
 }
