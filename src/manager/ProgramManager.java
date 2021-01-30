@@ -14,6 +14,7 @@ public class ProgramManager implements Manager, Runnable {
         functionManager = new FunctionManager();
         this.notificationManager = notificationManager;
         compilationManager = new CompilationManager();
+        notificationManager.addListener(executionManager);
     }
 
     public ExecutionManager getExecutionManager() {

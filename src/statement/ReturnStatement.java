@@ -38,7 +38,8 @@ public class ReturnStatement extends Statement {
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
         try {
             executionManager.triggerReturn(
-                    ExpressionEvaluator.evaluateValue(expressionContext, getProgramManager()));
+                    ExpressionEvaluator
+                            .evaluateValue(expressionContext, getProgramManager()));
         } catch(CompilationException e) {
             System.err.println("unexpected " + e.getMessage() + " at runtime");
         }

@@ -17,8 +17,10 @@ public class WhileStatement extends IterationStatement {
         super(programManager, countDown, boundCtx);
         this.initCtx = initCtx;
         try {
-            Storage.Type initType = ExpressionEvaluator.evaluateType(initCtx, programManager);
-            Storage.Type boundType = ExpressionEvaluator.evaluateType(boundCtx, programManager);
+            Storage.Type initType = ExpressionEvaluator
+                    .evaluateType(initCtx, programManager);
+            Storage.Type boundType = ExpressionEvaluator
+                    .evaluateType(boundCtx, programManager);
             if (initType != Storage.Type.INT) {
                 throw new BoundException(initType);
             }
@@ -31,21 +33,23 @@ public class WhileStatement extends IterationStatement {
         }
     }
 
+
     @Override
     public void execute() {
         super.execute();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
         try {
-            int initialValue = (int) ExpressionEvaluator.evaluateValue(initCtx, getProgramManager());
+            int initialValue = (int) ExpressionEvaluator
+                    .evaluateValue(initCtx, getProgramManager());
             int destinationValue = (int) ExpressionEvaluator
                     .evaluateValue(getBoundContext(), getProgramManager());
             executionManager.enterBlock(this);
-            do {
+            beginIteration(initialValue, destinationValue);
 
-                initialValue = initialValue + (isCountDown() ? -1 : 1);
-            } while (initialValue != destinationValue);
-
-            executionManager.exitBlock();
+            // if condition is false and no break statement was called, automatically break
+            if (!hasBroken()) {
+                executionManager.triggerBreak();
+            }
         } catch(CompilationException e) {
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());
         }

@@ -67,7 +67,7 @@ public class IfStatement extends CompoundStatement {
     public void execute() {
         super.execute();
         try {
-            Boolean value = (Boolean)
+            boolean value = (boolean)
                     ExpressionEvaluator.evaluateValue(condition, getProgramManager());
             ExecutionManager executionManager = getProgramManager().getExecutionManager();
             executionManager.enterBlock(this);

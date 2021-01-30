@@ -32,6 +32,26 @@ public abstract class IterationStatement extends CompoundStatement {
         return countDown;
     }
 
+    public void beginIteration(int initialValue, int destinationValue) {
+        if (isCountDown()) {
+            while (initialValue >= destinationValue && !hasBroken()) {
+                executeOneIteration();
+                initialValue--;
+            }
+        } else {
+            while (initialValue <= destinationValue && !hasBroken()) {
+                executeOneIteration();
+                initialValue++;
+            }
+        }
+    }
+
+    public void executeOneIteration() {
+        for (int i = 0; i < statements.size() && !hasBroken(); i++) {
+            getStatements().get(i).execute();
+        }
+    }
+
     @Override
     public void addStatement(Statement statement) {
         statements.add(statement);

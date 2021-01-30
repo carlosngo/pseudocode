@@ -39,12 +39,11 @@ public class DoWhileStatement extends IterationStatement {
             int destinationValue = (int) ExpressionEvaluator
                     .evaluateValue(getBoundContext(), getProgramManager());
             executionManager.enterBlock(this);
-            do {
-
-                initialValue = initialValue + (isCountDown() ? -1 : 1);
-            } while (initialValue != destinationValue);
-
-            executionManager.exitBlock();
+            executeOneIteration();
+            beginIteration(initialValue, destinationValue);
+            if (!hasBroken()) {
+                executionManager.triggerBreak();
+            }
         } catch(CompilationException e) {
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());
         }

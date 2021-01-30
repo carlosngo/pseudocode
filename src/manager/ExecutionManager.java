@@ -1,15 +1,22 @@
 package manager;
 
+import error.exception.CompilationException;
+import notification.event.EndScanEvent;
+import notification.event.StartScanEvent;
+import notification.listener.PseudocodeListener;
+import notification.listener.ScanListener;
+import statement.ScanStatement;
 import statement.compound.CompoundStatement;
 import statement.compound.FunctionCallStatement;
 import statement.compound.IterationStatement;
 
 import java.util.Stack;
 
-public class ExecutionManager implements Manager {
+public class ExecutionManager implements Manager, ScanListener {
 
     private final Stack<FunctionCallStatement> callStack;
     private final Stack<CompoundStatement> controlStack;
+    private ScanStatement awaitingScanStatement;
     private final Object executionGate = new Object();
     private boolean executionFlag;
 
@@ -81,5 +88,24 @@ public class ExecutionManager implements Manager {
     public void reset() {
         callStack.empty();
         executionFlag = true;
+    }
+
+    @Override
+    public void onScanStart(StartScanEvent e) {
+        awaitingScanStatement = (ScanStatement) e.getSource();
+        stopExecution();
+    }
+
+    @Override
+    public void onScanEnd(EndScanEvent evt) {
+        resumeExecution();
+        try {
+            callStack.peek()
+                    .getLocalVariables()
+                    .getVariable(awaitingScanStatement.getIdentifier())
+                    .setValue(evt.getInput());
+        } catch(CompilationException e) {
+            System.err.println("unexpected " + e.getMessage() + " at runtime");
+        }
     }
 }
