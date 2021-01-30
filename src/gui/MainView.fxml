@@ -16,11 +16,9 @@
       <RowConstraints maxHeight="191.0" minHeight="10.0" prefHeight="54.0" vgrow="SOMETIMES" />
     </rowConstraints>
         <ScrollPane id="inputScrollPane" fx:id="inputScrollPane" pannable="true" prefHeight="200.0" prefWidth="500.0" GridPane.rowSpan="2">
-           <Label id="inputContentsLabel" fx:id="inputContentsLabel" layoutX="48.0" layoutY="14.0" text="Input contents here">
-             <padding>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-             </padding>
-           </Label>
+         <content>
+            <TextArea fx:id="inputContents" prefHeight="477.0" prefWidth="632.0" />
+         </content>
         </ScrollPane>
         <ScrollPane id="errorsScrollPane" fx:id="errorsScrollPane" layoutX="10.0" layoutY="10.0" pannable="true" prefHeight="200.0" prefWidth="500.0" GridPane.columnIndex="1" GridPane.rowSpan="2">
            <Label id="consoleLabel" fx:id="consoleLabel" layoutX="52.0" layoutY="14.0" text="Syntax errors here">
@@ -30,10 +28,11 @@
            </Label>
         </ScrollPane>
         <Pane id="inputFilePane" fx:id="inputFilePane" prefHeight="200.0" prefWidth="1000.0" GridPane.columnSpan="2" GridPane.rowIndex="2">
-          <Label id="inputFileLabel" layoutX="20.0" layoutY="14.0" text="Type the code OR select an input file OR input file path" />
+          <Label id="inputFileLabel" layoutX="20.0" layoutY="14.0" text="Type the code OR select an input file" />
           <TextField id="inputFileField" fx:id="inputFileField" layoutX="20.0" layoutY="35.0" prefHeight="31.0" prefWidth="366.0" />
-          <Button id="compileButton" layoutX="20.0" layoutY="72.0" mnemonicParsing="false" onMouseClicked="#readTextFile" text="Compile" />
+          <Button id="compileButton" layoutX="20.0" layoutY="72.0" mnemonicParsing="false" onMouseClicked="#readTextFile" text="Compile from input file" />
          <Button id="selectFileButton" fx:id="selectFileButton" layoutX="415.0" layoutY="38.0" mnemonicParsing="false" onMouseClicked="#selectFile" text="Select txt input file" />
+         <Button id="compileTextButton" layoutX="222.0" layoutY="73.0" mnemonicParsing="false" onMouseClicked="#compileText" text="Compile from typed code" />
         </Pane>
   </GridPane>
 </AnchorPane>

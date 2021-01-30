@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.CharStream;
@@ -21,6 +22,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.nio.file.Paths;
@@ -48,7 +50,8 @@ public class MainView {
     @FXML
     public Pane errorsPane1;
     @FXML
-    public Label inputContentsLabel;
+    public TextArea inputContents;
+//    public Label inputContentsLabel;
     @FXML
     public Label consoleLabel;
     @FXML
@@ -75,7 +78,7 @@ public class MainView {
         try {
             charStream = CharStreams.fromPath(Paths.get(filepath));
             fulltext = charStream.toString();
-            inputContentsLabel.setText(fulltext);
+            inputContents.setText(fulltext);
             PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromFileName(filepath));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             PseudocodeParser parser = new PseudocodeParser(tokens);
@@ -116,5 +119,35 @@ public class MainView {
         } else {
             consoleLabel.setText("File Cannot be NULL");
         }
+    }
+
+    public void compileText(MouseEvent mouseEvent) {
+       String inputs = inputContents.getText();
+
+//        CharStreams.fromString(inputs);
+        PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromString(inputs));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        PseudocodeParser parser = new PseudocodeParser(tokens);
+        PseudocodeErrorListener pseudocodeErrorListener = new PseudocodeErrorListener();
+        lexer.removeErrorListeners();
+        parser.removeErrorListeners();
+        lexer.addErrorListener(pseudocodeErrorListener);
+        parser.addErrorListener(pseudocodeErrorListener);
+        parser.setErrorHandler(new PseudocodeErrorStrategy());
+        ParseTree tree = parser.init();
+        TreeViewer viewr = new TreeViewer(Arrays.asList(
+                parser.getRuleNames()), tree);
+        viewr.open();
+        System.out.println(tree.toStringTree(parser));
+
+        StringBuilder sb = new StringBuilder();
+        ArrayList<String> errorList = pseudocodeErrorListener.errorList;
+        for (String error: errorList) {
+            sb.append(error);
+            sb.append("\n");
+        }
+        errortext = sb.toString();
+
+        consoleLabel.setText(errortext);
     }
 }
