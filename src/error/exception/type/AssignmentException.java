@@ -8,6 +8,5 @@ public class AssignmentException extends TypeMismatchException {
         super("assignment type mismatch, expected " + Keyword.parseKeyword(expectedType)
                 + ", found " + Keyword.parseKeyword(offendingType)
                 , expectedType, offendingType);
-
     }
 }

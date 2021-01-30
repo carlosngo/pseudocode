@@ -1,17 +1,19 @@
 package manager;
 
-import gen.PseudocodeParser;
+import gen.PseudocodeParser.ExpressionContext;
 import statement.compound.FunctionCallStatement;
 
-public class ProgramManager implements Manager {
+public class ProgramManager implements Manager, Runnable {
     private final ExecutionManager executionManager;
     private final FunctionManager functionManager;
     private final NotificationManager notificationManager;
+    private final CompilationManager compilationManager;
 
     public ProgramManager(NotificationManager notificationManager) {
         executionManager = new ExecutionManager();
         functionManager = new FunctionManager();
         this.notificationManager = notificationManager;
+        compilationManager = new CompilationManager();
     }
 
     public ExecutionManager getExecutionManager() {
@@ -26,10 +28,17 @@ public class ProgramManager implements Manager {
         return notificationManager;
     }
 
-    public void executeProgram() {
+    public CompilationManager getCompilationManager() { return compilationManager; }
+
+    public void compile() {
+
+    }
+
+    @Override
+    public void run() {
         new FunctionCallStatement(
-                this, "main", new PseudocodeParser.ExpressionContext[0])
-                .execute(null);
+                this, "main", new ExpressionContext[0])
+                .execute();
     }
 
     @Override

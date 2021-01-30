@@ -9,17 +9,16 @@ public class Variable extends Storage {
 
 
     private final boolean isFinal;
-    private final int level;
+    private int level;
     private Object value;
 
-    public Variable(Type type, String name, int level) {
-        this(false, type, name, level);
+    public Variable(Type type, String name) {
+        this(false, type, name);
     }
 
-    public Variable(boolean isFinal, Type type, String name, int level) {
+    public Variable(boolean isFinal, Type type, String name) {
         super(type, name);
         this.isFinal = isFinal;
-        this.level = level;
         value = null;
     }
 
@@ -46,5 +45,8 @@ public class Variable extends Storage {
         return level;
     }
 
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
 }

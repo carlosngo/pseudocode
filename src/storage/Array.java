@@ -7,12 +7,12 @@ import error.exception.type.TypeMismatchException;
 
 public class Array extends Variable {
 
-    public Array(Type type, String name, int level, int size) {
-        this(false, type, name, level, size);
+    public Array(Type type, String name, int size) {
+        this(false, type, name, size);
     }
 
-    public Array(boolean isFinal, Type type, String name, int level, int size) {
-        super(isFinal, type, name, level);
+    public Array(boolean isFinal, Type type, String name, int size) {
+        super(isFinal, type, name);
         try {
             super.setValue(new Object[size]);
         } catch (TypeMismatchException e) {

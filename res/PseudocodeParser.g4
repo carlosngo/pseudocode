@@ -140,18 +140,14 @@ printStatement:
     Print LeftParen constantExpression RightParen Semi
     | Print LeftParen LeftParen+ constantExpression RightParen Semi { notifyErrorListeners("too many open parenthesis"); }
     | Print LeftParen constantExpression RightParen RightParen+ Semi { notifyErrorListeners("too many closing parenthesis"); }
-//    | Print constantExpression RightParen+ Semi { notifyErrorListeners("expected open parenthesis"); }
     | Print LeftParen+ constantExpression Semi { notifyErrorListeners("expected closing parenthesis"); }
-//    | Print constantExpression Semi { notifyErrorListeners("expected parentheses"); }
     ;
 
 scanStatement:
     Scan LeftParen StringLiteral Comma Identifier RightParen Semi
     | Scan LeftParen LeftParen+ StringLiteral Comma Identifier RightParen Semi { notifyErrorListeners("too many open parenthesis"); }
     | Scan LeftParen StringLiteral Comma Identifier RightParen RightParen+ Semi { notifyErrorListeners("too many closing parenthesis"); }
-//    | Scan StringLiteral Comma Identifier RightParen Semi { notifyErrorListeners("expected open parenthesis"); }
     | Scan LeftParen StringLiteral Comma Identifier Semi { notifyErrorListeners("expected closing parenthesis"); }
-//    | Scan StringLiteral Comma Identifier Semi { notifyErrorListeners("expected parentheses"); }
     ;
 
 jumpStatement:
@@ -190,21 +186,17 @@ selectionStatement:
     ifStatement elseIfStatement* elseStatement?;
 
 ifStatement:
-    If LeftParen condition RightParen Then? compoundStatement
-//    | If condition RightParen+ Then? compoundStatement { notifyErrorListeners("expected opening parenthesis"); }
-    | If LeftParen+ condition Then? compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
-    | If LeftParen condition RightParen RightParen+ Then? compoundStatement { notifyErrorListeners("too many closing parenthesis"); }
-    | If LeftParen LeftParen+ condition RightParen Then? compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
-//    | If condition Then? compoundStatement { notifyErrorListeners("expected parentheses"); }
+    If LeftParen condition RightParen Then compoundStatement
+    | If LeftParen+ condition Then compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
+    | If LeftParen condition RightParen RightParen+ Then compoundStatement { notifyErrorListeners("too many closing parenthesis"); }
+    | If LeftParen LeftParen+ condition RightParen Then compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
     ;
 
 elseIfStatement:
     Else If LeftParen condition RightParen Then? compoundStatement
-//    | Else If condition RightParen+ Then? compoundStatement { notifyErrorListeners("expected opening parenthesis"); }
     | Else If LeftParen+ condition Then? compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
     | Else If LeftParen condition RightParen RightParen+ Then? compoundStatement { notifyErrorListeners("too many closing parenthesis"); }
     | Else If LeftParen LeftParen+ condition RightParen Then? compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
-//    | Else If condition Then? compoundStatement { notifyErrorListeners("expected parentheses"); }
     ;
 
 elseStatement:
@@ -212,19 +204,8 @@ elseStatement:
     ;
 
 condition:
-    logicalOrExpression comparisonOperator logicalOrExpression
-    | (Identifier | BooleanLiteral) ((OrOr || AndAnd) (Identifier | BooleanLiteral))*
-	| assignmentExpression {notifyErrorListeners("expected comparison operator"); }
+    constantExpression
 	;
-
-comparisonOperator:
-    Equal
-    | NotEqual
-    | GreaterEqual
-    | LessEqual
-    | Greater
-    | Less
-    ;
 
 // Conditional End
 
@@ -233,43 +214,11 @@ comparisonOperator:
 iterationStatement:
     For iterationInit (Up | Down) To constantExpression compoundStatement
     | While iterationInit (Up | Down) To constantExpression compoundStatement
-	| While LeftParen condition RightParen compoundStatement
-	| Do compoundStatement While LeftParen condition RightParen Semi
-	| For LeftParen (
-    		forInitStatement condition? Semi expression?
-    	) RightParen compoundStatement
+	| Do compoundStatement While iterationInit (Up | Down) To constantExpression Semi
 
     | While iterationInit badIteration constantExpression compoundStatement
-//    | While condition compoundStatement { notifyErrorListeners("expected parentheses"); }
-//	| While condition RightParen+ compoundStatement { notifyErrorListeners("expected opening parenthesis"); }
-	| While LeftParen+ condition compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
-	| While LeftParen LeftParen+ condition RightParen compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
-	| While LeftParen condition RightParen RightParen+ compoundStatement { notifyErrorListeners("too many closing parenthesis"); }
-
-//    | Do compoundStatement While condition Semi { notifyErrorListeners("expected parentheses"); }
-//	| Do compoundStatement While condition RightParen+ Semi { notifyErrorListeners("expected opening parenthesis"); }
-	| Do compoundStatement While LeftParen+ condition Semi  { notifyErrorListeners("expected closing parenthesis"); }
-	| Do compoundStatement While LeftParen LeftParen+ condition RightParen Semi { notifyErrorListeners("too many opening parenthesis"); }
-	| Do compoundStatement While LeftParen condition RightParen RightParen+ Semi { notifyErrorListeners("too many closing parenthesis"); }
-
     | For iterationInit badIteration constantExpression compoundStatement
-//    | For (
-//        forInitStatement condition? Semi expression?
-//    ) compoundStatement { notifyErrorListeners("expected parentheses"); }
-//	| For (
-//    	forInitStatement condition? Semi expression?
-//    ) RightParen+ compoundStatement { notifyErrorListeners("expected opening parenthesis"); }
-    | For LeftParen+ (
-    	forInitStatement condition? Semi expression?
-    ) compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
-    | For LeftParen LeftParen+ (
-        forInitStatement condition? Semi expression?
-    ) RightParen compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
-    | For LeftParen (
-            forInitStatement condition? Semi expression?
-    ) RightParen RightParen+ compoundStatement { notifyErrorListeners("too many closing parenthesis"); };
-
-forInitStatement: expressionStatement | simpleDeclaration;
+    | Do compoundStatement While iterationInit badIteration constantExpression Semi;
 
 iterationInit:
     expression
