@@ -13,6 +13,10 @@
     -fx-background: #22393D;
 }
 
+#ioScrollPane{
+    -fx-background: #224932;
+}
+
 .Label{
     -fx-font-family: "Courier Prime";
     -fx-font-style: normal;
