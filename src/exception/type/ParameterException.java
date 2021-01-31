@@ -1,10 +1,10 @@
-package error.exception.type;
+package exception.type;
 
-import error.exception.CompilationException;
+import exception.SemanticException;
 import storage.Storage;
 import util.Keyword;
 
-public class ParameterException extends CompilationException {
+public class ParameterException extends SemanticException {
     private final Storage.Type expectedType;
     private final Storage.Type offendingType;
 

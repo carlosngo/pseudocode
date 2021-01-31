@@ -1,6 +1,6 @@
-package error.exception;
+package exception;
 
-public class StorageRedeclarationException extends CompilationException {
+public class StorageRedeclarationException extends SemanticException {
     private final String storageName;
     private final boolean isFunction;
 

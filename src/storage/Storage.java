@@ -55,7 +55,6 @@ public abstract class Storage {
         }
     }
 
-
     public static Type typeOf(Object value) {
         if (value == null) {
             return Type.VOID;
@@ -77,5 +76,27 @@ public abstract class Storage {
             return Type.STRING;
         }
         return Type.UNKNOWN;
+    }
+
+    public static Object getRandomValueOfType(Type type) {
+        switch (type) {
+            case CHAR:
+                return Character.MIN_VALUE;
+            case BOOLEAN:
+                return Boolean.TRUE;
+            case SHORT:
+                return Short.MIN_VALUE;
+            case INT:
+                return Integer.MIN_VALUE;
+            case LONG:
+                return Long.MIN_VALUE;
+            case FLOAT:
+                return Float.MIN_VALUE;
+            case DOUBLE:
+                return Double.MIN_VALUE;
+            case STRING:
+                return "";
+        }
+        return null;
     }
 }

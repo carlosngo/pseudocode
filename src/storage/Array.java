@@ -1,9 +1,9 @@
 package storage;
 
-import error.exception.ConstantReassignmentException;
-import error.exception.IndexOutOfBoundsException;
-import error.exception.type.AssignmentException;
-import error.exception.type.TypeMismatchException;
+import exception.ConstantReassignmentException;
+import exception.IndexOutOfBoundsException;
+import exception.type.AssignmentException;
+import exception.type.TypeMismatchException;
 
 public class Array extends Variable {
 

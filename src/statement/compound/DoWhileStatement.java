@@ -1,7 +1,7 @@
 package statement.compound;
 
-import error.exception.CompilationException;
-import error.exception.type.BoundException;
+import exception.SemanticException;
+import exception.type.BoundException;
 import gen.PseudocodeParser.ExpressionContext;
 import manager.ExecutionManager;
 import manager.ProgramManager;
@@ -12,8 +12,12 @@ import util.evaluator.ExpressionEvaluator;
 public class DoWhileStatement extends IterationStatement {
     private ExpressionContext initCtx;
 
-    public DoWhileStatement(ProgramManager programManager, ExpressionContext boundCtx, boolean countDown, ExpressionContext initCtx) {
-        super(programManager, countDown, boundCtx);
+    public DoWhileStatement(ProgramManager programManager
+            , ExpressionContext boundCtx
+            , boolean countDown
+            , ExpressionContext initCtx
+            , int lineNumber) {
+        super(programManager, countDown, boundCtx, lineNumber);
         this.initCtx = initCtx;
         try {
             Storage.Type initType = ExpressionEvaluator.evaluateType(initCtx, programManager);
@@ -24,28 +28,26 @@ public class DoWhileStatement extends IterationStatement {
             if (boundType != Storage.Type.INT) {
                 throw new BoundException(boundType);
             }
-        } catch(CompilationException e) {
-            SemanticErrorEvent evt = new SemanticErrorEvent(this, e);
-            programManager.getNotificationManager().notifyErrorListeners(evt);
+        } catch(SemanticException e) {
+            notifyErrorListeners(e);
         }
     }
 
     @Override
     public void execute() {
-        super.execute();
+        tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
         try {
             int initialValue = (int) ExpressionEvaluator.evaluateValue(initCtx, getProgramManager());
             int destinationValue = (int) ExpressionEvaluator
                     .evaluateValue(getBoundContext(), getProgramManager());
             executionManager.enterBlock(this);
-            do {
-
-                initialValue = initialValue + (isCountDown() ? -1 : 1);
-            } while (initialValue != destinationValue);
-
-            executionManager.exitBlock();
-        } catch(CompilationException e) {
+            executeOneIteration();
+            beginIteration(initialValue, destinationValue);
+            if (!hasBroken()) {
+                executionManager.triggerBreak();
+            }
+        } catch(SemanticException e) {
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());
         }
     }

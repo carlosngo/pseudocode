@@ -10,35 +10,36 @@ import java.util.ArrayList;
 public abstract class IterationStatement extends CompoundStatement {
     private final boolean countDown;
     private final ExpressionContext boundCtx;
-    private final ArrayList<Statement> statements;
 
 
-    public IterationStatement(ProgramManager programManager, boolean countDown, ExpressionContext boundCtx) {
-        super(programManager);
-        statements = new ArrayList<>();
+    public IterationStatement(ProgramManager programManager
+            , boolean countDown
+            , ExpressionContext boundCtx
+            , int lineNumber) {
+        super(programManager, lineNumber);
         this.countDown = countDown;
         this.boundCtx = boundCtx;
-    }
-
-    public ArrayList<Statement> getStatements() {
-        return statements;
     }
 
     public ExpressionContext getBoundContext() {
         return boundCtx;
     }
 
-    public boolean isCountDown() {
+    protected boolean isCountDown() {
         return countDown;
     }
 
-    @Override
-    public void addStatement(Statement statement) {
-        statements.add(statement);
-    }
-
-    @Override
-    public void execute() {
-        super.execute();
+    protected void beginIteration(int initialValue, int destinationValue) {
+        if (isCountDown()) {
+            while (initialValue >= destinationValue && !hasBroken()) {
+                executeOneIteration();
+                initialValue--;
+            }
+        } else {
+            while (initialValue <= destinationValue && !hasBroken()) {
+                executeOneIteration();
+                initialValue++;
+            }
+        }
     }
 }

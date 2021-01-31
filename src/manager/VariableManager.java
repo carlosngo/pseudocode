@@ -1,7 +1,7 @@
 package manager;
 
-import error.exception.StorageRedeclarationException;
-import error.exception.UndeclaredStorageException;
+import exception.StorageRedeclarationException;
+import exception.UndeclaredStorageException;
 import storage.Variable;
 
 import java.util.HashMap;

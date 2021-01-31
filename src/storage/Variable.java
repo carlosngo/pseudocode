@@ -1,9 +1,8 @@
 package storage;
 
-import error.exception.ConstantReassignmentException;
-import error.exception.type.AssignmentException;
-import error.exception.type.TypeMismatchException;
-import util.Keyword;
+import exception.ConstantReassignmentException;
+import exception.type.AssignmentException;
+import exception.type.TypeMismatchException;
 
 public class Variable extends Storage {
 

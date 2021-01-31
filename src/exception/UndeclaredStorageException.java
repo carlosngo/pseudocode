@@ -1,6 +1,6 @@
-package error.exception;
+package exception;
 
-public class UndeclaredStorageException extends CompilationException {
+public class UndeclaredStorageException extends SemanticException {
     private final String storageName;
     private final boolean isFunction;
 

@@ -1,15 +1,13 @@
 package statement.compound;
 
-import error.exception.*;
-import error.exception.type.ParameterException;
-import error.exception.type.ReturnException;
+import exception.*;
+import exception.type.ParameterException;
 import gen.PseudocodeParser.ExpressionContext;
 import manager.ExecutionManager;
 import manager.ProgramManager;
 import manager.FunctionManager;
 import manager.VariableManager;
 import notification.event.SemanticErrorEvent;
-import statement.ReturnStatement;
 import statement.Statement;
 import storage.Function;
 import storage.Variable;
@@ -24,9 +22,11 @@ public class FunctionCallStatement extends CompoundStatement {
     private Object returnValue;
     private VariableManager localVariables;
 
-    public FunctionCallStatement(ProgramManager programManager, String functionName
-            , ExpressionContext[] parameterExpressions) {
-        super(programManager);
+    public FunctionCallStatement(ProgramManager programManager
+            , String functionName
+            , ExpressionContext[] parameterExpressions
+            , int lineNumber) {
+        super(programManager, lineNumber);
         try {
             FunctionManager functionManager = programManager.getFunctionManager();
             function = functionManager.getFunction(functionName);
@@ -48,9 +48,8 @@ public class FunctionCallStatement extends CompoundStatement {
                     throw new ParameterException(expectedParameter.getType(), givenType);
                 }
             }
-        } catch (CompilationException e) {
-            SemanticErrorEvent evt = new SemanticErrorEvent(this, e);
-            programManager.getNotificationManager().notifyErrorListeners(evt);
+        } catch(SemanticException e) {
+            notifyErrorListeners(e);
         }
     }
 
@@ -73,7 +72,7 @@ public class FunctionCallStatement extends CompoundStatement {
 
     @Override
     public void execute() {
-        super.execute();
+        tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
         try {
             // evaluate given parameters and place inside local variables
@@ -100,7 +99,7 @@ public class FunctionCallStatement extends CompoundStatement {
             if (!hasBroken()) {
                 executionManager.triggerReturn(null);
             }
-        } catch (CompilationException e) {
+        } catch (SemanticException e) {
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());
         }
     }

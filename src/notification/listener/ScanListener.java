@@ -2,7 +2,7 @@ package notification.listener;
 
 import notification.event.*;
 
-public interface ScanListener {
-	void onScanStart(StartScanEvent e);
-	void onScanEnd(EndScanEvent e);
-}	
+public interface ScanListener extends PseudocodeListener {
+	void onScanStart(ScanStartEvent e);
+	void onScanEnd(ScanEndEvent e);
+}
