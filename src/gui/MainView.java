@@ -99,7 +99,7 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
         * By default IO console should be hidden
         * hideIOConsole() is commented out for testing purposes.
         * */
-        // hideIOConsole();
+//         hideIOConsole();
     }
 
     @FXML
@@ -202,11 +202,13 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
         GridPane.setColumnSpan(errorsScrollPane, 1);
         GridPane.setRowSpan(errorsScrollPane, 2);
 
-        bodyPane.getChildren().add(ioScrollPane);
-        GridPane.setColumnIndex(ioScrollPane, 1);
-        GridPane.setRowIndex(ioScrollPane, 0);
-        GridPane.setColumnSpan(ioScrollPane, 1);
-        GridPane.setRowSpan(ioScrollPane, 2);
+        if (!bodyPane.getChildren().contains(ioScrollPane)) {
+            bodyPane.getChildren().add(ioScrollPane);
+            GridPane.setColumnIndex(ioScrollPane, 1);
+            GridPane.setRowIndex(ioScrollPane, 0);
+            GridPane.setColumnSpan(ioScrollPane, 1);
+            GridPane.setRowSpan(ioScrollPane, 2);
+        }
         ioScrollPane.setVisible(true);
     }
 
@@ -239,7 +241,7 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
 
     @Override
     public void onScanStart(ScanStartEvent e) {
-        showIOConsole();
+//        showIOConsole();
         printToIOLabel(e.getMessage());
     }
 
@@ -251,6 +253,7 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
     @Override
     public void onExecuteStart(ExecuteStartEvent e) {
         //
+
     }
 
     @Override
@@ -295,6 +298,8 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
         // source is the button thats clicked
         CompileStartEvent compileStartEvent = new CompileStartEvent(source, srcCode);
         manager.notifyCompileListeners(compileStartEvent);
+
+        showIOConsole();
     }
 
 
