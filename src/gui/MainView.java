@@ -16,6 +16,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 import manager.NotificationManager;
+import notification.event.PrintEvent;
+import notification.event.ScanEndEvent;
+import notification.event.ScanStartEvent;
+import notification.listener.PrintListener;
+import notification.listener.ScanListener;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -30,7 +35,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MainView {
+public class MainView implements PrintListener, ScanListener {
     private NotificationManager manager;
     /*
     Put gui objects here
@@ -79,6 +84,7 @@ public class MainView {
 
     public void setManager(NotificationManager manager){
         this.manager = manager;
+        manager.addListener(this);
     }
 
     @FXML
@@ -177,7 +183,15 @@ public class MainView {
         ioLabel.setText(text);
     }
 
-    public void showIOConsole () {
+    private void resetIOLabel () {
+        ioLabel.setText("");
+    }
+
+    private void printToIOLabel (String text) {
+        ioLabel.setText(ioLabel.getText() + text);
+    }
+
+    private void showIOConsole () {
         GridPane.setColumnIndex(errorsScrollPane, 1);
         GridPane.setRowIndex(errorsScrollPane, 2);
         GridPane.setColumnSpan(errorsScrollPane, 1);
@@ -191,7 +205,7 @@ public class MainView {
         ioScrollPane.setVisible(true);
     }
 
-    public void hideIOConsole () {
+    private void hideIOConsole () {
         ioScrollPane.setVisible(false);
 
         bodyPane.getChildren().remove(ioScrollPane);
@@ -208,6 +222,24 @@ public class MainView {
 
     public void submitInput () {
         // linked to "OK" button
-        String input = tfUserInput.getText();
+        ScanEndEvent eInput = new ScanEndEvent(btnUserOk, tfUserInput.getText());
+        manager.notifyScanListeners(eInput);
+    }
+
+
+    @Override
+    public void onPrint(PrintEvent e) {
+        printToIOLabel(e.getMessage());
+    }
+
+    @Override
+    public void onScanStart(ScanStartEvent e) {
+        showIOConsole();
+        printToIOLabel(e.getMessage());
+    }
+
+    @Override
+    public void onScanEnd(ScanEndEvent e) {
+        // make frontend do something after scanning
     }
 }
