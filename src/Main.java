@@ -22,7 +22,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        NotificationManager manager = new NotificationManager();
+        NotificationManager notificationManager = new NotificationManager();
+        ProgramManager programManager = new ProgramManager(notificationManager);
 
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource(
@@ -35,7 +36,7 @@ public class Main extends Application {
         );
 
         MainView controller = loader.getController();
-        controller.setManager(manager);
+        controller.setManager(notificationManager);
 
         stage.show();
     }
@@ -72,8 +73,9 @@ public class Main extends Application {
 //                parser.getRuleNames()), tree);
 //        viewr.open();
 //        System.out.println(tree.toStringTree(parser));
-        NotificationManager notificationManager = new NotificationManager();
-        ProgramManager programManager = new ProgramManager(notificationManager);
+
+//        NotificationManager notificationManager = new NotificationManager();
+//        ProgramManager programManager = new ProgramManager(notificationManager);
 
         MainView controller  = new MainView();
 
