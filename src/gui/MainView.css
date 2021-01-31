@@ -13,6 +13,10 @@
     -fx-background: #22393D;
 }
 
+#ioScrollPane{
+    -fx-background: #224932;
+}
+
 .Label{
     -fx-font-family: "Courier Prime";
     -fx-font-style: normal;
@@ -25,7 +29,35 @@
     -fx-text-fill: #FFFFFF;
 }
 
+/*#inputContentsLabel{*/
+/*    -fx-background-color: transparent;*/
+/*}*/
+
 #compileButton{
+    -fx-background-color: transparent;
+    -fx-border-width: 3px;
+    -fx-border-style: solid;
+    -fx-border-color: #51979B;
+    -fx-border-radius: 3px;
+
+    -fx-font-family: "Courier Prime";
+    -fx-text-fill: #000000;
+
+}
+
+#compileTextButton{
+    -fx-background-color: transparent;
+    -fx-border-width: 3px;
+    -fx-border-style: solid;
+    -fx-border-color: #51979B;
+    -fx-border-radius: 3px;
+
+    -fx-font-family: "Courier Prime";
+    -fx-text-fill: #000000;
+
+}
+
+#selectFileButton{
     -fx-background-color: transparent;
     -fx-border-width: 3px;
     -fx-border-style: solid;
