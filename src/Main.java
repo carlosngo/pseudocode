@@ -30,15 +30,15 @@ public class Main extends Application {
                         "gui/MainView.fxml"
                 )
         );
-        Stage stage = new Stage();
-        stage.setScene(
+        primaryStage.setTitle("Pseudocode Interpreter");
+        primaryStage.setScene(
                 new Scene(loader.load())
         );
-
         MainView controller = loader.getController();
         controller.setManager(notificationManager);
 
-        stage.show();
+        primaryStage.show();
+        primaryStage.setResizable(true);
     }
 
    /* @Override
