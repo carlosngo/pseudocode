@@ -2,14 +2,12 @@ package statement.compound;
 
 import error.exception.*;
 import error.exception.type.ParameterException;
-import error.exception.type.ReturnException;
 import gen.PseudocodeParser.ExpressionContext;
 import manager.ExecutionManager;
 import manager.ProgramManager;
 import manager.FunctionManager;
 import manager.VariableManager;
 import notification.event.SemanticErrorEvent;
-import statement.ReturnStatement;
 import statement.Statement;
 import storage.Function;
 import storage.Variable;
@@ -25,33 +23,29 @@ public class FunctionCallStatement extends CompoundStatement {
     private VariableManager localVariables;
 
     public FunctionCallStatement(ProgramManager programManager, String functionName
-            , ExpressionContext[] parameterExpressions) {
+            , ExpressionContext[] parameterExpressions) throws SemanticException {
         super(programManager);
-        try {
-            FunctionManager functionManager = programManager.getFunctionManager();
-            function = functionManager.getFunction(functionName);
-            this.parameterExpressions = parameterExpressions;
-            returnValue = null;
-            ArrayList<Variable> expectedParameters = function.getParameters();
-            if (parameterExpressions.length > expectedParameters.size()) {
-                throw new ParameterException(null, Storage.Type.UNKNOWN);
-            }
-            if (parameterExpressions.length < expectedParameters.size()) {
-                throw new ParameterException(Storage.Type.UNKNOWN, null);
-            }
-
-            for (int i = 0; i < parameterExpressions.length; i++) {
-                Variable expectedParameter = expectedParameters.get(i);
-                Storage.Type givenType = ExpressionEvaluator
-                        .evaluateType(parameterExpressions[i], programManager);
-                if (givenType != expectedParameter.getType()) {
-                    throw new ParameterException(expectedParameter.getType(), givenType);
-                }
-            }
-        } catch (CompilationException e) {
-            SemanticErrorEvent evt = new SemanticErrorEvent(this, e);
-            programManager.getNotificationManager().notifyErrorListeners(evt);
+        FunctionManager functionManager = programManager.getFunctionManager();
+        function = functionManager.getFunction(functionName);
+        this.parameterExpressions = parameterExpressions;
+        returnValue = null;
+        ArrayList<Variable> expectedParameters = function.getParameters();
+        if (parameterExpressions.length > expectedParameters.size()) {
+            throw new ParameterException(null, Storage.Type.UNKNOWN);
         }
+        if (parameterExpressions.length < expectedParameters.size()) {
+            throw new ParameterException(Storage.Type.UNKNOWN, null);
+        }
+
+        for (int i = 0; i < parameterExpressions.length; i++) {
+            Variable expectedParameter = expectedParameters.get(i);
+            Storage.Type givenType = ExpressionEvaluator
+                    .evaluateType(parameterExpressions[i], programManager);
+            if (givenType != expectedParameter.getType()) {
+                throw new ParameterException(expectedParameter.getType(), givenType);
+            }
+        }
+
     }
 
     public VariableManager getLocalVariables() {
@@ -100,7 +94,7 @@ public class FunctionCallStatement extends CompoundStatement {
             if (!hasBroken()) {
                 executionManager.triggerReturn(null);
             }
-        } catch (CompilationException e) {
+        } catch (SemanticException e) {
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());
         }
     }

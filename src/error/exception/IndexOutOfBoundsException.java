@@ -1,6 +1,6 @@
 package error.exception;
 
-public class IndexOutOfBoundsException extends CompilationException {
+public class IndexOutOfBoundsException extends SemanticException {
     private final int index;
     private final int arraySize;
 

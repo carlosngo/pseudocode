@@ -1,25 +1,19 @@
 package statement;
 
-import error.exception.CompilationException;
+import error.exception.SemanticException;
 import gen.PseudocodeParser.ExpressionContext;
 import manager.ProgramManager;
 import notification.event.PrintEvent;
 import notification.event.SemanticErrorEvent;
-import storage.Storage;
 import util.evaluator.ExpressionEvaluator;
 
 public class PrintStatement extends Statement {
     private final ExpressionContext messageContext;
 
-    public PrintStatement(ProgramManager programManager, ExpressionContext messageContext) {
+    public PrintStatement(ProgramManager programManager, ExpressionContext messageContext) throws SemanticException{
         super(programManager);
         this.messageContext = messageContext;
-        try {
-            ExpressionEvaluator.evaluateType(messageContext, programManager);
-        } catch(CompilationException e) {
-            SemanticErrorEvent evt = new SemanticErrorEvent(this, e);
-            programManager.getNotificationManager().notifyErrorListeners(evt);
-        }
+        ExpressionEvaluator.evaluateType(messageContext, programManager);
     }
 
     @Override
@@ -31,7 +25,7 @@ public class PrintStatement extends Statement {
                     .evaluateValue(messageContext, programManager).toString();
             PrintEvent evt = new PrintEvent(this, message);
             programManager.getNotificationManager().notifyPrintListeners(evt);
-        } catch(CompilationException e) {
+        } catch(SemanticException e) {
             System.err.println("unexpected " + e.getMessage() + " at runtime");
         }
     }

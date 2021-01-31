@@ -1,9 +1,9 @@
 package error.exception.type;
 
-import error.exception.CompilationException;
+import error.exception.SemanticException;
 import storage.Storage;
 
-public abstract class TypeMismatchException extends CompilationException {
+public abstract class TypeMismatchException extends SemanticException {
     private final Storage.Type expectedType;
     private final Storage.Type offendingType;
 

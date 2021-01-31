@@ -1,4 +1,6 @@
 import gui.MainView;
+import manager.NotificationManager;
+import manager.ProgramManager;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -43,7 +45,8 @@ public class Main extends Application {
 //                parser.getRuleNames()), tree);
 //        viewr.open();
 //        System.out.println(tree.toStringTree(parser));
-
+        NotificationManager notificationManager = new NotificationManager();
+        ProgramManager programManager = new ProgramManager(notificationManager);
 
         launch(args);
     }

@@ -3,7 +3,7 @@ package error.exception;
 import storage.Array;
 import storage.Variable;
 
-public class ConstantReassignmentException extends CompilationException {
+public class ConstantReassignmentException extends SemanticException {
     private final Variable constant;
 
     public ConstantReassignmentException(Variable constant) {

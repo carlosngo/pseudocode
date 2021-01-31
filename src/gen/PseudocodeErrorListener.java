@@ -1,17 +1,17 @@
 package gen;
 
+import notification.event.SemanticErrorEvent;
+import notification.listener.SemanticErrorListener;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.IntervalSet;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class PseudocodeErrorListener extends BaseErrorListener {
-    public ArrayList<String> errorList = new ArrayList<>();
+public class PseudocodeErrorListener extends BaseErrorListener implements SemanticErrorListener {
+    private final ArrayList<String> errorList = new ArrayList<>();
 
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer,
@@ -92,5 +92,17 @@ public class PseudocodeErrorListener extends BaseErrorListener {
 //        Collections.reverse(stack);
 //        System.err.println("rule stack: "+stack);
 //        System.err.println("line "+line+ ": "+msg);
+    }
+
+    @Override
+    public void onSemanticError(SemanticErrorEvent evt) {
+        errorList.add("semantic error: "
+                + evt.getError().getMessage()
+                + " at line "
+                + evt.getLineNumber());
+    }
+
+    public ArrayList<String> getErrorList() {
+        return errorList;
     }
 }

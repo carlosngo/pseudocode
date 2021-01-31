@@ -1,24 +1,46 @@
 package manager;
 
-import error.exception.StorageRedeclarationException;
+import gen.PseudocodeErrorListener;
+import gen.PseudocodeErrorStrategy;
+import gen.PseudocodeLexer;
+import gen.PseudocodeParser;
+import notification.event.CompileErrorEvent;
+import notification.event.CompileSuccessEvent;
+import notification.event.SemanticErrorEvent;
+import notification.event.CompileStartEvent;
+import notification.listener.CompileListener;
+import notification.listener.SemanticErrorListener;
+import org.antlr.v4.gui.TreeViewer;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 import statement.Statement;
 import statement.compound.CompoundStatement;
-import statement.compound.FunctionCallStatement;
 import statement.compound.IfStatement;
-import storage.Variable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Stack;
 
-public class CompilationManager implements Manager {
+public class CompilationManager implements Manager, CompileListener, SemanticErrorListener {
+    private final ProgramManager programManager;
+    private final PseudocodeErrorListener pseudocodeErrorListener;
     private final Stack<CompoundStatement> statementStack;
+    private boolean compileSuccess;
 
-    public CompilationManager() {
+
+    public CompilationManager(ProgramManager programManager) {
+        this.programManager = programManager;
+        pseudocodeErrorListener = new PseudocodeErrorListener();
         statementStack = new Stack<>();
+        programManager
+                .getNotificationManager()
+                .addListener(pseudocodeErrorListener);
+        compileSuccess = true;
     }
 
     public void enterCompoundStatement(CompoundStatement statement) {
-        statement
-                .getProgramManager()
+        programManager
                 .getFunctionManager()
                 .getCurrentFunction()
                 .getVariableManager()
@@ -33,8 +55,7 @@ public class CompilationManager implements Manager {
             return;
         }
         addStatement(current);
-        current
-                .getProgramManager()
+        programManager
                 .getFunctionManager()
                 .getCurrentFunction()
                 .getVariableManager()
@@ -63,8 +84,47 @@ public class CompilationManager implements Manager {
         }
     }
 
+    public void compile(String sourceCode) {
+
+        PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromString(sourceCode));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        PseudocodeParser parser = new PseudocodeParser(tokens);
+        lexer.removeErrorListeners();
+        parser.removeErrorListeners();
+        lexer.addErrorListener(pseudocodeErrorListener);
+        parser.addErrorListener(pseudocodeErrorListener);
+        parser.setErrorHandler(new PseudocodeErrorStrategy());
+        ParseTree tree = parser.init();
+        TreeViewer viewr = new TreeViewer(Arrays.asList(
+                parser.getRuleNames()), tree);
+        viewr.open();
+        ArrayList<String> errorList = pseudocodeErrorListener.getErrorList();
+        NotificationManager notificationManager = programManager.getNotificationManager();
+        if (errorList.size() == 0) {
+            notificationManager.notifyCompileListeners(new CompileSuccessEvent(this));
+        } else {
+            notificationManager.notifyCompileListeners(new CompileErrorEvent(this, errorList));
+        }
+    }
+
     @Override
     public void reset() {
         statementStack.clear();
+    }
+
+    @Override
+    public void onCompileStart(CompileStartEvent e) {
+        compile(e.getSourceCode());
+    }
+
+    @Override
+    public void onCompileSuccess(CompileSuccessEvent e) {}
+
+    @Override
+    public void onCompileError(CompileErrorEvent e) {}
+
+    @Override
+    public void onSemanticError(SemanticErrorEvent e) {
+        compileSuccess = false;
     }
 }

@@ -1,11 +1,10 @@
 package statement.compound;
 
-import error.exception.CompilationException;
+import error.exception.SemanticException;
 import error.exception.type.BoundException;
 import gen.PseudocodeParser.ExpressionContext;
 import manager.ExecutionManager;
 import manager.ProgramManager;
-import manager.VariableManager;
 import notification.event.SemanticErrorEvent;
 import storage.Storage;
 import util.evaluator.ExpressionEvaluator;
@@ -13,23 +12,19 @@ import util.evaluator.ExpressionEvaluator;
 public class WhileStatement extends IterationStatement {
     private ExpressionContext initCtx;
 
-    public WhileStatement(ProgramManager programManager, ExpressionContext boundCtx, boolean countDown, ExpressionContext initCtx) {
+    public WhileStatement(ProgramManager programManager, ExpressionContext boundCtx, boolean countDown, ExpressionContext initCtx) throws SemanticException {
         super(programManager, countDown, boundCtx);
         this.initCtx = initCtx;
-        try {
-            Storage.Type initType = ExpressionEvaluator
-                    .evaluateType(initCtx, programManager);
-            Storage.Type boundType = ExpressionEvaluator
-                    .evaluateType(boundCtx, programManager);
-            if (initType != Storage.Type.INT) {
-                throw new BoundException(initType);
-            }
-            if (boundType != Storage.Type.INT) {
-                throw new BoundException(boundType);
-            }
-        } catch(CompilationException e) {
-            SemanticErrorEvent evt = new SemanticErrorEvent(this, e);
-            programManager.getNotificationManager().notifyErrorListeners(evt);
+
+        Storage.Type initType = ExpressionEvaluator
+                .evaluateType(initCtx, programManager);
+        Storage.Type boundType = ExpressionEvaluator
+                .evaluateType(boundCtx, programManager);
+        if (initType != Storage.Type.INT) {
+            throw new BoundException(initType);
+        }
+        if (boundType != Storage.Type.INT) {
+            throw new BoundException(boundType);
         }
     }
 
@@ -50,7 +45,7 @@ public class WhileStatement extends IterationStatement {
             if (!hasBroken()) {
                 executionManager.triggerBreak();
             }
-        } catch(CompilationException e) {
+        } catch(SemanticException e) {
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());
         }
     }

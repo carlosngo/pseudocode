@@ -1,31 +1,22 @@
 package statement;
 
-import error.exception.CompilationException;
-import manager.NotificationManager;
+import error.exception.SemanticException;
 import manager.ProgramManager;
-import notification.event.EndScanEvent;
-import notification.event.SemanticErrorEvent;
-import notification.event.StartScanEvent;
+import notification.event.ScanStartEvent;
 
 public class ScanStatement extends Statement {
     private final String message;
     private final String identifier;
 
-    public ScanStatement(ProgramManager programManager, String message, String identifier) {
+    public ScanStatement(ProgramManager programManager, String message, String identifier) throws SemanticException {
         super(programManager);
         this.message = message;
         this.identifier = identifier;
-        NotificationManager notificationManager = programManager.getNotificationManager();
-        try {
-            programManager
-                    .getFunctionManager()
-                    .getCurrentFunction()
-                    .getVariableManager()
-                    .getVariable(identifier);
-        } catch(CompilationException e) {
-            SemanticErrorEvent evt = new SemanticErrorEvent(this, e);
-            notificationManager.notifyErrorListeners(evt);
-        }
+        programManager
+                .getFunctionManager()
+                .getCurrentFunction()
+                .getVariableManager()
+                .getVariable(identifier);
     }
 
     public String getIdentifier() {
@@ -35,7 +26,7 @@ public class ScanStatement extends Statement {
     @Override
     public void execute() {
         super.execute();
-        StartScanEvent evt = new StartScanEvent(this, message);
+        ScanStartEvent evt = new ScanStartEvent(this, message);
         getProgramManager()
                 .getNotificationManager()
                 .notifyScanListeners(evt);

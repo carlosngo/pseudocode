@@ -1,17 +1,13 @@
 package statement.compound;
 
 
-import error.exception.CompilationException;
+import error.exception.SemanticException;
 import error.exception.type.ConditionException;
-import error.exception.type.TypeMismatchException;
 import gen.PseudocodeParser.ExpressionContext;
 import manager.ExecutionManager;
-import manager.FunctionManager;
 import manager.ProgramManager;
-import manager.VariableManager;
 import notification.event.SemanticErrorEvent;
 import statement.Statement;
-import storage.Function;
 import storage.Storage;
 import util.evaluator.ExpressionEvaluator;
 
@@ -24,21 +20,16 @@ public class IfStatement extends CompoundStatement {
 
     private final ExpressionContext condition;
 
-    public IfStatement(ProgramManager programManager, ExpressionContext condition) {
+    public IfStatement(ProgramManager programManager, ExpressionContext condition) throws SemanticException {
         super(programManager);
         this.condition = condition;
         positiveStatements = new ArrayList<>();
         negativeStatements = new ArrayList<>();
         inPositive = true;
-        try {
-            Storage.Type givenType =
-                    ExpressionEvaluator.evaluateType(condition, programManager);
-            if (givenType != Storage.Type.BOOLEAN) {
-                throw new ConditionException(givenType);
-            }
-        } catch(CompilationException e) {
-            SemanticErrorEvent evt = new SemanticErrorEvent(this, e);
-            programManager.getNotificationManager().notifyErrorListeners(evt);
+        Storage.Type givenType =
+                ExpressionEvaluator.evaluateType(condition, programManager);
+        if (givenType != Storage.Type.BOOLEAN) {
+            throw new ConditionException(givenType);
         }
     }
 
@@ -83,7 +74,7 @@ public class IfStatement extends CompoundStatement {
             if (!hasBroken()) {
                 executionManager.exitBlock();
             }
-        } catch(CompilationException e) {
+        } catch(SemanticException e) {
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());
         }
     }

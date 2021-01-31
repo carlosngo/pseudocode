@@ -1,16 +1,20 @@
 package notification.event;
 
-import error.exception.CompilationException;
+import error.exception.SemanticException;
 
 public class SemanticErrorEvent extends PseudocodeEvent {
-    private final CompilationException error;
+    private final SemanticException error;
+    private final int lineNumber;
 
-    public SemanticErrorEvent(Object source, CompilationException error) {
+    public SemanticErrorEvent(Object source, SemanticException error, int lineNumber) {
         super(source);
         this.error = error;
+        this.lineNumber = lineNumber;
     }
 
-    public CompilationException getError() {
+    public SemanticException getError() {
         return error;
     }
+
+    public int getLineNumber() { return lineNumber; }
 }
