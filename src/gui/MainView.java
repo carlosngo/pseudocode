@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
+import manager.NotificationManager;
 import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainView {
-
+    private NotificationManager manager;
     /*
     Put gui objects here
      */
@@ -75,6 +76,10 @@ public class MainView {
 
     private String fulltext;
     private String errortext;
+
+    public void setManager(NotificationManager manager){
+        this.manager = manager;
+    }
 
     @FXML
     private void initialize() {
