@@ -77,7 +77,7 @@ public class Main extends Application {
 //        NotificationManager notificationManager = new NotificationManager();
 //        ProgramManager programManager = new ProgramManager(notificationManager);
 
-        MainView controller  = new MainView();
+//        MainView controller  = new MainView();
 
         launch(args);
     }
