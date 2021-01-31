@@ -45,8 +45,8 @@ public class Main extends Application {
 //                parser.getRuleNames()), tree);
 //        viewr.open();
 //        System.out.println(tree.toStringTree(parser));
-        NotificationManager notificationManager = new NotificationManager();
-        ProgramManager programManager = new ProgramManager(notificationManager);
+            NotificationManager notificationManager = new NotificationManager();
+            ProgramManager programManager = new ProgramManager(notificationManager);
 
         launch(args);
     }

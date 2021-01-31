@@ -1,12 +1,7 @@
-package gen;
+package antlr;
 
-import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.IntervalSet;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class PseudocodeErrorStrategy extends DefaultErrorStrategy {
     @Override

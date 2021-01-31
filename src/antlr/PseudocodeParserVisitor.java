@@ -1,5 +1,5 @@
 // Generated from D:/Documents/La Salle/CMPILER/pseudocode/res\PseudocodeParser.g4 by ANTLR 4.9
-package gen;
+package antlr;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -28,12 +28,6 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExpression(PseudocodeParser.ExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#assignmentExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAssignmentExpression(PseudocodeParser.AssignmentExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#logicalOrExpression}.
 	 * @param ctx the parse tree
@@ -89,11 +83,11 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPostfixExpression(PseudocodeParser.PostfixExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#constantExpression}.
+	 * Visit a parse tree produced by {@link PseudocodeParser#arrayAccess}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitConstantExpression(PseudocodeParser.ConstantExpressionContext ctx);
+	T visitArrayAccess(PseudocodeParser.ArrayAccessContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#expressionList}.
 	 * @param ctx the parse tree
@@ -125,6 +119,12 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStatement(PseudocodeParser.StatementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#assignmentStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssignmentStatement(PseudocodeParser.AssignmentStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#printStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -137,23 +137,35 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitScanStatement(PseudocodeParser.ScanStatementContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#jumpStatement}.
+	 * Visit a parse tree produced by {@link PseudocodeParser#returnStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitJumpStatement(PseudocodeParser.JumpStatementContext ctx);
+	T visitReturnStatement(PseudocodeParser.ReturnStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#breakStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBreakStatement(PseudocodeParser.BreakStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#continueStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitContinueStatement(PseudocodeParser.ContinueStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#functionCallStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionCallStatement(PseudocodeParser.FunctionCallStatementContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#badReturn}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitBadReturn(PseudocodeParser.BadReturnContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#expressionStatement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitExpressionStatement(PseudocodeParser.ExpressionStatementContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#compoundStatement}.
 	 * @param ctx the parse tree
@@ -191,29 +203,11 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitElseStatement(PseudocodeParser.ElseStatementContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#condition}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCondition(PseudocodeParser.ConditionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#comparisonOperator}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitComparisonOperator(PseudocodeParser.ComparisonOperatorContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#iterationStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitIterationStatement(PseudocodeParser.IterationStatementContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#forInitStatement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitForInitStatement(PseudocodeParser.ForInitStatementContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#iterationInit}.
 	 * @param ctx the parse tree
@@ -233,29 +227,47 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDeclaration(PseudocodeParser.DeclarationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#emptyDeclaration}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitEmptyDeclaration(PseudocodeParser.EmptyDeclarationContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#simpleDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitSimpleDeclaration(PseudocodeParser.SimpleDeclarationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#declSpecifierSeq}.
+	 * Visit a parse tree produced by {@link PseudocodeParser#variableDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitDeclSpecifierSeq(PseudocodeParser.DeclSpecifierSeqContext ctx);
+	T visitVariableDeclaration(PseudocodeParser.VariableDeclarationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#badConst}.
+	 * Visit a parse tree produced by {@link PseudocodeParser#arrayDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitBadConst(PseudocodeParser.BadConstContext ctx);
+	T visitArrayDeclaration(PseudocodeParser.ArrayDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#declSpecifier}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDeclSpecifier(PseudocodeParser.DeclSpecifierContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#variableSpecifier}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariableSpecifier(PseudocodeParser.VariableSpecifierContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#arraySpecifier}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArraySpecifier(PseudocodeParser.ArraySpecifierContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#constantSpecifier}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstantSpecifier(PseudocodeParser.ConstantSpecifierContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#typeSpecifier}.
 	 * @param ctx the parse tree
@@ -263,11 +275,11 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTypeSpecifier(PseudocodeParser.TypeSpecifierContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#declarator}.
+	 * Visit a parse tree produced by {@link PseudocodeParser#functionCall}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitDeclarator(PseudocodeParser.DeclaratorContext ctx);
+	T visitFunctionCall(PseudocodeParser.FunctionCallContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#functionDefinition}.
 	 * @param ctx the parse tree
@@ -298,12 +310,6 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitInitializer(PseudocodeParser.InitializerContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PseudocodeParser#initializerClause}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitInitializerClause(PseudocodeParser.InitializerClauseContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#initializerList}.
 	 * @param ctx the parse tree

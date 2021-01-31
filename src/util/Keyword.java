@@ -12,8 +12,8 @@ public class Keyword {
     public static final String DOUBLE = "double";
     public static final String STRING = "String";
     public static final String VOID = "void";
-    public static final String TRUE = "true";
-    public static final String FALSE = "false";
+    public static final String TRUE = "T";
+    public static final String FALSE = "F";
 
     public static String parseKeyword(Storage.Type type) {
         switch (type) {

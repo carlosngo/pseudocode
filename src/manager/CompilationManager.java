@@ -1,9 +1,9 @@
 package manager;
 
-import gen.PseudocodeErrorListener;
-import gen.PseudocodeErrorStrategy;
-import gen.PseudocodeLexer;
-import gen.PseudocodeParser;
+import antlr.PseudocodeErrorListener;
+import antlr.PseudocodeErrorStrategy;
+import antlr.PseudocodeLexer;
+import antlr.PseudocodeParser;
 import notification.event.CompileErrorEvent;
 import notification.event.CompileSuccessEvent;
 import notification.event.SemanticErrorEvent;

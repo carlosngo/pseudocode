@@ -1,9 +1,9 @@
 package gui;
 
-import gen.PseudocodeErrorListener;
-import gen.PseudocodeErrorStrategy;
-import gen.PseudocodeLexer;
-import gen.PseudocodeParser;
+import antlr.PseudocodeErrorListener;
+import antlr.PseudocodeErrorStrategy;
+import antlr.PseudocodeLexer;
+import antlr.PseudocodeParser;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -16,13 +16,8 @@ import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
