@@ -16,9 +16,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 import manager.NotificationManager;
-import notification.event.PrintEvent;
-import notification.event.ScanEndEvent;
-import notification.event.ScanStartEvent;
+import notification.event.*;
+import notification.listener.ExecuteListener;
 import notification.listener.PrintListener;
 import notification.listener.ScanListener;
 import org.antlr.v4.gui.TreeViewer;
@@ -35,7 +34,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MainView implements PrintListener, ScanListener {
+public class MainView implements PrintListener, ScanListener, ExecuteListener {
     private NotificationManager manager;
     /*
     Put gui objects here
@@ -241,5 +240,49 @@ public class MainView implements PrintListener, ScanListener {
     @Override
     public void onScanEnd(ScanEndEvent e) {
         // make frontend do something after scanning
+    }
+
+    @Override
+    public void onExecuteStart(ExecuteStartEvent e) {
+
+    }
+
+    @Override
+    public void onExecuteSuccess(ExecuteSuccessEvent e) {
+    String currText = consoleLabel.getText();
+
+    StringBuilder sb = new StringBuilder();
+    sb.append(currText);
+    sb.append("\n");
+    sb.append("------------------------------");
+    sb.append("\n\n\n");
+    sb.append("EXECUTE HAS FINISHED SUCCESSFULLY");
+    sb.append("\n\n\n");
+    sb.append("------------------------------");
+    sb.append("\n");
+
+    errortext = sb.toString();
+
+    consoleLabel.setText(errortext);
+
+    }
+
+    @Override
+    public void onExecuteError(ExecuteErrorEvent e) {
+    String currText = consoleLabel.getText();
+
+    StringBuilder sb = new StringBuilder();
+    sb.append(currText);
+    sb.append("\n");
+    sb.append("------------------------------");
+    sb.append("\n\n\n");
+    sb.append("EXECUTE HAS FINISHED SUCCESSFULLY");
+    sb.append("\n\n\n");
+    sb.append("------------------------------");
+    sb.append("\n");
+
+    errortext = sb.toString();
+
+    consoleLabel.setText(errortext);
     }
 }
