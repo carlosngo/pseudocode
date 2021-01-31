@@ -1,7 +1,7 @@
 package statement.compound;
 
-import error.exception.SemanticException;
-import error.exception.type.BoundException;
+import exception.SemanticException;
+import exception.type.BoundException;
 import gen.PseudocodeParser.ExpressionContext;
 import manager.ExecutionManager;
 import manager.ProgramManager;
@@ -15,22 +15,27 @@ public class DoWhileStatement extends IterationStatement {
     public DoWhileStatement(ProgramManager programManager
             , ExpressionContext boundCtx
             , boolean countDown
-            , ExpressionContext initCtx) throws SemanticException {
-        super(programManager, countDown, boundCtx);
+            , ExpressionContext initCtx
+            , int lineNumber) {
+        super(programManager, countDown, boundCtx, lineNumber);
         this.initCtx = initCtx;
-        Storage.Type initType = ExpressionEvaluator.evaluateType(initCtx, programManager);
-        Storage.Type boundType = ExpressionEvaluator.evaluateType(boundCtx, programManager);
-        if (initType != Storage.Type.INT) {
-            throw new BoundException(initType);
-        }
-        if (boundType != Storage.Type.INT) {
-            throw new BoundException(boundType);
+        try {
+            Storage.Type initType = ExpressionEvaluator.evaluateType(initCtx, programManager);
+            Storage.Type boundType = ExpressionEvaluator.evaluateType(boundCtx, programManager);
+            if (initType != Storage.Type.INT) {
+                throw new BoundException(initType);
+            }
+            if (boundType != Storage.Type.INT) {
+                throw new BoundException(boundType);
+            }
+        } catch(SemanticException e) {
+            notifyErrorListeners(e);
         }
     }
 
     @Override
     public void execute() {
-        super.execute();
+        tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
         try {
             int initialValue = (int) ExpressionEvaluator.evaluateValue(initCtx, getProgramManager());

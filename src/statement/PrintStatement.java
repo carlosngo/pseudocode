@@ -1,6 +1,6 @@
 package statement;
 
-import error.exception.SemanticException;
+import exception.SemanticException;
 import gen.PseudocodeParser.ExpressionContext;
 import manager.ProgramManager;
 import notification.event.PrintEvent;
@@ -10,15 +10,21 @@ import util.evaluator.ExpressionEvaluator;
 public class PrintStatement extends Statement {
     private final ExpressionContext messageContext;
 
-    public PrintStatement(ProgramManager programManager, ExpressionContext messageContext) throws SemanticException{
-        super(programManager);
+    public PrintStatement(ProgramManager programManager
+            , ExpressionContext messageContext
+            , int lineNumber) {
+        super(programManager, lineNumber);
         this.messageContext = messageContext;
-        ExpressionEvaluator.evaluateType(messageContext, programManager);
+        try {
+            ExpressionEvaluator.evaluateType(messageContext, programManager);
+        } catch(SemanticException e) {
+            notifyErrorListeners(e);
+        }
     }
 
     @Override
     public void execute() {
-        super.execute();
+        tryExecution();
         try {
             ProgramManager programManager = getProgramManager();
             String message = ExpressionEvaluator

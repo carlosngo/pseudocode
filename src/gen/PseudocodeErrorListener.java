@@ -3,6 +3,7 @@ package gen;
 import notification.event.SemanticErrorEvent;
 import notification.listener.SemanticErrorListener;
 import org.antlr.v4.runtime.*;
+import statement.Statement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,10 +97,11 @@ public class PseudocodeErrorListener extends BaseErrorListener implements Semant
 
     @Override
     public void onSemanticError(SemanticErrorEvent evt) {
+        Statement offendingStatement = (Statement) evt.getSource();
         errorList.add("semantic error: "
                 + evt.getError().getMessage()
                 + " at line "
-                + evt.getLineNumber());
+                + offendingStatement.getLineNumber());
     }
 
     public ArrayList<String> getErrorList() {

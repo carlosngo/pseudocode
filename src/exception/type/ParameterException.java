@@ -1,6 +1,6 @@
-package error.exception.type;
+package exception.type;
 
-import error.exception.SemanticException;
+import exception.SemanticException;
 import storage.Storage;
 import util.Keyword;
 

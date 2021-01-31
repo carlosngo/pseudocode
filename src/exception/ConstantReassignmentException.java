@@ -1,4 +1,4 @@
-package error.exception;
+package exception;
 
 import storage.Array;
 import storage.Variable;

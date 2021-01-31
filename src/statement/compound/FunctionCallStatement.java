@@ -1,7 +1,7 @@
 package statement.compound;
 
-import error.exception.*;
-import error.exception.type.ParameterException;
+import exception.*;
+import exception.type.ParameterException;
 import gen.PseudocodeParser.ExpressionContext;
 import manager.ExecutionManager;
 import manager.ProgramManager;
@@ -22,30 +22,35 @@ public class FunctionCallStatement extends CompoundStatement {
     private Object returnValue;
     private VariableManager localVariables;
 
-    public FunctionCallStatement(ProgramManager programManager, String functionName
-            , ExpressionContext[] parameterExpressions) throws SemanticException {
-        super(programManager);
-        FunctionManager functionManager = programManager.getFunctionManager();
-        function = functionManager.getFunction(functionName);
-        this.parameterExpressions = parameterExpressions;
-        returnValue = null;
-        ArrayList<Variable> expectedParameters = function.getParameters();
-        if (parameterExpressions.length > expectedParameters.size()) {
-            throw new ParameterException(null, Storage.Type.UNKNOWN);
-        }
-        if (parameterExpressions.length < expectedParameters.size()) {
-            throw new ParameterException(Storage.Type.UNKNOWN, null);
-        }
-
-        for (int i = 0; i < parameterExpressions.length; i++) {
-            Variable expectedParameter = expectedParameters.get(i);
-            Storage.Type givenType = ExpressionEvaluator
-                    .evaluateType(parameterExpressions[i], programManager);
-            if (givenType != expectedParameter.getType()) {
-                throw new ParameterException(expectedParameter.getType(), givenType);
+    public FunctionCallStatement(ProgramManager programManager
+            , String functionName
+            , ExpressionContext[] parameterExpressions
+            , int lineNumber) {
+        super(programManager, lineNumber);
+        try {
+            FunctionManager functionManager = programManager.getFunctionManager();
+            function = functionManager.getFunction(functionName);
+            this.parameterExpressions = parameterExpressions;
+            returnValue = null;
+            ArrayList<Variable> expectedParameters = function.getParameters();
+            if (parameterExpressions.length > expectedParameters.size()) {
+                throw new ParameterException(null, Storage.Type.UNKNOWN);
             }
-        }
+            if (parameterExpressions.length < expectedParameters.size()) {
+                throw new ParameterException(Storage.Type.UNKNOWN, null);
+            }
 
+            for (int i = 0; i < parameterExpressions.length; i++) {
+                Variable expectedParameter = expectedParameters.get(i);
+                Storage.Type givenType = ExpressionEvaluator
+                        .evaluateType(parameterExpressions[i], programManager);
+                if (givenType != expectedParameter.getType()) {
+                    throw new ParameterException(expectedParameter.getType(), givenType);
+                }
+            }
+        } catch(SemanticException e) {
+            notifyErrorListeners(e);
+        }
     }
 
     public VariableManager getLocalVariables() {
@@ -67,7 +72,7 @@ public class FunctionCallStatement extends CompoundStatement {
 
     @Override
     public void execute() {
-        super.execute();
+        tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
         try {
             // evaluate given parameters and place inside local variables

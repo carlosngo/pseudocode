@@ -1,7 +1,7 @@
 package statement;
 
-import error.exception.SemanticException;
-import error.exception.type.ReturnException;
+import exception.SemanticException;
+import exception.type.ReturnException;
 import gen.PseudocodeParser.ExpressionContext;
 import manager.ExecutionManager;
 import manager.ProgramManager;
@@ -14,22 +14,27 @@ import util.evaluator.ExpressionEvaluator;
 public class ReturnStatement extends Statement {
     private final ExpressionContext expressionContext;
 
-    public ReturnStatement(ProgramManager programManager, ExpressionContext expressionContext) throws SemanticException {
-        super(programManager);
+    public ReturnStatement(ProgramManager programManager
+            , ExpressionContext expressionContext
+            , int lineNumber) {
+        super(programManager, lineNumber);
         this.expressionContext = expressionContext;
-
-        FunctionManager functionManager = programManager.getFunctionManager();
-        Function currentFunction = functionManager.getCurrentFunction();
-        Storage.Type givenReturnType = ExpressionEvaluator
-                .evaluateType(expressionContext, programManager);
-        if (givenReturnType != currentFunction.getType()) {
-            throw new ReturnException(currentFunction.getType(), givenReturnType);
+        try {
+            FunctionManager functionManager = programManager.getFunctionManager();
+            Function currentFunction = functionManager.getCurrentFunction();
+            Storage.Type givenReturnType = ExpressionEvaluator
+                    .evaluateType(expressionContext, programManager);
+            if (givenReturnType != currentFunction.getType()) {
+                throw new ReturnException(currentFunction.getType(), givenReturnType);
+            }
+        } catch(SemanticException e) {
+            notifyErrorListeners(e);
         }
     }
 
     @Override
     public void execute() {
-        super.execute();
+        tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
         try {
             executionManager.triggerReturn(

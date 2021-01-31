@@ -1,8 +1,8 @@
 package statement.compound;
 
-import error.exception.SemanticException;
+import exception.SemanticException;
 
-import error.exception.type.BoundException;
+import exception.type.BoundException;
 import gen.PseudocodeParser.ForInitStatementContext;
 import gen.PseudocodeParser.ExpressionContext;
 import manager.ExecutionManager;
@@ -19,24 +19,27 @@ public class ForStatement extends IterationStatement {
     public ForStatement(ProgramManager programManager
             , ForInitStatementContext initCtx
             , boolean countDown
-            , ExpressionContext boundCtx) throws SemanticException {
-        super(programManager, countDown, boundCtx);
+            , ExpressionContext boundCtx, int lineNumber) {
+        super(programManager, countDown, boundCtx, lineNumber);
         this.initCtx = initCtx;
         this.boundCtx = boundCtx;
-
+        try {
 //            Storage.Type initType = ExpressionEvaluator.evaluateType(initCtx, programManager);
-        Storage.Type boundType = ExpressionEvaluator.evaluateType(boundCtx, programManager);
+            Storage.Type boundType = ExpressionEvaluator.evaluateType(boundCtx, programManager);
 //            if (initType != Storage.Type.INT) {
 //                throw new BoundException(initType);
 //            }
-        if (boundType != Storage.Type.INT) {
-            throw new BoundException(boundType);
+            if (boundType != Storage.Type.INT) {
+                throw new BoundException(boundType);
+            }
+        } catch(SemanticException e) {
+            notifyErrorListeners(e);
         }
     }
 
     @Override
     public void execute() {
-        super.execute();
+        tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
         try {
 //            int initialValue = (int) ExpressionEvaluator.evaluateValue(initCtx, getProgramManager());

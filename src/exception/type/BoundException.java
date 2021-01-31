@@ -1,4 +1,4 @@
-package error.exception.type;
+package exception.type;
 
 import storage.Storage;
 import util.Keyword;

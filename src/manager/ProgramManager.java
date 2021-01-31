@@ -32,7 +32,8 @@ public class ProgramManager implements Manager {
 
     @Override
     public void reset() {
-        executionManager.resumeExecution();
+        executionManager.reset();
         functionManager.reset();
+        compilationManager.reset();
     }
 }

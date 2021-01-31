@@ -1,6 +1,6 @@
 package manager;
 
-import error.exception.SemanticException;
+import exception.SemanticException;
 import gen.PseudocodeParser;
 import notification.event.*;
 import notification.listener.ExecuteListener;
@@ -117,21 +117,16 @@ public class ExecutionManager
 
     @Override
     public void run() {
-        try {
-            new FunctionCallStatement(
-                    programManager
-                    , "main"
-                    , new PseudocodeParser.ExpressionContext[0])
-                    .execute();
-            programManager
-                    .getNotificationManager()
-                    .notifyExecuteListeners(new ExecuteSuccessEvent(this));
-        } catch(SemanticException e) {
-            System.err.println("unexpected semantic error" + e.getMessage() + "during runtime");
-            programManager
-                    .getNotificationManager()
-                    .notifyExecuteListeners(new ExecuteErrorEvent(this, callStack));
-        }
+        new FunctionCallStatement(
+                programManager
+                , "main"
+                , new PseudocodeParser.ExpressionContext[0]
+                , 0)
+                .execute();
+
+        programManager
+                .getNotificationManager()
+                .notifyExecuteListeners(new ExecuteSuccessEvent(this));
     }
 
     @Override

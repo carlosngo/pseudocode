@@ -85,7 +85,6 @@ public class CompilationManager implements Manager, CompileListener, SemanticErr
     }
 
     public void compile(String sourceCode) {
-
         PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromString(sourceCode));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         PseudocodeParser parser = new PseudocodeParser(tokens);
@@ -101,9 +100,11 @@ public class CompilationManager implements Manager, CompileListener, SemanticErr
         ArrayList<String> errorList = pseudocodeErrorListener.getErrorList();
         NotificationManager notificationManager = programManager.getNotificationManager();
         if (errorList.size() == 0) {
-            notificationManager.notifyCompileListeners(new CompileSuccessEvent(this));
+            notificationManager
+                    .notifyCompileListeners(new CompileSuccessEvent(this));
         } else {
-            notificationManager.notifyCompileListeners(new CompileErrorEvent(this, errorList));
+            notificationManager
+                    .notifyCompileListeners(new CompileErrorEvent(this, errorList));
         }
     }
 

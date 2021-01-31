@@ -1,4 +1,4 @@
-package error.exception;
+package exception;
 
 public class IndexOutOfBoundsException extends SemanticException {
     private final int index;
