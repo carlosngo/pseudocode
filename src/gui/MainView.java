@@ -172,6 +172,14 @@ public class MainView {
         ioLabel.setText(text);
     }
 
+    private void resetIOLabel () {
+        ioLabel.setText("");
+    }
+
+    private void printToIOLabel (String text) {
+        ioLabel.setText(ioLabel.getText() + text);
+    }
+
     public void showIOConsole () {
         GridPane.setColumnIndex(errorsScrollPane, 1);
         GridPane.setRowIndex(errorsScrollPane, 2);
