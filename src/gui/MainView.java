@@ -17,6 +17,7 @@ import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 import manager.NotificationManager;
 import notification.event.*;
+import notification.listener.CompileListener;
 import notification.listener.ExecuteListener;
 import notification.listener.PrintListener;
 import notification.listener.ScanListener;
@@ -34,7 +35,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MainView implements PrintListener, ScanListener, ExecuteListener {
+public class MainView implements PrintListener, ScanListener, ExecuteListener, CompileListener {
     private NotificationManager manager;
     /*
     Put gui objects here
@@ -77,9 +78,12 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener {
     public Button btnUserOk;
     @FXML
     public Button btnUserCancel;
+    @FXML
+    public Button compileTextButton;
 
     private String fulltext;
     private String errortext;
+    private ArrayList<String> errorList;
 
     public void setManager(NotificationManager manager){
         this.manager = manager;
@@ -121,15 +125,16 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener {
             viewr.open();
             System.out.println(tree.toStringTree(parser));
 
-            StringBuilder sb = new StringBuilder();
-            ArrayList<String> errorList = pseudocodeErrorListener.getErrorList();
-            for (String error: errorList) {
-                sb.append(error);
-                sb.append("\n");
-            }
-            errortext = sb.toString();
+//            StringBuilder sb = new StringBuilder();
+            errorList = pseudocodeErrorListener.getErrorList();
+//            for (String error: errorList) {
+//                sb.append(error);
+//                sb.append("\n");
+//            }
+//            errortext = sb.toString();
 
-            consoleLabel.setText(errortext);
+            compile(compileButton, fulltext);
+//            consoleLabel.setText(errortext);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -167,15 +172,16 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener {
         viewr.open();
         System.out.println(tree.toStringTree(parser));
 
-        StringBuilder sb = new StringBuilder();
-        ArrayList<String> errorList = pseudocodeErrorListener.getErrorList();
-        for (String error: errorList) {
-            sb.append(error);
-            sb.append("\n");
-        }
-        errortext = sb.toString();
-
-        consoleLabel.setText(errortext);
+//        StringBuilder sb = new StringBuilder();
+        errorList = pseudocodeErrorListener.getErrorList();
+//        for (String error: errorList) {
+//            sb.append(error);
+//            sb.append("\n");
+//        }
+//        errortext = sb.toString();
+//
+//        consoleLabel.setText(errortext);
+        compile(compileTextButton, inputContents.getText());
     }
 
     private void setIOHeader (String text) {
@@ -244,45 +250,88 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener {
 
     @Override
     public void onExecuteStart(ExecuteStartEvent e) {
-
+        //
     }
 
     @Override
     public void onExecuteSuccess(ExecuteSuccessEvent e) {
-    String currText = consoleLabel.getText();
+        String currText = consoleLabel.getText();
 
-    StringBuilder sb = new StringBuilder();
-    sb.append(currText);
-    sb.append("\n");
-    sb.append("------------------------------");
-    sb.append("\n\n\n");
-    sb.append("EXECUTE HAS FINISHED SUCCESSFULLY");
-    sb.append("\n\n\n");
-    sb.append("------------------------------");
-    sb.append("\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append(currText);
+        sb.append("\n");
+        sb.append("------------------------------");
+        sb.append("\n\n\n");
+        sb.append("EXECUTE HAS FINISHED SUCCESSFULLY");
+        sb.append("\n\n\n");
+        sb.append("------------------------------");
+        sb.append("\n");
 
-    errortext = sb.toString();
-
-    consoleLabel.setText(errortext);
+        errortext = sb.toString();
+        consoleLabel.setText(errortext);
 
     }
 
     @Override
     public void onExecuteError(ExecuteErrorEvent e) {
-    String currText = consoleLabel.getText();
+        String currText = consoleLabel.getText();
 
-    StringBuilder sb = new StringBuilder();
-    sb.append(currText);
-    sb.append("\n");
-    sb.append("------------------------------");
-    sb.append("\n\n\n");
-    sb.append("EXECUTE HAS FINISHED SUCCESSFULLY");
-    sb.append("\n\n\n");
-    sb.append("------------------------------");
-    sb.append("\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append(currText);
+        sb.append("\n");
+        sb.append("------------------------------");
+        sb.append("\n\n\n");
+        sb.append("EXECUTE FAILED");
+        sb.append("\n\n\n");
+        sb.append("------------------------------");
+        sb.append("\n");
 
-    errortext = sb.toString();
+        errortext = sb.toString();
+        consoleLabel.setText(errortext);
+    }
 
-    consoleLabel.setText(errortext);
+
+    public void compile (Object source, String srcCode) {
+        // source is the button thats clicked
+        CompileStartEvent compileStartEvent = new CompileStartEvent(source, srcCode);
+        manager.notifyCompileListeners(compileStartEvent);
+    }
+
+
+    @Override
+    public void onCompileStart(CompileStartEvent e) {
+        // probably some frontend stuff
+    }
+
+    @Override
+    public void onCompileSuccess(CompileSuccessEvent e) {
+        String currText = consoleLabel.getText();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(currText);
+        sb.append("\n");
+        sb.append("------------------------------");
+        sb.append("\n\n\n");
+        sb.append("COMPILED SUCCESSFULLY");
+        sb.append("\n\n\n");
+        sb.append("------------------------------");
+        sb.append("\n");
+
+        errortext = sb.toString();
+
+        consoleLabel.setText(errortext);
+        ExecuteStartEvent startEvent = new ExecuteStartEvent(e);
+        manager.notifyExecuteListeners(startEvent);
+    }
+
+    @Override
+    public void onCompileError(CompileErrorEvent e) {
+        StringBuilder sb = new StringBuilder();
+        for (String error: errorList) {
+            sb.append(error);
+            sb.append("\n");
+        }
+        errortext = sb.toString();
+        consoleLabel.setText(errortext);
     }
 }
