@@ -3,7 +3,6 @@ package statement.compound;
 import exception.SemanticException;
 
 import exception.type.BoundException;
-import antlr.PseudocodeParser.ForInitStatementContext;
 import antlr.PseudocodeParser.ExpressionContext;
 import manager.ExecutionManager;
 import manager.ProgramManager;
@@ -12,15 +11,15 @@ import util.evaluator.ExpressionEvaluator;
 
 public class ForStatement extends IterationStatement {
 
-    private final ForInitStatementContext initCtx;
+//    private final ForInitStatementContext initCtx;
     private final ExpressionContext boundCtx;
 
     public ForStatement(ProgramManager programManager
-            , ForInitStatementContext initCtx
+//            , ForInitStatementContext initCtx
             , boolean countDown
             , ExpressionContext boundCtx, int lineNumber) {
         super(programManager, countDown, boundCtx, lineNumber);
-        this.initCtx = initCtx;
+//        this.initCtx = initCtx;
         this.boundCtx = boundCtx;
         try {
 //            Storage.Type initType = ExpressionEvaluator.evaluateType(initCtx, programManager);

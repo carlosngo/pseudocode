@@ -14,16 +14,17 @@ import storage.Storage;
 import util.evaluator.ExpressionEvaluator;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FunctionCallStatement extends CompoundStatement {
     private Function function;
-    private ExpressionContext[] parameterExpressions;
+    private List<ExpressionContext> parameterExpressions;
     private Object returnValue;
     private VariableManager localVariables;
 
     public FunctionCallStatement(ProgramManager programManager
             , String functionName
-            , ExpressionContext[] parameterExpressions
+            , List<ExpressionContext> parameterExpressions
             , int lineNumber) {
         super(programManager, lineNumber);
         try {
@@ -32,17 +33,17 @@ public class FunctionCallStatement extends CompoundStatement {
             this.parameterExpressions = parameterExpressions;
             returnValue = null;
             ArrayList<Variable> expectedParameters = function.getParameters();
-            if (parameterExpressions.length > expectedParameters.size()) {
+            if (parameterExpressions.size() > expectedParameters.size()) {
                 throw new ParameterException(null, Storage.Type.UNKNOWN);
             }
-            if (parameterExpressions.length < expectedParameters.size()) {
+            if (parameterExpressions.size() < expectedParameters.size()) {
                 throw new ParameterException(Storage.Type.UNKNOWN, null);
             }
 
-            for (int i = 0; i < parameterExpressions.length; i++) {
+            for (int i = 0; i < parameterExpressions.size(); i++) {
                 Variable expectedParameter = expectedParameters.get(i);
                 Storage.Type givenType = ExpressionEvaluator
-                        .evaluateType(parameterExpressions[i], programManager);
+                        .evaluateType(parameterExpressions.get(i), programManager);
                 if (givenType != expectedParameter.getType()) {
                     throw new ParameterException(expectedParameter.getType(), givenType);
                 }
@@ -50,6 +51,10 @@ public class FunctionCallStatement extends CompoundStatement {
         } catch(SemanticException e) {
             notifyErrorListeners(e);
         }
+    }
+
+    public Function getFunctionSignature() {
+        return function;
     }
 
     public VariableManager getLocalVariables() {
@@ -80,7 +85,7 @@ public class FunctionCallStatement extends CompoundStatement {
             for (int i = 0; i < functionParameters.size(); i++) {
 
                 Object parameterValue = ExpressionEvaluator.evaluateValue(
-                        parameterExpressions[i], getProgramManager());
+                        parameterExpressions.get(i), getProgramManager());
 
                 Variable expectedParameter = functionParameters.get(i);
                 expectedParameter.setValue(parameterValue);

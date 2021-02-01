@@ -156,7 +156,7 @@ public class MainView {
         System.out.println(tree.toStringTree(parser));
 
         StringBuilder sb = new StringBuilder();
-        ArrayList<String> errorList = pseudocodeErrorListener.errorList;
+        ArrayList<String> errorList = pseudocodeErrorListener.getErrorList();
         for (String error: errorList) {
             sb.append(error);
             sb.append("\n");

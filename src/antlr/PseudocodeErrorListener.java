@@ -97,11 +97,10 @@ public class PseudocodeErrorListener extends BaseErrorListener implements Semant
 
     @Override
     public void onSemanticError(SemanticErrorEvent evt) {
-        Statement offendingStatement = (Statement) evt.getSource();
         errorList.add("semantic error: "
                 + evt.getError().getMessage()
                 + " at line "
-                + offendingStatement.getLineNumber());
+                + evt.getLineNumber());
     }
 
     public ArrayList<String> getErrorList() {
