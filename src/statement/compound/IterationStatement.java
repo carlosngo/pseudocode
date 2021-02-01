@@ -1,7 +1,11 @@
 package statement.compound;
 
-import antlr.PseudocodeParser.ExpressionContext;
+import gen.PseudocodeParser.ExpressionContext;
 import manager.ProgramManager;
+import manager.VariableManager;
+import statement.Statement;
+
+import java.util.ArrayList;
 
 public abstract class IterationStatement extends CompoundStatement {
     private final boolean countDown;

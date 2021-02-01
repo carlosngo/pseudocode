@@ -2,7 +2,7 @@ package util.evaluator;
 
 import exception.ExpressionEvaluationException;
 import exception.UndeclaredStorageException;
-import antlr.PseudocodeParser.ExpressionContext;
+import gen.PseudocodeParser.ExpressionContext;
 import manager.FunctionManager;
 import manager.ProgramManager;
 import manager.VariableManager;
