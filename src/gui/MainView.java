@@ -1,9 +1,9 @@
 package gui;
 
-import gen.PseudocodeErrorListener;
-import gen.PseudocodeErrorStrategy;
-import gen.PseudocodeLexer;
-import gen.PseudocodeParser;
+import antlr.PseudocodeErrorListener;
+import antlr.PseudocodeErrorStrategy;
+import antlr.PseudocodeLexer;
+import antlr.PseudocodeParser;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -25,11 +25,8 @@ import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -109,32 +106,7 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
         try {
             charStream = CharStreams.fromPath(Paths.get(filepath));
             fulltext = charStream.toString();
-            inputContents.setText(fulltext);
-            PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromFileName(filepath));
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            PseudocodeParser parser = new PseudocodeParser(tokens);
-            PseudocodeErrorListener pseudocodeErrorListener = new PseudocodeErrorListener();
-            lexer.removeErrorListeners();
-            parser.removeErrorListeners();
-            lexer.addErrorListener(pseudocodeErrorListener);
-            parser.addErrorListener(pseudocodeErrorListener);
-            parser.setErrorHandler(new PseudocodeErrorStrategy());
-            ParseTree tree = parser.init();
-            TreeViewer viewr = new TreeViewer(Arrays.asList(
-                    parser.getRuleNames()), tree);
-            viewr.open();
-            System.out.println(tree.toStringTree(parser));
-
-//            StringBuilder sb = new StringBuilder();
-            errorList = pseudocodeErrorListener.getErrorList();
-//            for (String error: errorList) {
-//                sb.append(error);
-//                sb.append("\n");
-//            }
-//            errortext = sb.toString();
-
             compile(compileButton, fulltext);
-//            consoleLabel.setText(errortext);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -154,33 +126,6 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
     }
 
     public void compileText(MouseEvent mouseEvent) {
-       String inputs = inputContents.getText();
-
-//        CharStreams.fromString(inputs);
-        PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromString(inputs));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        PseudocodeParser parser = new PseudocodeParser(tokens);
-        PseudocodeErrorListener pseudocodeErrorListener = new PseudocodeErrorListener();
-        lexer.removeErrorListeners();
-        parser.removeErrorListeners();
-        lexer.addErrorListener(pseudocodeErrorListener);
-        parser.addErrorListener(pseudocodeErrorListener);
-        parser.setErrorHandler(new PseudocodeErrorStrategy());
-        ParseTree tree = parser.init();
-        TreeViewer viewr = new TreeViewer(Arrays.asList(
-                parser.getRuleNames()), tree);
-        viewr.open();
-        System.out.println(tree.toStringTree(parser));
-
-//        StringBuilder sb = new StringBuilder();
-        errorList = pseudocodeErrorListener.getErrorList();
-//        for (String error: errorList) {
-//            sb.append(error);
-//            sb.append("\n");
-//        }
-//        errortext = sb.toString();
-//
-//        consoleLabel.setText(errortext);
         compile(compileTextButton, inputContents.getText());
     }
 
@@ -332,7 +277,7 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
     @Override
     public void onCompileError(CompileErrorEvent e) {
         StringBuilder sb = new StringBuilder();
-        for (String error: errorList) {
+        for (String error: e.getErrorList()) {
             sb.append(error);
             sb.append("\n");
         }

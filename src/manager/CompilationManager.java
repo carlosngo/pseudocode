@@ -1,9 +1,11 @@
 package manager;
 
-import gen.PseudocodeErrorListener;
-import gen.PseudocodeErrorStrategy;
-import gen.PseudocodeLexer;
-import gen.PseudocodeParser;
+import antlr.PseudocodeErrorListener;
+import antlr.PseudocodeErrorStrategy;
+import antlr.PseudocodeLexer;
+import antlr.PseudocodeParser;
+import antlr.visitor.CompilerVisitor;
+import antlr.visitor.IntegerExpressionVisitor;
 import notification.event.CompileErrorEvent;
 import notification.event.CompileSuccessEvent;
 import notification.event.SemanticErrorEvent;
@@ -94,9 +96,18 @@ public class CompilationManager implements Manager, CompileListener, SemanticErr
         parser.addErrorListener(pseudocodeErrorListener);
         parser.setErrorHandler(new PseudocodeErrorStrategy());
         ParseTree tree = parser.init();
-        TreeViewer viewr = new TreeViewer(Arrays.asList(
-                parser.getRuleNames()), tree);
-        viewr.open();
+//        TreeViewer viewr = new TreeViewer(Arrays.asList(
+//                parser.getRuleNames()), tree);
+//        viewr.open();
+        System.out.println(tree.toStringTree(parser));
+        CompilerVisitor visitor = new CompilerVisitor(programManager);
+        visitor.visit(tree);
+//        IntegerExpressionVisitor visitor = new IntegerExpressionVisitor(programManager, true);
+//
+//        programManager.getFunctionManager().getCurrentFunction().getVariableManager()
+//        visitor.visit(tree);
+
+
         ArrayList<String> errorList = pseudocodeErrorListener.getErrorList();
         NotificationManager notificationManager = programManager.getNotificationManager();
         if (errorList.size() == 0) {
@@ -106,6 +117,7 @@ public class CompilationManager implements Manager, CompileListener, SemanticErr
             notificationManager
                     .notifyCompileListeners(new CompileErrorEvent(this, errorList));
         }
+
     }
 
     @Override

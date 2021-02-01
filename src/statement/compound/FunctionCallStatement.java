@@ -1,13 +1,12 @@
 package statement.compound;
 
-import exception.*;
+import exception.SemanticException;
 import exception.type.ParameterException;
-import gen.PseudocodeParser.ExpressionContext;
+import antlr.PseudocodeParser.ExpressionContext;
 import manager.ExecutionManager;
 import manager.ProgramManager;
 import manager.FunctionManager;
 import manager.VariableManager;
-import notification.event.SemanticErrorEvent;
 import statement.Statement;
 import storage.Function;
 import storage.Variable;
@@ -52,6 +51,11 @@ public class FunctionCallStatement extends CompoundStatement {
         } catch(SemanticException e) {
             notifyErrorListeners(e);
         }
+    }
+
+    public FunctionCallStatement(ProgramManager programManager, Function function, int lineNumber) {
+        super(programManager, lineNumber);
+        this.function = function;
     }
 
     public Function getFunctionSignature() {

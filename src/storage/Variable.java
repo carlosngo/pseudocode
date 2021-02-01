@@ -3,6 +3,7 @@ package storage;
 import exception.ConstantReassignmentException;
 import exception.type.AssignmentException;
 import exception.type.TypeMismatchException;
+import util.Keyword;
 
 public class Variable extends Storage {
 
@@ -48,4 +49,7 @@ public class Variable extends Storage {
         this.level = level;
     }
 
+    public String toString() {
+        return (isFinal ? "const " : "") + Keyword.parseKeyword(getType()) + " " + getName() + " = " + value;
+    }
 }

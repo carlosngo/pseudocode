@@ -25,7 +25,6 @@ public class FunctionManager implements Manager {
     }
 
     public void exitFunction() {
-
         currentFunction = null;
     }
 

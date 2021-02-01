@@ -1,7 +1,7 @@
 package manager;
 
 import exception.SemanticException;
-import gen.PseudocodeParser;
+import antlr.PseudocodeParser;
 import notification.event.*;
 import notification.listener.ExecuteListener;
 import notification.listener.ScanListener;
@@ -10,6 +10,7 @@ import statement.compound.CompoundStatement;
 import statement.compound.FunctionCallStatement;
 import statement.compound.IterationStatement;
 
+import java.util.ArrayList;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -117,16 +118,16 @@ public class ExecutionManager
 
     @Override
     public void run() {
-        new FunctionCallStatement(
-                programManager
-                , "main"
-                , new PseudocodeParser.ExpressionContext[0]
-                , 0)
-                .execute();
+//        new FunctionCallStatement(
+//                programManager
+//                , "main"
+//                , new ArrayList<>()
+//                , 0)
+//                .execute();
 
-        programManager
-                .getNotificationManager()
-                .notifyExecuteListeners(new ExecuteSuccessEvent(this));
+//        programManager
+//                .getNotificationManager()
+//                .notifyExecuteListeners(new ExecuteSuccessEvent(this));
     }
 
     @Override

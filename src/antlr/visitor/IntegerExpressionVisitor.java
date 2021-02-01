@@ -162,7 +162,7 @@ public class IntegerExpressionVisitor extends PseudocodeParserBaseVisitor<Intege
     @Override
     public Integer visitFunctionCall(PseudocodeParser.FunctionCallContext ctx) {
         String identifier = ctx.Identifier().getText();
-        List<PseudocodeParser.ExpressionContext> parameterContexts = ctx.expressionList().initializerList().expression();
+        List<PseudocodeParser.ExpressionContext> parameterContexts = ctx.expressionList().expression();
         int lineNumber = ctx.getStart().getLine();
         FunctionCallStatement statement
                 = new FunctionCallStatement(
