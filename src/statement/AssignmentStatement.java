@@ -1,8 +1,9 @@
 package statement;
 
 import exception.SemanticException;
-import antlr.PseudocodeParser.ExpressionContext;
+import gen.PseudocodeParser.ExpressionContext;
 import manager.ProgramManager;
+import manager.VariableManager;
 import storage.Storage;
 import storage.Variable;
 import util.evaluator.ExpressionEvaluator;

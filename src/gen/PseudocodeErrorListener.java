@@ -1,4 +1,4 @@
-package antlr;
+package gen;
 
 import notification.event.SemanticErrorEvent;
 import notification.listener.SemanticErrorListener;

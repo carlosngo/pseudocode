@@ -16,7 +16,6 @@ public class Keyword {
     public static final String DIVIDE = "/";
     public static final String LESS = "<";
 
-
     public static String parseKeyword(Storage.Type type) {
         switch (type) {
             case BOOLEAN:

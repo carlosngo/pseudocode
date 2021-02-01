@@ -1,7 +1,7 @@
 package manager;
 
 import exception.SemanticException;
-import antlr.PseudocodeParser;
+import gen.PseudocodeParser;
 import notification.event.*;
 import notification.listener.ExecuteListener;
 import notification.listener.ScanListener;
