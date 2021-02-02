@@ -1,5 +1,6 @@
 package manager;
 
+import exception.SemanticException;
 import exception.StorageRedeclarationException;
 import exception.UndeclaredStorageException;
 import storage.Variable;
@@ -8,21 +9,25 @@ import java.util.HashMap;
 
 public class VariableManager implements Manager {
     private final HashMap<String, Variable> variables;
-    private int currentLevel;
 
     public VariableManager() {
         variables = new HashMap<>();
-        currentLevel = 0;
     }
 
-    public int getCurrentLevel() { return currentLevel; }
-
-    public void enterNewScope() {
-        currentLevel++;
+    public VariableManager(VariableManager variableManager) {
+        this();
+        HashMap<String, Variable> parentScope = variableManager.getVariables();
+        try {
+            for (String varName : parentScope.keySet()) {
+                addVariable(parentScope.get(varName));
+            }
+        } catch (SemanticException e) {
+            System.err.println("unexpected " + e.getMessage());
+        }
     }
 
-    public void exitCurrentScope() {
-        currentLevel--;
+    private HashMap<String, Variable> getVariables() {
+        return variables;
     }
 
     public Variable getVariable(String identifier)
@@ -38,22 +43,11 @@ public class VariableManager implements Manager {
             throws StorageRedeclarationException {
         String name = variable.getName();
         try {
-            Variable existingVariable = getVariable(name);
-            if (isInsideScope(existingVariable, currentLevel)) {
-                throw new UndeclaredStorageException(name, false);
-            }
+            getVariable(name);
             throw new StorageRedeclarationException(name, false);
         } catch(UndeclaredStorageException e) {
-            variable.setLevel(currentLevel);
             variables.put(name, variable);
         }
-    }
-
-    private boolean isInsideScope(Variable variable, int level) {
-
-        System.out.println("variable level = " + variable.getLevel());
-        System.out.println("current level = " + currentLevel);
-        return variable.getLevel() >= level;
     }
 
     @Override

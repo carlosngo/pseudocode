@@ -23,13 +23,12 @@ public class FunctionCallStatement extends CompoundStatement {
     private Function function;
     private List<ExpressionContext> parameterExpressions;
     private Object returnValue;
-    private VariableManager localVariables;
 
     public FunctionCallStatement(ProgramManager programManager
             , String functionName
             , List<ExpressionContext> parameterExpressions
             , int lineNumber) {
-        super(programManager, lineNumber);
+        super(programManager, new VariableManager(), lineNumber);
         try {
             FunctionManager functionManager = programManager.getFunctionManager();
             function = functionManager.getFunction(functionName);
@@ -50,6 +49,7 @@ public class FunctionCallStatement extends CompoundStatement {
                     if (expressionVisitor.visit(parameterExpressions.get(i)) == null) {
                         throw new ParameterException(expectedParameter.getType(), Storage.Type.UNKNOWN);
                     }
+                    getLocalVariables().addVariable(expectedParameter);
                 } catch(NullPointerException e) {
 //                e.printStackTrace();
                     throw new ParameterException(expectedParameter.getType(), Storage.Type.UNKNOWN);
@@ -61,16 +61,19 @@ public class FunctionCallStatement extends CompoundStatement {
     }
 
     public FunctionCallStatement(ProgramManager programManager, Function function, int lineNumber) {
-        super(programManager, lineNumber);
+        super(programManager, new VariableManager(), lineNumber);
         this.function = function;
+        try {
+            for (Variable parameter : function.getParameters()) {
+                getLocalVariables().addVariable(parameter);
+            }
+        } catch (SemanticException e) {
+            System.err.println("unexpected " + e.getMessage());
+        }
     }
 
     public Function getFunctionSignature() {
         return function;
-    }
-
-    public VariableManager getLocalVariables() {
-        return localVariables;
     }
 
     public Object getReturnValue() {
@@ -93,7 +96,7 @@ public class FunctionCallStatement extends CompoundStatement {
 
         try {
             // evaluate given parameters and place inside local variables
-            localVariables = new VariableManager();
+            VariableManager localVariables = getLocalVariables();
             ArrayList<Variable> functionParameters = function.getParameters();
             for (int i = 0; i < functionParameters.size(); i++) {
                 Variable expectedParameter = functionParameters.get(i);

@@ -39,11 +39,6 @@ public class CompilationManager implements Manager, CompileListener, SemanticErr
     }
 
     public void enterCompoundStatement(CompoundStatement statement) {
-        programManager
-                .getFunctionManager()
-                .getCurrentFunction()
-                .getVariableManager()
-                .enterNewScope();
         statementStack.push(statement);
     }
 
@@ -54,11 +49,6 @@ public class CompilationManager implements Manager, CompileListener, SemanticErr
             return;
         }
         addStatement(current);
-        programManager
-                .getFunctionManager()
-                .getCurrentFunction()
-                .getVariableManager()
-                .exitCurrentScope();
     }
 
     public void enterPositive() {
@@ -81,6 +71,10 @@ public class CompilationManager implements Manager, CompileListener, SemanticErr
         } else {
             current.addStatement(statement);
         }
+    }
+
+    public VariableManager getCurrentLocalVariables() {
+        return statementStack.peek().getLocalVariables();
     }
 
     public void compile(String sourceCode) {

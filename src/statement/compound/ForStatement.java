@@ -7,6 +7,7 @@ import antlr.PseudocodeParser.ExpressionContext;
 
 import manager.ExecutionManager;
 import manager.ProgramManager;
+import manager.VariableManager;
 import notification.event.SemanticErrorEvent;
 import storage.Storage;
 import util.evaluator.ExpressionEvaluator;
@@ -17,10 +18,11 @@ public class ForStatement extends IterationStatement {
     private final ExpressionContext boundCtx;
 
     public ForStatement(ProgramManager programManager
+            , VariableManager parentVariables
 //            , ForInitStatementContext initCtx
             , boolean countDown
             , ExpressionContext boundCtx, int lineNumber) {
-        super(programManager, countDown, boundCtx, lineNumber);
+        super(programManager, parentVariables, countDown, boundCtx, lineNumber);
 //        this.initCtx = initCtx;
         this.boundCtx = boundCtx;
         try {

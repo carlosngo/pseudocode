@@ -12,21 +12,12 @@ import java.util.LinkedHashMap;
 public class Function extends Storage {
     private final ArrayList<Statement> statements;
     private final ArrayList<Variable> parameters;
-    private final VariableManager variableManager;
 
     public Function(Type returnType, String name,
                     ArrayList<Variable> parameters) {
         super(returnType, name);
         this.parameters = parameters;
         statements = new ArrayList<>();
-        variableManager = new VariableManager();
-        try {
-            for (Variable variable : parameters) {
-                variableManager.addVariable(variable);
-            }
-        } catch (SemanticException e) {
-            System.err.println("unexpected " + e);
-        }
     }
 
     public ArrayList<Variable> getParameters() {
@@ -39,10 +30,6 @@ public class Function extends Storage {
 
     public void addStatement(Statement statement) {
         statements.add(statement);
-    }
-
-    public VariableManager getVariableManager() {
-        return variableManager;
     }
 
     public String toString() {

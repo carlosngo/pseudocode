@@ -98,7 +98,10 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
     public Void visitCompoundStatement(PseudocodeParser.CompoundStatementContext ctx) {
         int lineNumber = ctx.getStart().getLine();
         if (ctx.parent instanceof PseudocodeParser.StatementContext) {
-            compilationManager.enterCompoundStatement(new CompoundStatement(programManager, lineNumber));
+            compilationManager.enterCompoundStatement(
+                    new CompoundStatement(programManager
+                            , compilationManager.getCurrentLocalVariables()
+                            , lineNumber));
             if (ctx.statementSeq() != null) {
                 visit(ctx.statementSeq());
             }

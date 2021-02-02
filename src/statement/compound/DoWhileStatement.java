@@ -5,6 +5,7 @@ import exception.type.BoundException;
 import antlr.PseudocodeParser.ExpressionContext;
 import manager.ExecutionManager;
 import manager.ProgramManager;
+import manager.VariableManager;
 import notification.event.SemanticErrorEvent;
 import storage.Storage;
 import util.evaluator.ExpressionEvaluator;
@@ -13,11 +14,12 @@ public class DoWhileStatement extends IterationStatement {
     private ExpressionContext initCtx;
 
     public DoWhileStatement(ProgramManager programManager
+            , VariableManager parentVariables
             , ExpressionContext boundCtx
             , boolean countDown
             , ExpressionContext initCtx
             , int lineNumber) {
-        super(programManager, countDown, boundCtx, lineNumber);
+        super(programManager, parentVariables, countDown, boundCtx, lineNumber);
         this.initCtx = initCtx;
         try {
             Storage.Type initType = ExpressionEvaluator.evaluateType(initCtx, programManager);

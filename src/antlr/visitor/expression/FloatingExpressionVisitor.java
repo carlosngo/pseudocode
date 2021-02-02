@@ -17,9 +17,9 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
             , boolean isCompiling) {
         this.programManager = programManager;
         functionManager = programManager.getFunctionManager();
-        variableManager = functionManager
-                .getCurrentFunction()
-                .getVariableManager();
+        variableManager = programManager
+                .getCompilationManager()
+                .getCurrentLocalVariables();
         notificationManager = programManager.getNotificationManager();
         this.isCompiling = isCompiling;
     }

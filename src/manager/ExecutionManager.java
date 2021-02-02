@@ -37,8 +37,6 @@ public class ExecutionManager
         controlStack.push(statement);
         if (statement instanceof FunctionCallStatement) {
             callStack.push((FunctionCallStatement) statement);
-        } else {
-            getCurrentFunctionCall().getLocalVariables().enterNewScope();
         }
     }
 
@@ -46,8 +44,6 @@ public class ExecutionManager
         CompoundStatement statement = controlStack.pop();
         if (statement instanceof FunctionCallStatement) {
             callStack.pop();
-        } else {
-            getCurrentFunctionCall().getLocalVariables().exitCurrentScope();
         }
         return statement;
     }
@@ -105,15 +101,15 @@ public class ExecutionManager
 
     @Override
     public void onScanEnd(ScanEndEvent evt) {
-        resumeExecution();
         try {
-            callStack.peek()
+            controlStack.peek()
                     .getLocalVariables()
                     .getVariable(awaitingScanStatement.getIdentifier())
                     .setValue(evt.getInput());
         } catch(SemanticException e) {
             System.err.println("unexpected " + e.getMessage() + " at runtime");
         }
+        resumeExecution();
     }
 
     @Override

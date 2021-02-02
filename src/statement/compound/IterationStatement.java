@@ -2,6 +2,7 @@ package statement.compound;
 
 import antlr.PseudocodeParser.ExpressionContext;
 import manager.ProgramManager;
+import manager.VariableManager;
 import statement.Statement;
 
 public abstract class IterationStatement extends CompoundStatement {
@@ -10,10 +11,11 @@ public abstract class IterationStatement extends CompoundStatement {
 
 
     public IterationStatement(ProgramManager programManager
+            , VariableManager variableManager
             , boolean countDown
             , ExpressionContext boundCtx
             , int lineNumber) {
-        super(programManager, lineNumber);
+        super(programManager, variableManager, lineNumber);
         this.countDown = countDown;
         this.boundCtx = boundCtx;
     }

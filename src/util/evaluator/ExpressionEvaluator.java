@@ -57,7 +57,9 @@ public class ExpressionEvaluator {
         FunctionManager functionManager = programManager.getFunctionManager();
 
         Function currentFunction = functionManager.getCurrentFunction();
-        VariableManager variableManager = currentFunction.getVariableManager();
+        VariableManager variableManager = programManager
+                .getCompilationManager()
+                .getCurrentLocalVariables();
 
         return null;
     }

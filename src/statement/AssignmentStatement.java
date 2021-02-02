@@ -25,9 +25,8 @@ public class AssignmentStatement extends Statement {
             System.out.println(programManager.getFunctionManager().getCurrentFunction());
 
             Variable variable = programManager
-                    .getFunctionManager()
-                    .getCurrentFunction()
-                    .getVariableManager()
+                    .getCompilationManager()
+                    .getCurrentLocalVariables()
                     .getVariable(identifier);
             PseudocodeParserBaseVisitor expressionVisitor = ExpressionVisitorFactory.getExpressionVisitor(programManager, variable.getType(), true);
             try {
@@ -51,9 +50,8 @@ public class AssignmentStatement extends Statement {
         tryExecution();
         try {
             Variable variable = getProgramManager()
-                    .getFunctionManager()
-                    .getCurrentFunction()
-                    .getVariableManager()
+                    .getCompilationManager()
+                    .getCurrentLocalVariables()
                     .getVariable(identifier);
             PseudocodeParserBaseVisitor expressionVisitor = ExpressionVisitorFactory.getExpressionVisitor(getProgramManager(), variable.getType(), false);
 

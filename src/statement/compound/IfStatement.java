@@ -6,6 +6,7 @@ import exception.type.ConditionException;
 import antlr.PseudocodeParser.ExpressionContext;
 import manager.ExecutionManager;
 import manager.ProgramManager;
+import manager.VariableManager;
 import notification.event.SemanticErrorEvent;
 import statement.Statement;
 import storage.Storage;
@@ -20,9 +21,10 @@ public class IfStatement extends CompoundStatement {
     private final ExpressionContext condition;
 
     public IfStatement(ProgramManager programManager
+            , VariableManager parentVariables
             , ExpressionContext condition
             , int lineNumber) {
-        super(programManager, lineNumber);
+        super(programManager, parentVariables, lineNumber);
         this.condition = condition;
         negativeStatements = new ArrayList<>();
         inPositive = true;

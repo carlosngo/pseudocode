@@ -9,12 +9,18 @@ import java.util.ArrayList;
 
 public class CompoundStatement extends Statement {
     private final ArrayList<Statement> statements;
+    private final VariableManager localVariables;
     private boolean breakFlag;
 
-    public CompoundStatement(ProgramManager programManager, int lineNumber) {
+    public CompoundStatement(ProgramManager programManager, VariableManager parentVariables, int lineNumber) {
         super(programManager, lineNumber);
+        localVariables = new VariableManager(parentVariables);
         statements = new ArrayList<>();
         breakFlag = false;
+    }
+
+    public VariableManager getLocalVariables() {
+        return localVariables;
     }
 
     public boolean hasBroken() {
