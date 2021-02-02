@@ -4,6 +4,7 @@ import exception.ConstantReassignmentException;
 import exception.IndexOutOfBoundsException;
 import exception.type.AssignmentException;
 import exception.type.TypeMismatchException;
+import util.Keyword;
 
 public class Array extends Variable {
 
@@ -13,13 +14,7 @@ public class Array extends Variable {
 
     public Array(boolean isFinal, Type type, String name, int size) {
         super(isFinal, type, name);
-        try {
-            super.setValue(new Object[size]);
-        } catch (TypeMismatchException e) {
-            System.err.println("unexpected type mismatch error.exception in array");
-        } catch (ConstantReassignmentException e) {
-            System.err.println("unexpected constant reassignment error.exception in array");
-        }
+        value = new Object[size];
     }
 
     @Override
@@ -28,7 +23,7 @@ public class Array extends Variable {
     }
 
     public int getSize() {
-        Variable[] array = (Variable[]) getValue();
+        Object[] array = (Object[]) getValue();
         return array.length;
     }
 
@@ -51,5 +46,10 @@ public class Array extends Variable {
 
         Object[] array = (Object[]) getValue();
         array[index] = value;
+    }
+
+    @Override
+    public String toString() {
+        return Keyword.parseKeyword(getType()) + " " + getName() + "[" + getSize() + "]";
     }
 }

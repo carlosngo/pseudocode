@@ -10,7 +10,7 @@ public class Variable extends Storage {
 
     private final boolean isFinal;
     private int level;
-    private Object value;
+    protected Object value;
 
     public Variable(Type type, String name) {
         this(false, type, name);

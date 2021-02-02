@@ -2,7 +2,9 @@ package antlr.visitor;
 
 import antlr.PseudocodeParser;
 import antlr.PseudocodeParserBaseVisitor;
+import antlr.visitor.expression.IntegerExpressionVisitor;
 import exception.StorageRedeclarationException;
+import exception.type.AssignmentException;
 import manager.*;
 import notification.event.SemanticErrorEvent;
 import statement.AssignmentStatement;
@@ -166,7 +168,6 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
 
     @Override
     public Void visitVariableDeclaration(PseudocodeParser.VariableDeclarationContext ctx) {
-        System.out.println("variable declaration detected!");
         int lineNumber = ctx.getStart().getLine();
         boolean isFinal = ctx.variableSpecifier().Const() != null;
         Storage.Type variableType = Storage.parseType(ctx.variableSpecifier().typeSpecifier().getText());
@@ -184,6 +185,22 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
 
     @Override
     public Void visitArrayDeclaration(PseudocodeParser.ArrayDeclarationContext ctx) {
-        return super.visitArrayDeclaration(ctx);
+        int lineNumber = ctx.getStart().getLine();
+        boolean isFinal = ctx.arraySpecifier().Const() != null;
+        Storage.Type arrayType = Storage.parseType(ctx.arraySpecifier().typeSpecifier().getText());
+        String arrayName = ctx.Identifier().getText();
+        PseudocodeParser.ExpressionContext sizeContext = ctx.createExpression().expression();
+        Storage.Type createType = Storage.parseType(ctx.createExpression().typeSpecifier().getText());
+        if (arrayType != createType) {
+            notificationManager.notifyErrorListeners(
+                    new SemanticErrorEvent(this
+                            , new AssignmentException(arrayType, createType)));
+        }
+        int size = new IntegerExpressionVisitor(programManager, true).visit(sizeContext);
+        Array array = new Array(isFinal, arrayType, arrayName, size);
+        new DeclarationStatement(programManager, array, lineNumber);
+        System.out.println("initialized array: " + array);
+//        String variableName =
+        return null;
     }
 }
