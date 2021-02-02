@@ -3,6 +3,8 @@ package antlr.visitor;
 import antlr.PseudocodeParser;
 import antlr.PseudocodeParserBaseVisitor;
 import antlr.visitor.expression.IntegerExpressionVisitor;
+import exception.ArraySizeException;
+import exception.SemanticException;
 import exception.StorageRedeclarationException;
 import exception.type.AssignmentException;
 import manager.*;
@@ -174,9 +176,12 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
         for (PseudocodeParser.InitDeclaratorContext c : ctx.initDeclaratorList().initDeclarator()) {
             String variableName = c.Identifier().getText();
             Variable variable = new Variable(isFinal, variableType, variableName);
-            new DeclarationStatement(programManager, variable, lineNumber);
+            compilationManager.addStatement(
+                    new DeclarationStatement(programManager, variable, lineNumber));
             if (c.initializer() != null) { // initialize
-                new AssignmentStatement(programManager, variableName, c.initializer().expression(), lineNumber);
+                compilationManager.addStatement(
+                        new AssignmentStatement(programManager, variableName, c.initializer().expression(), lineNumber)
+                );
             }
         }
 //        String variableName =
@@ -191,16 +196,25 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
         String arrayName = ctx.Identifier().getText();
         PseudocodeParser.ExpressionContext sizeContext = ctx.createExpression().expression();
         Storage.Type createType = Storage.parseType(ctx.createExpression().typeSpecifier().getText());
-        if (arrayType != createType) {
-            notificationManager.notifyErrorListeners(
-                    new SemanticErrorEvent(this
-                            , new AssignmentException(arrayType, createType)));
+
+        try {
+            if (arrayType != createType) {
+                throw new AssignmentException(arrayType, createType);
+            }
+            try {
+                Integer size = new IntegerExpressionVisitor(programManager, true).visit(sizeContext);
+                if (size == null) {
+                    throw new ArraySizeException();
+                }
+                Array array = new Array(isFinal, arrayType, arrayName, size);
+                new DeclarationStatement(programManager, array, lineNumber);
+                System.out.println("initialized array: " + array);
+            } catch (NullPointerException e) {
+                throw new ArraySizeException();
+            }
+        } catch (SemanticException e) {
+            notificationManager.notifyErrorListeners(new SemanticErrorEvent(this, e, lineNumber));
         }
-        int size = new IntegerExpressionVisitor(programManager, true).visit(sizeContext);
-        Array array = new Array(isFinal, arrayType, arrayName, size);
-        new DeclarationStatement(programManager, array, lineNumber);
-        System.out.println("initialized array: " + array);
-//        String variableName =
         return null;
     }
 }

@@ -3,6 +3,7 @@ package statement;
 import antlr.PseudocodeParserBaseVisitor;
 import antlr.visitor.expression.ExpressionVisitorFactory;
 import antlr.visitor.expression.IntegerExpressionVisitor;
+import exception.ArrayIndexException;
 import exception.NotArrayException;
 import exception.SemanticException;
 import antlr.PseudocodeParser.ExpressionContext;
@@ -42,7 +43,6 @@ public class AssignmentStatement extends Statement {
                 }
                 variable.setValue(value);
             } catch(NullPointerException e) {
-                e.printStackTrace();
                 throw new AssignmentException(variable.getType(), null);
             }
         } catch(SemanticException e) {
@@ -71,10 +71,14 @@ public class AssignmentStatement extends Statement {
                     = ExpressionVisitorFactory
                     .getExpressionVisitor(programManager, variable.getType(), true);
             try {
-                new IntegerExpressionVisitor(programManager, true).visit(indexCtx);
+                Integer index = new IntegerExpressionVisitor(
+                        programManager, true).visit(indexCtx);
+                if (index == null) {
+                    throw new ArrayIndexException();
+                }
             } catch (NullPointerException e) {
                 // invalid index
-                throw new AssignmentException(Storage.Type.INT, null);
+                throw new ArrayIndexException();
             }
             try {
                 Object value = expressionVisitor.visit(valueCtx);
@@ -100,7 +104,7 @@ public class AssignmentStatement extends Statement {
                     .getVariable(identifier);
             int index = new IntegerExpressionVisitor(
                     getProgramManager()
-                    , true)
+                    , false)
                     .visit(indexCtx);
             PseudocodeParserBaseVisitor expressionVisitor
                     = ExpressionVisitorFactory
