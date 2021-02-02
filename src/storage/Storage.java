@@ -63,9 +63,9 @@ public abstract class Storage {
             case BOOLEAN:
                 return Boolean.TRUE;
             case INT:
-                return Integer.MIN_VALUE;
+                return 0;
             case FLOAT:
-                return Float.MIN_VALUE;
+                return 0.0f;
             case STRING:
                 return "";
         }

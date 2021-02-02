@@ -31,9 +31,6 @@ public class VariableManager implements Manager {
             throw new UndeclaredStorageException(identifier, false);
         }
         Variable variable = variables.get(identifier);
-        if (isInsideScope(variable, currentLevel)) {
-            throw new UndeclaredStorageException(identifier, false);
-        }
         return variable;
     }
 
@@ -41,7 +38,10 @@ public class VariableManager implements Manager {
             throws StorageRedeclarationException {
         String name = variable.getName();
         try {
-            getVariable(name);
+            Variable existingVariable = getVariable(name);
+            if (isInsideScope(existingVariable, currentLevel)) {
+                throw new UndeclaredStorageException(name, false);
+            }
             throw new StorageRedeclarationException(name, false);
         } catch(UndeclaredStorageException e) {
             variable.setLevel(currentLevel);
@@ -50,6 +50,9 @@ public class VariableManager implements Manager {
     }
 
     private boolean isInsideScope(Variable variable, int level) {
+
+        System.out.println("variable level = " + variable.getLevel());
+        System.out.println("current level = " + currentLevel);
         return variable.getLevel() >= level;
     }
 

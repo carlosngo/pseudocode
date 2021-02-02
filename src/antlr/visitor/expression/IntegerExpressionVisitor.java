@@ -1,10 +1,10 @@
-package antlr.visitor;
+package antlr.visitor.expression;
 
 import antlr.PseudocodeParser;
 import antlr.PseudocodeParserBaseVisitor;
 import exception.ExpressionEvaluationException;
 import exception.NotArrayException;
-import exception.SemanticException;
+    import exception.SemanticException;
 import exception.type.AssignmentException;
 import exception.type.TypeMismatchException;
 import manager.FunctionManager;
@@ -42,45 +42,48 @@ public class IntegerExpressionVisitor extends PseudocodeParserBaseVisitor<Intege
         return visit(ctx.logicalOrExpression());
     }
 
+    /** if there is an boolean operator in the expression, the resulting expression will have a boolean value.
+     * If there is a boolean value in the expression, it cannot be typecasted to boolean
+     * Therefore, visit normally but return null
+     *
+     * @param ctx
+     * @return
+     */
     @Override
     public Integer visitLogicalOrExpression(PseudocodeParser.LogicalOrExpressionContext ctx)  {
-        PseudocodeParser.LogicalAndExpressionContext left = ctx.logicalAndExpression(0);
-        PseudocodeParser.LogicalAndExpressionContext right = ctx.logicalAndExpression(1);
-
-        if (right != null) {
+        Integer value = super.visitLogicalOrExpression(ctx);
+        if (ctx.logicalAndExpression(1) != null) {
             return null;
         }
-        return visit(left);
+        return value;
+
     }
 
     @Override
     public Integer visitLogicalAndExpression(PseudocodeParser.LogicalAndExpressionContext ctx) {
-        PseudocodeParser.EqualityExpressionContext left = ctx.equalityExpression(0);
-        PseudocodeParser.EqualityExpressionContext right = ctx.equalityExpression(1);
-        if (right != null) {
+        Integer value = super.visitLogicalAndExpression(ctx);
+        if (ctx.equalityExpression(1) != null) {
             return null;
         }
-        return visit(left);
+        return value;
     }
 
     @Override
     public Integer visitEqualityExpression(PseudocodeParser.EqualityExpressionContext ctx) {
-        PseudocodeParser.RelationalExpressionContext left = ctx.relationalExpression(0);
-        PseudocodeParser.RelationalExpressionContext right = ctx.relationalExpression(1);
-        if (right != null) {
+        Integer value = super.visitEqualityExpression(ctx);
+        if (ctx.relationalExpression(1) != null) {
             return null;
         }
-        return visit(left);
+        return value;
     }
 
     @Override
     public Integer visitRelationalExpression(PseudocodeParser.RelationalExpressionContext ctx) {
-        PseudocodeParser.AdditiveExpressionContext left = ctx.additiveExpression(0);
-        PseudocodeParser.AdditiveExpressionContext right = ctx.additiveExpression(1);
-        if (right != null) {
+        Integer value = super.visitRelationalExpression(ctx);
+        if (ctx.additiveExpression(1) != null) {
             return null;
         }
-        return visit(left);
+        return value;
     }
 
     @Override
@@ -109,9 +112,9 @@ public class IntegerExpressionVisitor extends PseudocodeParserBaseVisitor<Intege
         Integer product = visit(left);
         for (int i = 2; right != null; i++) {
             if (ctx.Star(i - 2) == null) {
-                product *= visit(right);
-            } else {
                 product /= visit(right);
+            } else {
+                product *= visit(right);
             }
             right = ctx.unaryExpression(i);
         }
@@ -120,38 +123,20 @@ public class IntegerExpressionVisitor extends PseudocodeParserBaseVisitor<Intege
 
     @Override
     public Integer visitUnaryExpression(PseudocodeParser.UnaryExpressionContext ctx) {
-        if (ctx.Not() != null || ctx.binaryOperator() != null || ctx.unaryExpression() != null) {
+        Integer value = super.visitUnaryExpression(ctx);
+        if (ctx.Not() != null || ctx.binaryOperator() != null) {
             return null;
         }
-        return visit(ctx.postfixExpression());
+        return value;
     }
 
     @Override
     public Integer visitPrimaryExpression(PseudocodeParser.PrimaryExpressionContext ctx) {
-        int lineNumber = ctx.getStart().getLine();
         if (ctx.literal(0) != null) {
             return visit(ctx.literal(0));
         }
-        if (ctx.Identifier(0) != null) {
-            String identifier = ctx.Identifier(0).getText();
-            try {
-                Variable variable = variableManager.getVariable(identifier);
-                if (variable.getType() != Storage.Type.INT) {
-                    return null;
-                }
-                if (variable instanceof Array) {
-                    return null;
-                } else {
-                    if (isCompiling) {
-                        return (Integer) Storage.getRandomValueOfType(variable.getType());
-                    } else {
-                        return (Integer) variable.getValue();
-                    }
-                }
-            } catch (SemanticException e) {
-                notificationManager.notifyErrorListeners(new SemanticErrorEvent(this, e, lineNumber));
-                return null;
-            }
+        if (ctx.variableName() != null) {
+            return visit(ctx.variableName());
         }
         if (ctx.expression() != null) {
             return visit(ctx.expression());
@@ -208,5 +193,38 @@ public class IntegerExpressionVisitor extends PseudocodeParserBaseVisitor<Intege
         }
     }
 
+    @Override
+    public Integer visitVariableName(PseudocodeParser.VariableNameContext ctx) {
+        int lineNumber = ctx.getStart().getLine();
+        if (ctx.Identifier() != null) {
+            String identifier = ctx.Identifier().getText();
+            try {
+                Variable variable = variableManager.getVariable(identifier);
+                if (variable.getType() != Storage.Type.INT) {
+                    return null;
+                }
+                if (variable instanceof Array) {
+                    return null;
+                } else {
+                    if (isCompiling) {
+                        return (Integer) Storage.getRandomValueOfType(variable.getType());
+                    } else {
+                        return (Integer) variable.getValue();
+                    }
+                }
+            } catch (SemanticException e) {
+                notificationManager.notifyErrorListeners(new SemanticErrorEvent(this, e, lineNumber));
+                return null;
+            }
+        }
+        return null;
+    }
 
+    @Override
+    public Integer visitLiteral(PseudocodeParser.LiteralContext ctx) {
+        if (ctx.IntegerLiteral() == null) {
+            return null;
+        }
+        return Integer.valueOf(ctx.IntegerLiteral().getText());
+    }
 }

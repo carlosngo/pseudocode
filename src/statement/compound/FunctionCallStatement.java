@@ -1,6 +1,9 @@
 package statement.compound;
 
+import antlr.PseudocodeParserBaseVisitor;
+import antlr.visitor.expression.ExpressionVisitorFactory;
 import exception.SemanticException;
+import exception.type.AssignmentException;
 import exception.type.ParameterException;
 import antlr.PseudocodeParser.ExpressionContext;
 import manager.ExecutionManager;
@@ -42,10 +45,14 @@ public class FunctionCallStatement extends CompoundStatement {
 
             for (int i = 0; i < parameterExpressions.size(); i++) {
                 Variable expectedParameter = expectedParameters.get(i);
-                Storage.Type givenType = ExpressionEvaluator
-                        .evaluateType(parameterExpressions.get(i), programManager);
-                if (givenType != expectedParameter.getType()) {
-                    throw new ParameterException(expectedParameter.getType(), givenType);
+                PseudocodeParserBaseVisitor expressionVisitor = ExpressionVisitorFactory.getExpressionVisitor(programManager, expectedParameter.getType(), true);
+                try {
+                    if (expressionVisitor.visit(parameterExpressions.get(i)) == null) {
+                        throw new ParameterException(expectedParameter.getType(), Storage.Type.UNKNOWN);
+                    }
+                } catch(NullPointerException e) {
+//                e.printStackTrace();
+                    throw new ParameterException(expectedParameter.getType(), Storage.Type.UNKNOWN);
                 }
             }
         } catch(SemanticException e) {
@@ -83,16 +90,21 @@ public class FunctionCallStatement extends CompoundStatement {
     public void execute() {
         tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
+
         try {
             // evaluate given parameters and place inside local variables
             localVariables = new VariableManager();
             ArrayList<Variable> functionParameters = function.getParameters();
             for (int i = 0; i < functionParameters.size(); i++) {
-
-                Object parameterValue = ExpressionEvaluator.evaluateValue(
-                        parameterExpressions.get(i), getProgramManager());
-
                 Variable expectedParameter = functionParameters.get(i);
+                Object parameterValue =
+                        ExpressionVisitorFactory.getExpressionVisitor(
+                                getProgramManager()
+                                , expectedParameter.getType()
+                                , false)
+                        .visit(parameterExpressions.get(i));
+
+
                 expectedParameter.setValue(parameterValue);
                 localVariables.addVariable(expectedParameter);
             }

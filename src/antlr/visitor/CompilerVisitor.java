@@ -166,11 +166,10 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
         System.out.println("variable declaration detected!");
         int lineNumber = ctx.getStart().getLine();
         boolean isFinal = ctx.variableSpecifier().Const() != null;
-        Storage.Type variableType = Storage.typeOf(ctx.variableSpecifier().typeSpecifier().getText());
-        VariableManager variableManager = functionManager.getCurrentFunction().getVariableManager();
+        Storage.Type variableType = Storage.parseType(ctx.variableSpecifier().typeSpecifier().getText());
         for (PseudocodeParser.InitDeclaratorContext c : ctx.initDeclaratorList().initDeclarator()) {
             String variableName = c.Identifier().getText();
-            Variable variable = new Variable(variableType, variableName);
+            Variable variable = new Variable(isFinal, variableType, variableName);
             new DeclarationStatement(programManager, variable, lineNumber);
             if (c.initializer() != null) { // initialize
                 new AssignmentStatement(programManager, variableName, c.initializer().expression(), lineNumber);

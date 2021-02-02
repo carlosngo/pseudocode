@@ -15,6 +15,7 @@ public class DeclarationStatement extends Statement {
         super(programManager, lineNumber);
         this.variable = variable;
         try {
+
             programManager
                     .getFunctionManager()
                     .getCurrentFunction()

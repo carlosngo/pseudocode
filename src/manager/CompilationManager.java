@@ -5,14 +5,12 @@ import antlr.PseudocodeErrorStrategy;
 import antlr.PseudocodeLexer;
 import antlr.PseudocodeParser;
 import antlr.visitor.CompilerVisitor;
-import antlr.visitor.IntegerExpressionVisitor;
 import notification.event.CompileErrorEvent;
 import notification.event.CompileSuccessEvent;
 import notification.event.SemanticErrorEvent;
 import notification.event.CompileStartEvent;
 import notification.listener.CompileListener;
 import notification.listener.SemanticErrorListener;
-import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -21,7 +19,6 @@ import statement.compound.CompoundStatement;
 import statement.compound.IfStatement;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Stack;
 
 public class CompilationManager implements Manager, CompileListener, SemanticErrorListener {
@@ -127,6 +124,7 @@ public class CompilationManager implements Manager, CompileListener, SemanticErr
 
     @Override
     public void onCompileStart(CompileStartEvent e) {
+        programManager.reset();
         compile(e.getSourceCode());
     }
 
