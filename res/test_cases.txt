@@ -9,3 +9,32 @@ int main() { // level 0
     int x;
 
 }
+
+int get
+int y = 4;
+boolean z = 4;
+int x = 5 + y * 10 / (12 + 5) + z;
+
+void funcA(int a, int b, int c) {
+    int a;
+    int x;
+    int y;
+    {
+        int z;
+    }
+    {
+        int z;
+        {
+            int z;
+            int p;
+        }
+    }
+
+}
+
+void funcA(int a, int b) {
+
+}
+
+void main() {
+}

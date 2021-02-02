@@ -10,8 +10,7 @@ init: (declaration | statement)* EOF;
 
 primaryExpression:
 	literal
-	| This
-	| Identifier
+	| variableName
 	| LeftParen expression RightParen
 	| LeftParen expression { notifyErrorListeners("expected closing parenthesis"); }
 	| LeftParen expression RightParen RightParen { notifyErrorListeners("too many closing parentheses"); }
@@ -19,13 +18,10 @@ primaryExpression:
 	| Identifier Identifier Colon IntegerLiteral Not { notifyErrorListeners("expected double quotes or operators"); }
 	;
 
-expression: assignmentExpression
-    ;
-//expression: assignmentExpression (Comma assignmentExpression)*;
+variableName: Identifier;
 
-assignmentExpression:
-	logicalOrExpression
-	| logicalOrExpression assignmentOperator initializerClause;
+expression: logicalOrExpression
+    ;
 
 logicalOrExpression:
 	logicalAndExpression (OrOr logicalAndExpression)*
@@ -61,18 +57,17 @@ multiplicativeExpression:
 unaryExpression:
 	postfixExpression
 	| Not unaryExpression
-	| createExpression
 	| binaryOperator unaryExpression { notifyErrorListeners("redundant binary operator: '" + $binaryOperator.text + "'"); }
 	| unaryExpression binaryOperator { notifyErrorListeners("redundant binary operator: '" + $binaryOperator.text + "'"); }
 	;
 
 createExpression:
-    (Create | New) typeSpecifier LeftBracket constantExpression RightBracket;
+    (Create | New) typeSpecifier LeftBracket expression RightBracket;
 
 postfixExpression:
 	primaryExpression
-	| Identifier LeftBracket expression RightBracket // arrays?
-	| Identifier LeftParen expressionList? RightParen // function call
+	| arrayAccess
+	| functionCall // function call
 	| Identifier (PlusPlus | MinusMinus)
 	| (Identifier | literal) (LeftParen expressionList? RightParen)+ { notifyErrorListeners("redundant parentheses"); }
     | Identifier LeftParen LeftParen expressionList? RightParen { notifyErrorListeners("redundant opening parenthesis"); }
@@ -80,12 +75,19 @@ postfixExpression:
     | Identifier LeftParen expressionList? { notifyErrorListeners("expecting closing parenthesis"); }
 	;
 
-
-constantExpression:
-    logicalOrExpression
+arrayAccess:
+    Identifier LeftBracket expression RightBracket
     ;
 
-expressionList: initializerList;
+functionCall:
+    Identifier LeftParen expressionList? RightParen
+    ;
+
+expressionList:
+	expression (
+		Comma expression
+	)*
+	;
 
 assignmentOperator:
 	Assign
@@ -127,20 +129,27 @@ literal:
 // Statements
 
 statement:
-    expressionStatement
+    assignmentStatement
     | compoundStatement
     | selectionStatement
     | iterationStatement
-    | jumpStatement
+    | breakStatement
+    | continueStatement
+    | returnStatement
     | printStatement
     | scanStatement
-	| simpleDeclaration;
+	| simpleDeclaration
+	;
+
+assignmentStatement:
+    (variableName | arrayAccess) assignmentOperator expression Semi
+    ;
 
 printStatement:
-    Print LeftParen constantExpression RightParen Semi
-    | Print LeftParen LeftParen+ constantExpression RightParen Semi { notifyErrorListeners("too many open parenthesis"); }
-    | Print LeftParen constantExpression RightParen RightParen+ Semi { notifyErrorListeners("too many closing parenthesis"); }
-    | Print LeftParen+ constantExpression Semi { notifyErrorListeners("expected closing parenthesis"); }
+    Print LeftParen expression RightParen Semi
+    | Print LeftParen LeftParen+ expression RightParen Semi { notifyErrorListeners("too many open parenthesis"); }
+    | Print LeftParen expression RightParen RightParen+ Semi { notifyErrorListeners("too many closing parenthesis"); }
+    | Print LeftParen+ expression Semi { notifyErrorListeners("expected closing parenthesis"); }
     ;
 
 scanStatement:
@@ -150,22 +159,21 @@ scanStatement:
     | Scan LeftParen StringLiteral Comma Identifier Semi { notifyErrorListeners("expected closing parenthesis"); }
     ;
 
-jumpStatement:
-	(
-		Break
-		| Continue
-		| Return (constantExpression)?
-	) Semi
-	| Return badReturn Semi
-	;
+breakStatement:
+    Break Semi;
+
+continueStatement:
+    Continue Semi;
+
+returnStatement:
+    Return (expression)? Semi
+    | Return badReturn Semi
+    ;
 
 badReturn:
     typeSpecifier  { notifyErrorListeners("expected expression as return storage"); }
     ;
 
-expressionStatement:
-    expression? Semi
-    ;
 
 // Compound statement Start
 
@@ -186,39 +194,47 @@ selectionStatement:
     ifStatement elseIfStatement* elseStatement?;
 
 ifStatement:
-    If LeftParen condition RightParen Then compoundStatement
-    | If LeftParen+ condition Then compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
-    | If LeftParen condition RightParen RightParen+ Then compoundStatement { notifyErrorListeners("too many closing parenthesis"); }
-    | If LeftParen LeftParen+ condition RightParen Then compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
+    If LeftParen expression RightParen Then compoundStatement
+    | If LeftParen+ expression Then compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
+    | If LeftParen expression RightParen RightParen+ Then compoundStatement { notifyErrorListeners("too many closing parenthesis"); }
+    | If LeftParen LeftParen+ expression RightParen Then compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
     ;
 
 elseIfStatement:
-    Else If LeftParen condition RightParen Then? compoundStatement
-    | Else If LeftParen+ condition Then? compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
-    | Else If LeftParen condition RightParen RightParen+ Then? compoundStatement { notifyErrorListeners("too many closing parenthesis"); }
-    | Else If LeftParen LeftParen+ condition RightParen Then? compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
+    Else If LeftParen expression RightParen Then? compoundStatement
+    | Else If LeftParen+ expression Then? compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
+    | Else If LeftParen expression RightParen RightParen+ Then? compoundStatement { notifyErrorListeners("too many closing parenthesis"); }
+    | Else If LeftParen LeftParen+ expression RightParen Then? compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
     ;
 
 elseStatement:
     Else Then? compoundStatement
     ;
 
-condition:
-    constantExpression
-	;
-
 // Conditional End
 
 // Iteration Start
 
 iterationStatement:
-    For iterationInit (Up | Down) To constantExpression compoundStatement
-    | While iterationInit (Up | Down) To constantExpression compoundStatement
-	| Do compoundStatement While iterationInit (Up | Down) To constantExpression Semi
+    forStatement
+    | whileStatement
+    | doWhileStatement
+    ;
 
-    | While iterationInit badIteration constantExpression compoundStatement
-    | For iterationInit badIteration constantExpression compoundStatement
-    | Do compoundStatement While iterationInit badIteration constantExpression Semi;
+forStatement:
+    For iterationInit (Up | Down) To expression compoundStatement
+    | For iterationInit badIteration expression compoundStatement
+    ;
+
+whileStatement:
+    While iterationInit (Up | Down) To expression compoundStatement
+    | While iterationInit badIteration expression compoundStatement
+    ;
+
+doWhileStatement:
+    Do compoundStatement While iterationInit (Up | Down) To expression Semi
+    | Do compoundStatement While iterationInit badIteration expression Semi
+    ;
 
 iterationInit:
     expression
@@ -235,19 +251,32 @@ badIteration:
 declaration:
 	simpleDeclaration
 	| functionDefinition
-	| emptyDeclaration
 	;
-
-emptyDeclaration: Semi;
 
 simpleDeclaration:
-	declSpecifierSeq? initDeclaratorList? Semi
+    variableDeclaration
+    | arrayDeclaration
 	;
 
-declSpecifierSeq:
-    (Const | Final)? typeSpecifier (LeftBracket RightBracket)?
-    | badConst typeSpecifier (LeftBracket RightBracket)? { notifyErrorListeners("misspelled constant declaration, use 'constant'"); }
+variableDeclaration:
+    variableSpecifier initDeclaratorList Semi
     ;
+
+arrayDeclaration:
+    arraySpecifier Identifier Assign createExpression Semi
+    ;
+
+declSpecifierSeq:
+    variableSpecifier
+    | arraySpecifier
+//    | badConst (variableSpecifier | arraySpecifier) { notifyErrorListeners("misspelled constant declaration, use 'constant'"); }
+    ;
+
+variableSpecifier:
+    (Const)? typeSpecifier;
+
+arraySpecifier:
+    (Const)? typeSpecifier LeftBracket RightBracket;
 
 badConst: Badconst;
 
@@ -265,32 +294,18 @@ typeSpecifier:
     )
     ;
 
-declarator:
-	Identifier (
-		parametersAndQualifiers
-		// | LeftBracket constantExpression? RightBracket
-	)?
-	| literal (
-        parametersAndQualifiers
-        // | LeftBracket constantExpression? RightBracket
-    )? { notifyErrorListeners("expected identifier as declarator"); }
-	| typeSpecifier { notifyErrorListeners("expected identifier, found data type"); }
-	;
-
 // Declaration End
 
 // Function Start
 
 functionDefinition:
-    Function? declSpecifierSeq declarator compoundStatement
+    Function? declSpecifierSeq Identifier parametersAndQualifiers compoundStatement
     | mainFunction
     ;
 
 mainFunction:
     Function? declSpecifierSeq? Main LeftParen RightParen compoundStatement
-    | Function? declSpecifierSeq? Main compoundStatement { notifyErrorListeners("expected parentheses"); }
-    | Function? declSpecifierSeq? Main RightParen+ compoundStatement { notifyErrorListeners("expected opening parenthesis"); }
-    | Function? declSpecifierSeq? Main LeftParen+ compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
+    | Function? declSpecifierSeq? Main LeftParen compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
     | Function? declSpecifierSeq? Main LeftParen LeftParen+ RightParen compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
     | Function? declSpecifierSeq? Main LeftParen RightParen RightParen+ compoundStatement { notifyErrorListeners("too many closing parenthesis"); };
 
@@ -300,18 +315,10 @@ mainFunction:
 
 initDeclaratorList: initDeclarator (Comma initDeclarator)*;
 
-initDeclarator: declarator initializer?;
+initDeclarator: Identifier initializer?;
 
 initializer:
-	Assign initializerClause;
-
-initializerClause: constantExpression
-    ;
-
-initializerList:
-	initializerClause (
-		Comma initializerClause
-	)*;
+	Assign expression;
 
 
 // Initialization End
@@ -328,10 +335,7 @@ parameterDeclarationClause:
 	parameterDeclaration (Comma parameterDeclaration)*;
 
 parameterDeclaration:
-	declSpecifierSeq (
-		declarator (
-			Assign initializerClause
-		)?
-	);
+	declSpecifierSeq Identifier
+	;
 
 // Parameters End

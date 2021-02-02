@@ -15,7 +15,8 @@ public class ParameterException extends SemanticException {
                 : (offendingType == null
                 ? "missing parameters"
                 : "expected " + Keyword.parseKeyword(expectedType)
-                + ", found " + Keyword.parseKeyword(offendingType))));
+//                + ", found " + Keyword.parseKeyword(offendingType)
+                )));
         this.expectedType = expectedType;
         this.offendingType = offendingType;
     }

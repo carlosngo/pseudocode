@@ -15,10 +15,10 @@ public class DeclarationStatement extends Statement {
         super(programManager, lineNumber);
         this.variable = variable;
         try {
+
             programManager
-                    .getFunctionManager()
-                    .getCurrentFunction()
-                    .getVariableManager()
+                    .getCompilationManager()
+                    .getCurrentLocalVariables()
                     .addVariable(variable);
         } catch(SemanticException e) {
             notifyErrorListeners(e);
@@ -31,9 +31,8 @@ public class DeclarationStatement extends Statement {
         tryExecution();
         try {
             getProgramManager()
-                    .getExecutionManager()
-                    .getCurrentFunctionCall()
-                    .getLocalVariables()
+                    .getCompilationManager()
+                    .getCurrentLocalVariables()
                     .addVariable(variable);
         } catch (SemanticException e) {
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());

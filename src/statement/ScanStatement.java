@@ -18,9 +18,8 @@ public class ScanStatement extends Statement {
         this.identifier = identifier;
         try {
             programManager
-                    .getFunctionManager()
-                    .getCurrentFunction()
-                    .getVariableManager()
+                    .getCompilationManager()
+                    .getCurrentLocalVariables()
                     .getVariable(identifier);
         } catch(SemanticException e) {
             notifyErrorListeners(e);

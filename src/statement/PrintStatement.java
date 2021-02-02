@@ -1,7 +1,7 @@
 package statement;
 
 import exception.SemanticException;
-import gen.PseudocodeParser.ExpressionContext;
+import antlr.PseudocodeParser.ExpressionContext;
 import manager.ProgramManager;
 import notification.event.PrintEvent;
 import notification.event.SemanticErrorEvent;

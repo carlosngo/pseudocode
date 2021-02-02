@@ -2,7 +2,7 @@ package util.evaluator;
 
 import exception.ExpressionEvaluationException;
 import exception.UndeclaredStorageException;
-import gen.PseudocodeParser.ExpressionContext;
+import antlr.PseudocodeParser.ExpressionContext;
 import manager.FunctionManager;
 import manager.ProgramManager;
 import manager.VariableManager;
@@ -57,7 +57,9 @@ public class ExpressionEvaluator {
         FunctionManager functionManager = programManager.getFunctionManager();
 
         Function currentFunction = functionManager.getCurrentFunction();
-        VariableManager variableManager = currentFunction.getVariableManager();
+        VariableManager variableManager = programManager
+                .getCompilationManager()
+                .getCurrentLocalVariables();
 
         return null;
     }

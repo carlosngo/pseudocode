@@ -1,9 +1,9 @@
 package gui;
 
-import gen.PseudocodeErrorListener;
-import gen.PseudocodeErrorStrategy;
-import gen.PseudocodeLexer;
-import gen.PseudocodeParser;
+import antlr.PseudocodeErrorListener;
+import antlr.PseudocodeErrorStrategy;
+import antlr.PseudocodeLexer;
+import antlr.PseudocodeParser;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -17,6 +17,7 @@ import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 import manager.NotificationManager;
 import notification.event.*;
+import notification.listener.CompileListener;
 import notification.listener.ExecuteListener;
 import notification.listener.PrintListener;
 import notification.listener.ScanListener;
@@ -24,17 +25,14 @@ import org.antlr.v4.gui.TreeViewer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MainView implements PrintListener, ScanListener, ExecuteListener {
+public class MainView implements PrintListener, ScanListener, ExecuteListener, CompileListener {
     private NotificationManager manager;
     /*
     Put gui objects here
@@ -77,9 +75,12 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener {
     public Button btnUserOk;
     @FXML
     public Button btnUserCancel;
+    @FXML
+    public Button compileTextButton;
 
     private String fulltext;
     private String errortext;
+    private ArrayList<String> errorList;
 
     public void setManager(NotificationManager manager){
         this.manager = manager;
@@ -95,7 +96,7 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener {
         * By default IO console should be hidden
         * hideIOConsole() is commented out for testing purposes.
         * */
-        // hideIOConsole();
+//         hideIOConsole();
     }
 
     @FXML
@@ -105,31 +106,7 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener {
         try {
             charStream = CharStreams.fromPath(Paths.get(filepath));
             fulltext = charStream.toString();
-            inputContents.setText(fulltext);
-            PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromFileName(filepath));
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            PseudocodeParser parser = new PseudocodeParser(tokens);
-            PseudocodeErrorListener pseudocodeErrorListener = new PseudocodeErrorListener();
-            lexer.removeErrorListeners();
-            parser.removeErrorListeners();
-            lexer.addErrorListener(pseudocodeErrorListener);
-            parser.addErrorListener(pseudocodeErrorListener);
-            parser.setErrorHandler(new PseudocodeErrorStrategy());
-            ParseTree tree = parser.init();
-            TreeViewer viewr = new TreeViewer(Arrays.asList(
-                    parser.getRuleNames()), tree);
-            viewr.open();
-            System.out.println(tree.toStringTree(parser));
-
-            StringBuilder sb = new StringBuilder();
-            ArrayList<String> errorList = pseudocodeErrorListener.getErrorList();
-            for (String error: errorList) {
-                sb.append(error);
-                sb.append("\n");
-            }
-            errortext = sb.toString();
-
-            consoleLabel.setText(errortext);
+            compile(compileButton, fulltext);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -149,33 +126,7 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener {
     }
 
     public void compileText(MouseEvent mouseEvent) {
-       String inputs = inputContents.getText();
-
-//        CharStreams.fromString(inputs);
-        PseudocodeLexer lexer = new PseudocodeLexer(CharStreams.fromString(inputs));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        PseudocodeParser parser = new PseudocodeParser(tokens);
-        PseudocodeErrorListener pseudocodeErrorListener = new PseudocodeErrorListener();
-        lexer.removeErrorListeners();
-        parser.removeErrorListeners();
-        lexer.addErrorListener(pseudocodeErrorListener);
-        parser.addErrorListener(pseudocodeErrorListener);
-        parser.setErrorHandler(new PseudocodeErrorStrategy());
-        ParseTree tree = parser.init();
-        TreeViewer viewr = new TreeViewer(Arrays.asList(
-                parser.getRuleNames()), tree);
-        viewr.open();
-        System.out.println(tree.toStringTree(parser));
-
-        StringBuilder sb = new StringBuilder();
-        ArrayList<String> errorList = pseudocodeErrorListener.getErrorList();
-        for (String error: errorList) {
-            sb.append(error);
-            sb.append("\n");
-        }
-        errortext = sb.toString();
-
-        consoleLabel.setText(errortext);
+        compile(compileTextButton, inputContents.getText());
     }
 
     private void setIOHeader (String text) {
@@ -196,11 +147,13 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener {
         GridPane.setColumnSpan(errorsScrollPane, 1);
         GridPane.setRowSpan(errorsScrollPane, 2);
 
-        bodyPane.getChildren().add(ioScrollPane);
-        GridPane.setColumnIndex(ioScrollPane, 1);
-        GridPane.setRowIndex(ioScrollPane, 0);
-        GridPane.setColumnSpan(ioScrollPane, 1);
-        GridPane.setRowSpan(ioScrollPane, 2);
+        if (!bodyPane.getChildren().contains(ioScrollPane)) {
+            bodyPane.getChildren().add(ioScrollPane);
+            GridPane.setColumnIndex(ioScrollPane, 1);
+            GridPane.setRowIndex(ioScrollPane, 0);
+            GridPane.setColumnSpan(ioScrollPane, 1);
+            GridPane.setRowSpan(ioScrollPane, 2);
+        }
         ioScrollPane.setVisible(true);
     }
 
@@ -233,7 +186,7 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener {
 
     @Override
     public void onScanStart(ScanStartEvent e) {
-        showIOConsole();
+//        showIOConsole();
         printToIOLabel(e.getMessage());
     }
 
@@ -244,45 +197,91 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener {
 
     @Override
     public void onExecuteStart(ExecuteStartEvent e) {
+        //
 
     }
 
     @Override
     public void onExecuteSuccess(ExecuteSuccessEvent e) {
-    String currText = consoleLabel.getText();
+        String currText = consoleLabel.getText();
 
-    StringBuilder sb = new StringBuilder();
-    sb.append(currText);
-    sb.append("\n");
-    sb.append("------------------------------");
-    sb.append("\n\n\n");
-    sb.append("EXECUTE HAS FINISHED SUCCESSFULLY");
-    sb.append("\n\n\n");
-    sb.append("------------------------------");
-    sb.append("\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append(currText);
+        sb.append("\n");
+        sb.append("------------------------------");
+        sb.append("\n\n\n");
+        sb.append("EXECUTE HAS FINISHED SUCCESSFULLY");
+        sb.append("\n\n\n");
+        sb.append("------------------------------");
+        sb.append("\n");
 
-    errortext = sb.toString();
-
-    consoleLabel.setText(errortext);
+        errortext = sb.toString();
+        consoleLabel.setText(errortext);
 
     }
 
     @Override
     public void onExecuteError(ExecuteErrorEvent e) {
-    String currText = consoleLabel.getText();
+        String currText = consoleLabel.getText();
 
-    StringBuilder sb = new StringBuilder();
-    sb.append(currText);
-    sb.append("\n");
-    sb.append("------------------------------");
-    sb.append("\n\n\n");
-    sb.append("EXECUTE HAS FINISHED SUCCESSFULLY");
-    sb.append("\n\n\n");
-    sb.append("------------------------------");
-    sb.append("\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append(currText);
+        sb.append("\n");
+        sb.append("------------------------------");
+        sb.append("\n\n\n");
+        sb.append("EXECUTE FAILED");
+        sb.append("\n\n\n");
+        sb.append("------------------------------");
+        sb.append("\n");
 
-    errortext = sb.toString();
+        errortext = sb.toString();
+        consoleLabel.setText(errortext);
+    }
 
-    consoleLabel.setText(errortext);
+
+    public void compile (Object source, String srcCode) {
+        // source is the button thats clicked
+        CompileStartEvent compileStartEvent = new CompileStartEvent(source, srcCode);
+        manager.notifyCompileListeners(compileStartEvent);
+
+        showIOConsole();
+    }
+
+
+    @Override
+    public void onCompileStart(CompileStartEvent e) {
+        // probably some frontend stuff
+    }
+
+    @Override
+    public void onCompileSuccess(CompileSuccessEvent e) {
+        String currText = consoleLabel.getText();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(currText);
+        sb.append("\n");
+        sb.append("------------------------------");
+        sb.append("\n\n\n");
+        sb.append("COMPILED SUCCESSFULLY");
+        sb.append("\n\n\n");
+        sb.append("------------------------------");
+        sb.append("\n");
+
+        errortext = sb.toString();
+
+        consoleLabel.setText(errortext);
+        ExecuteStartEvent startEvent = new ExecuteStartEvent(e);
+        manager.notifyExecuteListeners(startEvent);
+    }
+
+    @Override
+    public void onCompileError(CompileErrorEvent e) {
+        StringBuilder sb = new StringBuilder();
+        for (String error: e.getErrorList()) {
+            sb.append(error);
+            sb.append("\n");
+        }
+        errortext = sb.toString();
+        consoleLabel.setText(errortext);
     }
 }

@@ -1,7 +1,7 @@
 package manager;
 
 import exception.SemanticException;
-import gen.PseudocodeParser;
+import antlr.PseudocodeParser;
 import notification.event.*;
 import notification.listener.ExecuteListener;
 import notification.listener.ScanListener;
@@ -10,6 +10,7 @@ import statement.compound.CompoundStatement;
 import statement.compound.FunctionCallStatement;
 import statement.compound.IterationStatement;
 
+import java.util.ArrayList;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,8 +37,6 @@ public class ExecutionManager
         controlStack.push(statement);
         if (statement instanceof FunctionCallStatement) {
             callStack.push((FunctionCallStatement) statement);
-        } else {
-            getCurrentFunctionCall().getLocalVariables().enterNewScope();
         }
     }
 
@@ -45,8 +44,6 @@ public class ExecutionManager
         CompoundStatement statement = controlStack.pop();
         if (statement instanceof FunctionCallStatement) {
             callStack.pop();
-        } else {
-            getCurrentFunctionCall().getLocalVariables().exitCurrentScope();
         }
         return statement;
     }
@@ -104,29 +101,29 @@ public class ExecutionManager
 
     @Override
     public void onScanEnd(ScanEndEvent evt) {
-        resumeExecution();
         try {
-            callStack.peek()
+            controlStack.peek()
                     .getLocalVariables()
                     .getVariable(awaitingScanStatement.getIdentifier())
                     .setValue(evt.getInput());
         } catch(SemanticException e) {
             System.err.println("unexpected " + e.getMessage() + " at runtime");
         }
+        resumeExecution();
     }
 
     @Override
     public void run() {
-        new FunctionCallStatement(
-                programManager
-                , "main"
-                , new PseudocodeParser.ExpressionContext[0]
-                , 0)
-                .execute();
+//        new FunctionCallStatement(
+//                programManager
+//                , "main"
+//                , new ArrayList<>()
+//                , 0)
+//                .execute();
 
-        programManager
-                .getNotificationManager()
-                .notifyExecuteListeners(new ExecuteSuccessEvent(this));
+//        programManager
+//                .getNotificationManager()
+//                .notifyExecuteListeners(new ExecuteSuccessEvent(this));
     }
 
     @Override

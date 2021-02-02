@@ -57,8 +57,8 @@
           <Label id="inputFileLabel" layoutX="20.0" layoutY="14.0" text="Type the code above OR select an input .TXT file" />
           <TextField id="inputFileField" fx:id="inputFileField" layoutX="20.0" layoutY="35.0" prefHeight="31.0" prefWidth="319.0" />
          <Button id="selectFileButton" fx:id="selectFileButton" layoutX="364.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#selectFile" prefHeight="37.0" prefWidth="110.0" text="Select file" />
-         <Button id="compileTextButton" layoutX="20.0" layoutY="83.0" mnemonicParsing="false" onMouseClicked="#compileText" text="Compile from typed code" />
-          <Button id="compileButton" layoutX="294.0" layoutY="83.0" mnemonicParsing="false" onMouseClicked="#readTextFile" text="Compile from input file" />
+         <Button id="compileTextButton" fx:id="compileTextButton" layoutX="20.0" layoutY="83.0" mnemonicParsing="false" onMouseClicked="#compileText" text="Compile from typed code" />
+          <Button id="compileButton" fx:id="compileButton" layoutX="294.0" layoutY="83.0" mnemonicParsing="false" onMouseClicked="#readTextFile" text="Compile from input file" />
         </Pane>
   </GridPane>
 </AnchorPane>

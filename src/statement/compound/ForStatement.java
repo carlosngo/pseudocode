@@ -3,25 +3,27 @@ package statement.compound;
 import exception.SemanticException;
 
 import exception.type.BoundException;
-import gen.PseudocodeParser.ForInitStatementContext;
-import gen.PseudocodeParser.ExpressionContext;
+import antlr.PseudocodeParser.ExpressionContext;
+
 import manager.ExecutionManager;
 import manager.ProgramManager;
+import manager.VariableManager;
 import notification.event.SemanticErrorEvent;
 import storage.Storage;
 import util.evaluator.ExpressionEvaluator;
 
 public class ForStatement extends IterationStatement {
 
-    private final ForInitStatementContext initCtx;
+//    private final ForInitStatementContext initCtx;
     private final ExpressionContext boundCtx;
 
     public ForStatement(ProgramManager programManager
-            , ForInitStatementContext initCtx
+            , VariableManager parentVariables
+//            , ForInitStatementContext initCtx
             , boolean countDown
             , ExpressionContext boundCtx, int lineNumber) {
-        super(programManager, countDown, boundCtx, lineNumber);
-        this.initCtx = initCtx;
+        super(programManager, parentVariables, countDown, boundCtx, lineNumber);
+//        this.initCtx = initCtx;
         this.boundCtx = boundCtx;
         try {
 //            Storage.Type initType = ExpressionEvaluator.evaluateType(initCtx, programManager);

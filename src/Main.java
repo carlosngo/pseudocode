@@ -12,7 +12,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import gen.*;
 
 import java.io.FileInputStream;
 import java.util.Arrays;
@@ -30,32 +29,16 @@ public class Main extends Application {
                         "gui/MainView.fxml"
                 )
         );
-        Stage stage = new Stage();
-        stage.setScene(
+        primaryStage.setTitle("Pseudocode Interpreter");
+        primaryStage.setScene(
                 new Scene(loader.load())
         );
-
         MainView controller = loader.getController();
         controller.setManager(notificationManager);
 
-        stage.show();
-    }
-
-   /* @Override
-    public void start(Stage primaryStage) throws Exception {
-        NotificationManager notificationManager = new NotificationManager();
-
-        Parent root =  FXMLLoader.load(getClass().getResource("gui/MainView.fxml"));
-//        FXMLLoader loader = FXMLLoader.load(getClass().getResource("gui/MainView.fxml"));
-//        Parent root = loader.load();
-//        MainView controller = loader.getController();
-//        controller.setManager(notificationManager);
-
-        primaryStage.setTitle("Pseudocode Interpreter");
-        primaryStage.setScene(new Scene(root, 1000, 600));
         primaryStage.show();
         primaryStage.setResizable(true);
-    }*/
+    }
 
     public static void main(String[] args) {
 //        CPP14Lexer lexer = new CPP14Lexer(CharStreams.fromFileName("res/in.txt"));
