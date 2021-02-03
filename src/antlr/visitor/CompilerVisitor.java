@@ -306,18 +306,15 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
             if (arrayType != createType) {
                 throw new AssignmentException(arrayType, createType);
             }
-            try {
-                Integer size = new IntegerExpressionVisitor(programManager, true).visit(sizeContext);
-                if (size == null) {
-                    throw new ArraySizeException();
-                }
-                Array array = new Array(isFinal, arrayType, arrayName, size);
-                compilationManager.addStatement(
-                        new DeclarationStatement(programManager, array, lineNumber));
-                System.out.println("initialized array: " + array);
-            } catch (NullPointerException e) {
+
+            Integer size = new IntegerExpressionVisitor(programManager, true).visit(sizeContext);
+            if (size == null) {
                 throw new ArraySizeException();
             }
+            Array array = new Array(isFinal, arrayType, arrayName, size);
+            compilationManager.addStatement(
+                    new DeclarationStatement(programManager, array, lineNumber));
+
         } catch (SemanticException e) {
             notificationManager.notifyErrorListeners(new SemanticErrorEvent(this, e, lineNumber));
         }
@@ -326,18 +323,16 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
 
 
     private void visitFunction(Function function, int lineNumber, PseudocodeParser.CompoundStatementContext ctx) {
-        System.out.println(function);
         try {
             functionManager.addFunction(function);
         } catch (StorageRedeclarationException e) {
             notificationManager.notifyErrorListeners(new SemanticErrorEvent(this, e, lineNumber));
         }
         functionManager.enterFunction(function);
-        System.out.println("Entering " + function);
         compilationManager.enterCompoundStatement(new FunctionCallStatement(programManager, function, lineNumber));
         visit(ctx);
         compilationManager.exitCompoundStatement();
         functionManager.exitFunction();
-        System.out.println("Exiting " + function);
+        System.out.println(function);
     }
 }

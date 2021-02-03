@@ -94,11 +94,13 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
             return null;
         }
         for (int i = 2; right != null; i++) {
-            if (ctx.Plus(i - 2) == null) {
-                sum -= visit(right);
-            } else {
-                sum += visit(right);
-            }
+            try {
+                if (ctx.Plus(i - 2) == null) {
+                    sum -= visit(right);
+                } else {
+                    sum += visit(right);
+                }
+            } catch (NullPointerException e) { }
             right = ctx.multiplicativeExpression(i);
         }
         return sum;
@@ -110,11 +112,13 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
         PseudocodeParser.UnaryExpressionContext right = ctx.unaryExpression(1);
         Float product = visit(left);
         for (int i = 2; right != null; i++) {
-            if (ctx.Star(i - 2) == null) {
-                product /= visit(right);
-            } else {
-                product *= visit(right);
-            }
+            try {
+                if (ctx.Star(i - 2) == null) {
+                    product /= visit(right);
+                } else {
+                    product *= visit(right);
+                }
+            } catch (NullPointerException e) { }
             right = ctx.unaryExpression(i);
         }
         return product;
@@ -221,9 +225,12 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
 
     @Override
     public Float visitLiteral(PseudocodeParser.LiteralContext ctx) {
-        if (ctx.FloatingLiteral() == null) {
-            return null;
+        if (ctx.FloatingLiteral() != null) {
+            return Float.valueOf(ctx.FloatingLiteral().getText());
         }
-        return Float.valueOf(ctx.FloatingLiteral().getText());
+        if (ctx.IntegerLiteral() != null) {
+            return Float.valueOf(ctx.IntegerLiteral().getText());
+        }
+        return null;
     }
 }

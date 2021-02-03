@@ -24,12 +24,8 @@ public class WhileStatement extends IterationStatement {
         this.initVarName = initVarName;
         try {
             Storage.Type initType = parentVariables.getVariable(initVarName).getType();
-            try {
-                Integer bound = new IntegerExpressionVisitor(programManager, true).visit(boundCtx);
-                if (bound == null) {
-                    throw new BoundException(null);
-                }
-            } catch (NullPointerException e) {
+            Integer bound = new IntegerExpressionVisitor(programManager, true).visit(boundCtx);
+            if (bound == null) {
                 throw new BoundException(null);
             }
             if (initType != Storage.Type.INT) {

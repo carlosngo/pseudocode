@@ -87,39 +87,21 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
     public String visitAdditiveExpression(PseudocodeParser.AdditiveExpressionContext ctx) {
         PseudocodeParser.MultiplicativeExpressionContext left = ctx.multiplicativeExpression(0);
         PseudocodeParser.MultiplicativeExpressionContext right = ctx.multiplicativeExpression(1);
-
         String sum = visit(left);
-
         if(!ctx.PlusPlus().isEmpty() || !ctx.MinusMinus().isEmpty()){
             return null;
         }
-
         for (int i = 2; right != null; i++){
             if (ctx.Plus(i - 2) == null){
                 return null;
             } else {
-                sum = sum.concat(visit(right));
-            }
-            right = ctx.multiplicativeExpression(i);
-        }
-
-        return sum;
-
-        /*
-        if (!ctx.PlusPlus().isEmpty() || !ctx.MinusMinus().isEmpty()) {
-            return null;
-        }
-        for (int i = 2; right != null; i++) {
-            if (ctx.Plus(i - 2) == null) {
-                sum -= visit(right);
-            } else {
-                sum += visit(right);
+                try {
+                    sum = sum.concat(visit(right));
+                } catch (NullPointerException e) { }
             }
             right = ctx.multiplicativeExpression(i);
         }
         return sum;
-
-         */
     }
 
     @Override
@@ -163,9 +145,6 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                 = new FunctionCallStatement(
                 programManager, identifier, parameterContexts, lineNumber);
         Storage.Type returnType = statement.getFunctionSignature().getType();
-        if (returnType != Storage.Type.STRING) {
-            return null;
-        }
         if (isCompiling) {
             return (String) Storage.getRandomValueOfType(returnType);
         } else {
@@ -184,9 +163,6 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
             if (index == null)
                 throw new ArrayIndexException();
             Variable variable = variableManager.getVariable(identifier);
-            if (variable.getType() != Storage.Type.STRING) {
-                return null;
-            }
             if (variable instanceof Array) {
                 Array array = (Array) variable;
                 if (isCompiling) {
@@ -211,9 +187,6 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
             String identifier = ctx.Identifier().getText();
             try {
                 Variable variable = variableManager.getVariable(identifier);
-                if (variable.getType() != Storage.Type.STRING) {
-                    return null;
-                }
                 if (variable instanceof Array) {
                     return null;
                 } else {
@@ -233,10 +206,10 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
 
     @Override
     public String visitLiteral(PseudocodeParser.LiteralContext ctx) {
-        if (ctx.StringLiteral() == null) {
-            return null;
+        if (ctx.FloatingLiteral() != null) {
+            return ctx.getText().substring(0, ctx.getText().length() - 1);
         }
-        return String.valueOf(ctx.StringLiteral().getText());
+        return ctx.getText();
     }
 
 }

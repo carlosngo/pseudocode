@@ -45,7 +45,6 @@ public class CompilationManager implements Manager, CompileListener, SemanticErr
     public void exitCompoundStatement() {
         CompoundStatement current = statementStack.pop();
         if (statementStack.isEmpty()) {
-            System.err.println("done with function");
             return;
         }
         addStatement(current);

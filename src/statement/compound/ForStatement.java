@@ -34,16 +34,10 @@ public class ForStatement extends IterationStatement {
         this.initVarName = initVarName;
         this.boundCtx = boundCtx;
         try {
-//            Storage.Type initType = ExpressionEvaluator.evaluateType(initCtx, programManager);
-            try {
-                Integer bound = new IntegerExpressionVisitor(programManager, true).visit(boundCtx);
-                if (bound == null) {
-                    throw new BoundException(null);
-                }
-            } catch (NullPointerException e) {
+            Integer bound = new IntegerExpressionVisitor(programManager, true).visit(boundCtx);
+            if (bound == null) {
                 throw new BoundException(null);
             }
-
         } catch(SemanticException e) {
             notifyErrorListeners(e);
         }

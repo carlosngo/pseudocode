@@ -36,15 +36,11 @@ public class AssignmentStatement extends Statement {
             PseudocodeParserBaseVisitor expressionVisitor
                     = ExpressionVisitorFactory
                         .getExpressionVisitor(programManager, variable.getType(), true);
-            try {
-                Object value = expressionVisitor.visit(valueCtx);
-                if (value == null) {
-                    throw new AssignmentException(variable.getType(), null);
-                }
-                variable.setValue(value);
-            } catch(NullPointerException e) {
+            Object value = expressionVisitor.visit(valueCtx);
+            if (value == null) {
                 throw new AssignmentException(variable.getType(), null);
             }
+            variable.setValue(value);
         } catch(SemanticException e) {
             notifyErrorListeners(e);
         }
@@ -70,26 +66,16 @@ public class AssignmentStatement extends Statement {
             PseudocodeParserBaseVisitor expressionVisitor
                     = ExpressionVisitorFactory
                     .getExpressionVisitor(programManager, variable.getType(), true);
-            try {
-                Integer index = new IntegerExpressionVisitor(
-                        programManager, true).visit(indexCtx);
-                if (index == null) {
-                    throw new ArrayIndexException();
-                }
-            } catch (NullPointerException e) {
-                // invalid index
+            Integer index = new IntegerExpressionVisitor(
+                    programManager, true).visit(indexCtx);
+            if (index == null) {
                 throw new ArrayIndexException();
             }
-            try {
-                Object value = expressionVisitor.visit(valueCtx);
-                if (value == null) {
-                    throw new AssignmentException(variable.getType(), null);
-                }
-                variable.setValue(value);
-            } catch(NullPointerException e) {
-                e.printStackTrace();
+            Object value = expressionVisitor.visit(valueCtx);
+            if (value == null) {
                 throw new AssignmentException(variable.getType(), null);
             }
+            variable.setValue(value);
         } catch(SemanticException e) {
             notifyErrorListeners(e);
         }

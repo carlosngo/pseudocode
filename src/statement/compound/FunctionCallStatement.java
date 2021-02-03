@@ -45,15 +45,10 @@ public class FunctionCallStatement extends CompoundStatement {
             for (int i = 0; i < parameterExpressions.size(); i++) {
                 Variable expectedParameter = expectedParameters.get(i);
                 PseudocodeParserBaseVisitor expressionVisitor = ExpressionVisitorFactory.getExpressionVisitor(programManager, expectedParameter.getType(), true);
-                try {
-                    if (expressionVisitor.visit(parameterExpressions.get(i)) == null) {
-                        throw new ParameterException(expectedParameter.getType(), Storage.Type.UNKNOWN);
-                    }
-                    getLocalVariables().addVariable(expectedParameter);
-                } catch(NullPointerException e) {
-//                e.printStackTrace();
+                if (expressionVisitor.visit(parameterExpressions.get(i)) == null) {
                     throw new ParameterException(expectedParameter.getType(), Storage.Type.UNKNOWN);
                 }
+                getLocalVariables().addVariable(expectedParameter);
             }
         } catch(SemanticException e) {
             notifyErrorListeners(e);

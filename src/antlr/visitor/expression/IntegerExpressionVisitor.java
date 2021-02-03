@@ -39,6 +39,7 @@ public class IntegerExpressionVisitor extends PseudocodeParserBaseVisitor<Intege
 
     @Override
     public Integer visitExpression(PseudocodeParser.ExpressionContext ctx) {
+
         return visit(ctx.logicalOrExpression());
     }
 
@@ -95,11 +96,13 @@ public class IntegerExpressionVisitor extends PseudocodeParserBaseVisitor<Intege
             return null;
         }
         for (int i = 2; right != null; i++) {
-            if (ctx.Plus(i - 2) == null) {
-                sum -= visit(right);
-            } else {
-                sum += visit(right);
-            }
+            try {
+                if (ctx.Plus(i - 2) == null) {
+                    sum -= visit(right);
+                } else {
+                    sum += visit(right);
+                }
+            } catch (NullPointerException e) { }
             right = ctx.multiplicativeExpression(i);
         }
         return sum;
@@ -111,11 +114,13 @@ public class IntegerExpressionVisitor extends PseudocodeParserBaseVisitor<Intege
         PseudocodeParser.UnaryExpressionContext right = ctx.unaryExpression(1);
         Integer product = visit(left);
         for (int i = 2; right != null; i++) {
-            if (ctx.Star(i - 2) == null) {
-                product /= visit(right);
-            } else {
-                product *= visit(right);
-            }
+            try {
+                if (ctx.Star(i - 2) == null) {
+                    product /= visit(right);
+                } else {
+                    product *= visit(right);
+                }
+            } catch (NullPointerException e) { }
             right = ctx.unaryExpression(i);
         }
         return product;
