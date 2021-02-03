@@ -1,5 +1,7 @@
 package statement.compound;
 
+import antlr.PseudocodeParser;
+import antlr.visitor.expression.IntegerExpressionVisitor;
 import exception.SemanticException;
 
 import exception.type.BoundException;
@@ -9,34 +11,53 @@ import manager.ExecutionManager;
 import manager.ProgramManager;
 import manager.VariableManager;
 import notification.event.SemanticErrorEvent;
+import statement.AssignmentStatement;
+import statement.DeclarationStatement;
 import storage.Storage;
+import storage.Variable;
 import util.evaluator.ExpressionEvaluator;
 
 public class ForStatement extends IterationStatement {
 
-//    private final ForInitStatementContext initCtx;
+    private DeclarationStatement initDeclaration;
+    private AssignmentStatement initAssignment;
+    private String initVarName;
     private final ExpressionContext boundCtx;
 
     public ForStatement(ProgramManager programManager
             , VariableManager parentVariables
-//            , ForInitStatementContext initCtx
+            , String initVarName
             , boolean countDown
-            , ExpressionContext boundCtx, int lineNumber) {
+            , ExpressionContext boundCtx,
+            int lineNumber) {
         super(programManager, parentVariables, countDown, boundCtx, lineNumber);
-//        this.initCtx = initCtx;
+        this.initVarName = initVarName;
         this.boundCtx = boundCtx;
         try {
 //            Storage.Type initType = ExpressionEvaluator.evaluateType(initCtx, programManager);
-            Storage.Type boundType = ExpressionEvaluator.evaluateType(boundCtx, programManager);
-//            if (initType != Storage.Type.INT) {
-//                throw new BoundException(initType);
-//            }
-            if (boundType != Storage.Type.INT) {
-                throw new BoundException(boundType);
+            try {
+                Integer bound = new IntegerExpressionVisitor(programManager, true).visit(boundCtx);
+                if (bound == null) {
+                    throw new BoundException(null);
+                }
+            } catch (NullPointerException e) {
+                throw new BoundException(null);
             }
+
         } catch(SemanticException e) {
             notifyErrorListeners(e);
         }
+    }
+
+    public void setInitDeclaration(DeclarationStatement initDeclaration) {
+        this.initDeclaration = initDeclaration;
+        if (initDeclaration.getVariable().getType() != Storage.Type.INT) {
+            notifyErrorListeners(new BoundException(null));
+        }
+    }
+
+    public void setInitAssignment(AssignmentStatement initAssignment) {
+        this.initAssignment = initAssignment;
     }
 
     @Override

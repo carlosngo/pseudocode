@@ -7,8 +7,9 @@ public class ConditionException extends TypeMismatchException {
 
     public ConditionException(Storage.Type offendingType) {
         super("condition exception, expected " 
-                        + Keyword.BOOLEAN + ", found "
-                        + Keyword.parseKeyword(offendingType)
+                        + Keyword.BOOLEAN
+                        + (offendingType == null ? "" : ", found "
+                        + Keyword.parseKeyword(offendingType))
                 , Storage.Type.BOOLEAN, offendingType);
     }
 }

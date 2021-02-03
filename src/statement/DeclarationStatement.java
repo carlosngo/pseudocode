@@ -25,13 +25,16 @@ public class DeclarationStatement extends Statement {
         }
     }
 
+    public Variable getVariable() {
+        return variable;
+    }
 
     @Override
     public void execute() {
         tryExecution();
         try {
             getProgramManager()
-                    .getCompilationManager()
+                    .getExecutionManager()
                     .getCurrentLocalVariables()
                     .addVariable(variable);
         } catch (SemanticException e) {

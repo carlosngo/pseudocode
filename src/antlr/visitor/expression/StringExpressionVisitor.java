@@ -6,7 +6,7 @@ import manager.NotificationManager;
 import manager.ProgramManager;
 import manager.VariableManager;
 
-public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<Boolean> {
+public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String> {
     private final ProgramManager programManager;
     private final VariableManager variableManager;
     private final FunctionManager functionManager;

@@ -1,5 +1,6 @@
 package statement.compound;
 
+import antlr.visitor.expression.IntegerExpressionVisitor;
 import exception.SemanticException;
 import exception.type.BoundException;
 import antlr.PseudocodeParser.ExpressionContext;
@@ -11,26 +12,28 @@ import storage.Storage;
 import util.evaluator.ExpressionEvaluator;
 
 public class WhileStatement extends IterationStatement {
-    private ExpressionContext initCtx;
+    private final String initVarName;
 
     public WhileStatement(ProgramManager programManager
-            , VariableManager variableManager
+            , VariableManager parentVariables
             , ExpressionContext boundCtx
             , boolean countDown
-            , ExpressionContext initCtx
+            , String initVarName
             , int lineNumber) {
-        super(programManager, variableManager, countDown, boundCtx, lineNumber);
-        this.initCtx = initCtx;
+        super(programManager, parentVariables, countDown, boundCtx, lineNumber);
+        this.initVarName = initVarName;
         try {
-            Storage.Type initType = ExpressionEvaluator
-                    .evaluateType(initCtx, programManager);
-            Storage.Type boundType = ExpressionEvaluator
-                    .evaluateType(boundCtx, programManager);
+            Storage.Type initType = parentVariables.getVariable(initVarName).getType();
+            try {
+                Integer bound = new IntegerExpressionVisitor(programManager, true).visit(boundCtx);
+                if (bound == null) {
+                    throw new BoundException(null);
+                }
+            } catch (NullPointerException e) {
+                throw new BoundException(null);
+            }
             if (initType != Storage.Type.INT) {
                 throw new BoundException(initType);
-            }
-            if (boundType != Storage.Type.INT) {
-                throw new BoundException(boundType);
             }
         } catch(SemanticException e) {
             notifyErrorListeners(e);
@@ -43,10 +46,11 @@ public class WhileStatement extends IterationStatement {
         tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
         try {
-            int initialValue = (int) ExpressionEvaluator
-                    .evaluateValue(initCtx, getProgramManager());
-            int destinationValue = (int) ExpressionEvaluator
-                    .evaluateValue(getBoundContext(), getProgramManager());
+            int initialValue = (int) getLocalVariables().getVariable(initVarName).getValue();
+            Integer destinationValue = new IntegerExpressionVisitor(
+                    getProgramManager()
+                    , false)
+                    .visit(getBoundContext());
             executionManager.enterBlock(this);
             beginIteration(initialValue, destinationValue);
 

@@ -98,19 +98,24 @@ public class AssignmentStatement extends Statement {
     public void execute() {
         tryExecution();
         try {
-            Array array = (Array) getProgramManager()
-                    .getCompilationManager()
+            Variable variable = getProgramManager()
+                    .getExecutionManager()
                     .getCurrentLocalVariables()
                     .getVariable(identifier);
-            int index = new IntegerExpressionVisitor(
-                    getProgramManager()
-                    , false)
-                    .visit(indexCtx);
             PseudocodeParserBaseVisitor expressionVisitor
                     = ExpressionVisitorFactory
-                        .getExpressionVisitor(getProgramManager(), array.getType(), false);
+                    .getExpressionVisitor(getProgramManager(), variable.getType(), false);
             Object value = expressionVisitor.visit(valueCtx);
-            array.set(index, value);
+            if (indexCtx != null) {
+                int index = new IntegerExpressionVisitor(
+                        getProgramManager()
+                        , false)
+                        .visit(indexCtx);
+
+                ((Array) variable).set(index, value);
+            } else {
+                variable.setValue(value);
+            }
         } catch(SemanticException e) {
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());
         }

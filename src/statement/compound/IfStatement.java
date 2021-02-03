@@ -1,6 +1,7 @@
 package statement.compound;
 
 
+import antlr.visitor.expression.BooleanExpressionVisitor;
 import exception.SemanticException;
 import exception.type.ConditionException;
 import antlr.PseudocodeParser.ExpressionContext;
@@ -29,10 +30,9 @@ public class IfStatement extends CompoundStatement {
         negativeStatements = new ArrayList<>();
         inPositive = true;
         try {
-            Storage.Type givenType =
-                    ExpressionEvaluator.evaluateType(condition, programManager);
-            if (givenType != Storage.Type.BOOLEAN) {
-                throw new ConditionException(givenType);
+            Boolean value = new BooleanExpressionVisitor(programManager, true).visit(condition);
+            if (value == null) {
+                throw new ConditionException(null);
             }
         } catch(SemanticException e) {
             notifyErrorListeners(e);
@@ -58,23 +58,20 @@ public class IfStatement extends CompoundStatement {
     @Override
     public void execute() {
         tryExecution();
-        try {
-            boolean value = (boolean)
-                    ExpressionEvaluator.evaluateValue(condition, getProgramManager());
-            ExecutionManager executionManager = getProgramManager().getExecutionManager();
-            executionManager.enterBlock(this);
-            if (value) {
-                executeOneIteration();
-            } else {
-                for (int i = 0; i < negativeStatements.size() && !hasBroken(); i++) {
-                    negativeStatements.get(i).execute();
-                }
+        Boolean value = new BooleanExpressionVisitor(getProgramManager(), true)
+                .visit(condition);
+        ExecutionManager executionManager = getProgramManager().getExecutionManager();
+        executionManager.enterBlock(this);
+        if (value) {
+            executeOneIteration();
+        } else {
+            for (int i = 0; i < negativeStatements.size() && !hasBroken(); i++) {
+                negativeStatements.get(i).execute();
             }
-            if (!hasBroken()) {
-                executionManager.exitBlock();
-            }
-        } catch(SemanticException e) {
-            System.err.println("unexpected compilation error during runtime: " + e.getMessage());
         }
+        if (!hasBroken()) {
+            executionManager.exitBlock();
+        }
+
     }
 }
