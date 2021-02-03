@@ -37,7 +37,12 @@ public class Function extends Storage {
         for (Variable variable : parameters) {
             sb.append(variable.toString() + ",");
         }
-        sb.append(")");
+        sb.append(") {\n");
+        for (Statement statement : statements) {
+            sb.append(statement.toString());
+            sb.append("\n");
+        }
+        sb.append("}");
         return sb.toString();
     }
 }
