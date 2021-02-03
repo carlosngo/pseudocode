@@ -16,6 +16,8 @@ public class ExpressionVisitorFactory {
                 return new IntegerExpressionVisitor(programManager, isCompiling);
             case FLOAT:
                 return new FloatingExpressionVisitor(programManager, isCompiling);
+            case STRING:
+                return new StringExpressionVisitor(programManager, isCompiling);
         }
         return null;
     }
