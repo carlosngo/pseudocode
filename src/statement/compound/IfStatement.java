@@ -77,4 +77,11 @@ public class IfStatement extends CompoundStatement {
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());
         }
     }
+
+    @Override
+    public String toString() {
+        return "if (" + condition.getText() +
+                "), " + "negativeStatements=" + negativeStatements +
+                ", inPositive=" + inPositive;
+    }
 }

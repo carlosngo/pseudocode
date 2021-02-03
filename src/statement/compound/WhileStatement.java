@@ -58,4 +58,10 @@ public class WhileStatement extends IterationStatement {
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());
         }
     }
+
+    @Override
+    public String toString() {
+        return "While (" + initCtx.getText() +
+                ')';
+    }
 }

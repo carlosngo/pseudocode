@@ -59,4 +59,11 @@ public class ForStatement extends IterationStatement {
             System.err.println(e.getMessage());
         }
     }
+
+    @Override
+    public String toString() {
+        return "ForStatement{" +
+                "boundCtx=" + boundCtx.getText() +
+                '}';
+    }
 }

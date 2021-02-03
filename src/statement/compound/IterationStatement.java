@@ -41,4 +41,12 @@ public abstract class IterationStatement extends CompoundStatement {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return "for (" +
+                "countDown=" + countDown +
+                ", boundCtx=" + boundCtx.getText() +
+                ')';
+    }
 }

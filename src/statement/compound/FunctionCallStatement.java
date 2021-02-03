@@ -128,4 +128,12 @@ public class FunctionCallStatement extends CompoundStatement {
         }
     }
 
+    @Override
+    public String toString() {
+        return "FunctionCallStatement{" +
+                "function=" + function +
+                ", parameterExpressions=" + parameterExpressions +
+                ", returnValue=" + returnValue +
+                '}';
+    }
 }
