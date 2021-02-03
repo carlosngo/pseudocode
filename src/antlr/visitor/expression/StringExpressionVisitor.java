@@ -99,11 +99,28 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
             if (ctx.Plus(i - 2) == null){
                 return null;
             } else {
-                sum.concat(visit(right));
+                sum = sum.concat(visit(right));
             }
+            right = ctx.multiplicativeExpression(i);
         }
 
         return sum;
+
+        /*
+        if (!ctx.PlusPlus().isEmpty() || !ctx.MinusMinus().isEmpty()) {
+            return null;
+        }
+        for (int i = 2; right != null; i++) {
+            if (ctx.Plus(i - 2) == null) {
+                sum -= visit(right);
+            } else {
+                sum += visit(right);
+            }
+            right = ctx.multiplicativeExpression(i);
+        }
+        return sum;
+
+         */
     }
 
     @Override
