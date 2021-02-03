@@ -1,7 +1,6 @@
 package manager;
 
 import exception.SemanticException;
-import antlr.PseudocodeParser;
 import notification.event.*;
 import notification.listener.ExecuteListener;
 import notification.listener.ScanListener;
@@ -9,8 +8,9 @@ import statement.ScanStatement;
 import statement.compound.CompoundStatement;
 import statement.compound.FunctionCallStatement;
 import statement.compound.IterationStatement;
+import storage.Storage;
+import storage.Variable;
 
-import java.util.ArrayList;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -68,6 +68,10 @@ public class ExecutionManager
         return callStack.peek();
     }
 
+    public VariableManager getCurrentLocalVariables() {
+        return callStack.peek().getLocalVariables();
+    }
+
     public void tryExecution() throws InterruptedException {
         synchronized(executionGate) {
             while (!executionFlag) {
@@ -102,10 +106,10 @@ public class ExecutionManager
     @Override
     public void onScanEnd(ScanEndEvent evt) {
         try {
-            controlStack.peek()
+            Variable variable = controlStack.peek()
                     .getLocalVariables()
-                    .getVariable(awaitingScanStatement.getIdentifier())
-                    .setValue(evt.getInput());
+                    .getVariable(awaitingScanStatement.getIdentifier());
+            variable.setValue(Storage.convertFromString(evt.getInput(), variable.getType()));
         } catch(SemanticException e) {
             System.err.println("unexpected " + e.getMessage() + " at runtime");
         }

@@ -51,6 +51,8 @@ public class CompoundStatement extends Statement {
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
         executionManager.enterBlock(this);
         executeOneIteration();
-        executionManager.exitBlock();
+        if (!hasBroken()) {
+            executionManager.exitBlock();
+        }
     }
 }

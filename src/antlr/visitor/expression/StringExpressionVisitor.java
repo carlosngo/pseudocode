@@ -14,7 +14,6 @@ import statement.compound.FunctionCallStatement;
 import storage.Array;
 import storage.Storage;
 import storage.Variable;
-
 import java.util.List;
 
 public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String> {

@@ -72,6 +72,20 @@ public abstract class Storage {
         return null;
     }
 
+    public static Object convertFromString(String value, Type type) {
+        switch (type) {
+            case BOOLEAN:
+                return Boolean.parseBoolean(value);
+            case INT:
+                return Integer.parseInt(value);
+            case FLOAT:
+                return Float.parseFloat(value);
+            case STRING:
+                return value;
+        }
+        return null;
+    }
+
     public static Type getResultingType(
             Type leftOperand
             , String operator

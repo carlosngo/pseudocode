@@ -237,8 +237,7 @@ doWhileStatement:
     ;
 
 iterationInit:
-    expression
-    | declSpecifierSeq? initDeclaratorList;
+    variableSpecifier? initDeclarator;
 
 badIteration:
     (Up | Down) | To  { notifyErrorListeners("expected up/down to"); }
