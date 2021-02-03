@@ -35,11 +35,19 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
         this.isCompiling = isCompiling;
     }
 
+
     @Override
     public Float visitExpression(PseudocodeParser.ExpressionContext ctx) {
-
         return visit(ctx.logicalOrExpression());
     }
+
+    /** if there is an boolean operator in the expression, the resulting expression will have a boolean value.
+     * If there is a boolean value in the expression, it cannot be typecasted to boolean
+     * Therefore, visit normally but return null
+     *
+     * @param ctx
+     * @return
+     */
     @Override
     public Float visitLogicalOrExpression(PseudocodeParser.LogicalOrExpressionContext ctx)  {
         Float value = super.visitLogicalOrExpression(ctx);
@@ -164,24 +172,19 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
             Integer index = integerExpressionVisitor.visitExpression(ctx.expression());
             if (index == null)
                 throw new ArrayIndexException();
-            try {
-                Variable variable = variableManager.getVariable(identifier);
-                if (variable.getType() != Storage.Type.FLOAT && variable.getType() != Storage.Type.INT) {
-                    return null;
-                }
-                if (variable instanceof Array) {
-                    Array array = (Array) variable;
-                    if (isCompiling) {
-                        return (Float) Storage.getRandomValueOfType(array.getType());
-                    } else {
-                        return (Float) array.get(index);
-                    }
-                } else {
-                    throw new NotArrayException(variable);
-                }
-            } catch (SemanticException e) {
-                notificationManager.notifyErrorListeners(new SemanticErrorEvent(this, e, lineNumber));
+            Variable variable = variableManager.getVariable(identifier);
+            if (variable.getType() != Storage.Type.FLOAT && variable.getType() != Storage.Type.INT) {
                 return null;
+            }
+            if (variable instanceof Array) {
+                Array array = (Array) variable;
+                if (isCompiling) {
+                    return (Float) Storage.getRandomValueOfType(array.getType());
+                } else {
+                    return (Float) array.get(index);
+                }
+            } else {
+                throw new NotArrayException(variable);
             }
         } catch (SemanticException e) {
             notificationManager.notifyErrorListeners(new SemanticErrorEvent(this, e, lineNumber));
@@ -223,5 +226,4 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
         }
         return Float.valueOf(ctx.FloatingLiteral().getText());
     }
-
 }
