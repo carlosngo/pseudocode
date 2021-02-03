@@ -7,19 +7,17 @@ import exception.ArraySizeException;
 import exception.SemanticException;
 import exception.StorageRedeclarationException;
 import exception.type.AssignmentException;
+import exception.type.BoundException;
 import manager.*;
 import notification.event.SemanticErrorEvent;
-import statement.AssignmentStatement;
-import statement.DeclarationStatement;
-import statement.compound.CompoundStatement;
-import statement.compound.FunctionCallStatement;
+import statement.*;
+import statement.compound.*;
 import storage.Array;
 import storage.Function;
 import storage.Storage;
 import storage.Variable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
     private final ProgramManager programManager;
@@ -62,19 +60,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
             }
         }
         Function function = new Function(functionType, functionName, variables);
-        System.out.println(function);
-        try {
-            functionManager.addFunction(function);
-        } catch (StorageRedeclarationException e) {
-            notificationManager.notifyErrorListeners(new SemanticErrorEvent(this, e, lineNumber));
-        }
-        functionManager.enterFunction(function);
-        System.out.println("Entering " + function);
-        compilationManager.enterCompoundStatement(new FunctionCallStatement(programManager, function, lineNumber));
-        visit(ctx.compoundStatement());
-        compilationManager.exitCompoundStatement();
-        functionManager.exitFunction();
-        System.out.println("Exiting " + function);
+        visitFunction(function, lineNumber, ctx.compoundStatement());
         return null;
     }
 
@@ -82,19 +68,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
     public Void visitMainFunction(PseudocodeParser.MainFunctionContext ctx) {
         int lineNumber = ctx.getStart().getLine();
         Function function = new Function(Storage.Type.VOID, "main", new ArrayList<>());
-        System.out.println(function);
-        try {
-            functionManager.addFunction(function);
-        } catch (StorageRedeclarationException e) {
-            notificationManager.notifyErrorListeners(new SemanticErrorEvent(this, e, lineNumber));
-        }
-        functionManager.enterFunction(function);
-        System.out.println("Entering " + function);
-        compilationManager.enterCompoundStatement(new FunctionCallStatement(programManager, function, lineNumber));
-        visit(ctx.compoundStatement());
-        compilationManager.exitCompoundStatement();
-        functionManager.exitFunction();
-        System.out.println("Exiting " + function);
+        visitFunction(function, lineNumber, ctx.compoundStatement());
         return null;
     }
 
@@ -120,22 +94,57 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
 
     @Override
     public Void visitAssignmentStatement(PseudocodeParser.AssignmentStatementContext ctx) {
-        return super.visitAssignmentStatement(ctx);
+        int lineNumber = ctx.getStart().getLine();
+        String identifier;
+        PseudocodeParser.ExpressionContext valueCtx = ctx.expression();
+        AssignmentStatement assignmentStatement;
+        if (ctx.variableName() != null) {
+            identifier = ctx.variableName().Identifier().getText();
+            assignmentStatement = new AssignmentStatement(
+                    programManager
+                    , identifier
+                    , valueCtx
+                    , lineNumber);
+        } else {
+            identifier = ctx.arrayAccess().Identifier().getText();
+            PseudocodeParser.ExpressionContext indexCtx = ctx.arrayAccess().expression();
+            assignmentStatement = new AssignmentStatement(
+                    programManager
+                    , identifier
+                    , indexCtx
+                    , valueCtx
+                    , lineNumber);
+        }
+        compilationManager.addStatement(assignmentStatement);
+        return null;
     }
 
     @Override
     public Void visitPrintStatement(PseudocodeParser.PrintStatementContext ctx) {
-        return super.visitPrintStatement(ctx);
+        compilationManager.addStatement(new PrintStatement(
+                programManager
+                , ctx.expression()
+                , ctx.getStart().getLine()));
+        return null;
     }
 
     @Override
     public Void visitScanStatement(PseudocodeParser.ScanStatementContext ctx) {
-        return super.visitScanStatement(ctx);
+        compilationManager.addStatement(new ScanStatement(
+                programManager,
+                ctx.StringLiteral().getText(),
+                ctx.Identifier().getText(),
+                ctx.getStart().getLine()
+        ));
+        return null;
     }
 
     @Override
     public Void visitBreakStatement(PseudocodeParser.BreakStatementContext ctx) {
-        return super.visitBreakStatement(ctx);
+        compilationManager.addStatement(new BreakStatement(
+                programManager
+                , ctx.getStart().getLine()));
+        return null;
     }
 
     @Override
@@ -145,27 +154,124 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
 
     @Override
     public Void visitReturnStatement(PseudocodeParser.ReturnStatementContext ctx) {
+        compilationManager.addStatement(new ReturnStatement(
+                programManager
+                , ctx.expression()
+                , ctx.getStart().getLine()
+        ));
         return super.visitReturnStatement(ctx);
     }
 
     @Override
     public Void visitSelectionStatement(PseudocodeParser.SelectionStatementContext ctx) {
-        return super.visitSelectionStatement(ctx);
+        int lineNumber = ctx.getStart().getLine();
+        PseudocodeParser.IfStatementContext ifCtx = ctx.ifStatement();
+        VariableManager parentLocalVariables = compilationManager.getCurrentLocalVariables();
+        IfStatement currentIf = new IfStatement(
+                programManager
+                , parentLocalVariables
+                , ifCtx.expression()
+                , lineNumber);
+        compilationManager.enterCompoundStatement(currentIf);
+        visit(ifCtx.compoundStatement());
+        for (int i = 0; i < ctx.elseIfStatement().size(); i++) {
+            PseudocodeParser.ElseIfStatementContext elseIfCtx = ctx.elseIfStatement(i);
+            compilationManager.enterNegative();
+            IfStatement elseIfStatement = new IfStatement(
+                    programManager
+                    , parentLocalVariables
+                    , elseIfCtx.expression()
+                    , lineNumber
+            );
+            compilationManager.addStatement(elseIfStatement);
+            compilationManager.exitCompoundStatement();
+            compilationManager.enterCompoundStatement(elseIfStatement);
+            visit(elseIfCtx.compoundStatement());
+//            compilationManager.exitCompoundStatement();
+        }
+        if (ctx.elseStatement() != null) {
+            compilationManager.enterNegative();
+            visit(ctx.elseStatement().compoundStatement());
+        }
+        compilationManager.exitCompoundStatement();
+        return null;
     }
 
     @Override
     public Void visitForStatement(PseudocodeParser.ForStatementContext ctx) {
-        return super.visitForStatement(ctx);
+        int lineNumber = ctx.getStart().getLine();
+        String initVarName = ctx.iterationInit().initDeclarator().Identifier().getText();
+        PseudocodeParser.ExpressionContext boundCtx = ctx.expression();
+        boolean isCountDown = ctx.Down() != null;
+        ForStatement forStatement =
+                new ForStatement(programManager
+                        , compilationManager.getCurrentLocalVariables()
+                        , initVarName
+                        , isCountDown
+                        , boundCtx
+                        , lineNumber);
+        compilationManager.enterCompoundStatement(forStatement);
+        if (ctx.iterationInit().variableSpecifier() != null) {
+            Storage.Type varType = Storage.parseType(ctx.iterationInit().variableSpecifier().getText());
+            DeclarationStatement declarationStatement =
+                    new DeclarationStatement(programManager
+                            , new Variable(false, varType, initVarName)
+                            , lineNumber);
+
+            compilationManager.addStatement(declarationStatement);
+            forStatement.setInitDeclaration(declarationStatement);
+        }
+        if (ctx.iterationInit().initDeclarator().initializer() != null) {
+            AssignmentStatement assignmentStatement =
+                    new AssignmentStatement(
+                            programManager
+                            , initVarName
+                            , ctx.iterationInit().initDeclarator().initializer().expression()
+                            , lineNumber);
+            compilationManager.addStatement(assignmentStatement);
+            forStatement.setInitAssignment(assignmentStatement);
+        }
+        visit(ctx.compoundStatement());
+        compilationManager.exitCompoundStatement();
+        return null;
     }
 
     @Override
     public Void visitWhileStatement(PseudocodeParser.WhileStatementContext ctx) {
-        return super.visitWhileStatement(ctx);
+        int lineNumber = ctx.getStart().getLine();
+        String initVarName = ctx.iterationInit().initDeclarator().Identifier().getText();
+        PseudocodeParser.ExpressionContext boundCtx = ctx.expression();
+        boolean isCountDown = ctx.Down() != null;
+        compilationManager.enterCompoundStatement(
+                new WhileStatement(
+                        programManager
+                        , compilationManager.getCurrentLocalVariables()
+                        , boundCtx
+                        , isCountDown
+                        , initVarName
+                        , lineNumber));
+        visit(ctx.compoundStatement());
+        compilationManager.exitCompoundStatement();
+        return null;
     }
 
     @Override
     public Void visitDoWhileStatement(PseudocodeParser.DoWhileStatementContext ctx) {
-        return super.visitDoWhileStatement(ctx);
+        int lineNumber = ctx.getStart().getLine();
+        String initVarName = ctx.iterationInit().initDeclarator().Identifier().getText();
+        PseudocodeParser.ExpressionContext boundCtx = ctx.expression();
+        boolean isCountDown = ctx.Down() != null;
+        compilationManager.enterCompoundStatement(
+                new DoWhileStatement(
+                        programManager
+                        , compilationManager.getCurrentLocalVariables()
+                        , boundCtx
+                        , isCountDown
+                        , initVarName
+                        , lineNumber));
+        visit(ctx.compoundStatement());
+        compilationManager.exitCompoundStatement();
+        return null;
     }
 
     @Override
@@ -184,7 +290,6 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
                 );
             }
         }
-//        String variableName =
         return null;
     }
 
@@ -207,7 +312,8 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
                     throw new ArraySizeException();
                 }
                 Array array = new Array(isFinal, arrayType, arrayName, size);
-                new DeclarationStatement(programManager, array, lineNumber);
+                compilationManager.addStatement(
+                        new DeclarationStatement(programManager, array, lineNumber));
                 System.out.println("initialized array: " + array);
             } catch (NullPointerException e) {
                 throw new ArraySizeException();
@@ -216,5 +322,22 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
             notificationManager.notifyErrorListeners(new SemanticErrorEvent(this, e, lineNumber));
         }
         return null;
+    }
+
+
+    private void visitFunction(Function function, int lineNumber, PseudocodeParser.CompoundStatementContext ctx) {
+        System.out.println(function);
+        try {
+            functionManager.addFunction(function);
+        } catch (StorageRedeclarationException e) {
+            notificationManager.notifyErrorListeners(new SemanticErrorEvent(this, e, lineNumber));
+        }
+        functionManager.enterFunction(function);
+        System.out.println("Entering " + function);
+        compilationManager.enterCompoundStatement(new FunctionCallStatement(programManager, function, lineNumber));
+        visit(ctx);
+        compilationManager.exitCompoundStatement();
+        functionManager.exitFunction();
+        System.out.println("Exiting " + function);
     }
 }

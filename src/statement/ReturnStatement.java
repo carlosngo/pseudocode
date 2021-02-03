@@ -1,5 +1,6 @@
 package statement;
 
+import antlr.visitor.expression.ExpressionVisitorFactory;
 import exception.SemanticException;
 import exception.type.ReturnException;
 import antlr.PseudocodeParser.ExpressionContext;
@@ -22,10 +23,13 @@ public class ReturnStatement extends Statement {
         try {
             FunctionManager functionManager = programManager.getFunctionManager();
             Function currentFunction = functionManager.getCurrentFunction();
-            Storage.Type givenReturnType = ExpressionEvaluator
-                    .evaluateType(expressionContext, programManager);
-            if (givenReturnType != currentFunction.getType()) {
-                throw new ReturnException(currentFunction.getType(), givenReturnType);
+            Object value = ExpressionVisitorFactory.getExpressionVisitor(
+                    programManager
+                    , currentFunction.getType()
+                    , true
+            ).visit(expressionContext);
+            if (value == null) {
+                throw new ReturnException(currentFunction.getType(), null);
             }
         } catch(SemanticException e) {
             notifyErrorListeners(e);
@@ -36,12 +40,11 @@ public class ReturnStatement extends Statement {
     public void execute() {
         tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
-        try {
-            executionManager.triggerReturn(
-                    ExpressionEvaluator
-                            .evaluateValue(expressionContext, getProgramManager()));
-        } catch(SemanticException e) {
-            System.err.println("unexpected " + e.getMessage() + " at runtime");
-        }
+        Function currentFunction = executionManager.getCurrentFunctionCall().getFunctionSignature();
+        executionManager.triggerReturn(
+                ExpressionVisitorFactory.getExpressionVisitor(
+                        getProgramManager()
+                        , currentFunction.getType()
+                        , true).visit(expressionContext));
     }
 }

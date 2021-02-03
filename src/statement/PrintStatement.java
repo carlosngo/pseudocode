@@ -1,5 +1,7 @@
 package statement;
 
+import antlr.visitor.expression.StringExpressionVisitor;
+import exception.PrintException;
 import exception.SemanticException;
 import antlr.PseudocodeParser.ExpressionContext;
 import manager.ProgramManager;
@@ -16,7 +18,10 @@ public class PrintStatement extends Statement {
         super(programManager, lineNumber);
         this.messageContext = messageContext;
         try {
-            ExpressionEvaluator.evaluateType(messageContext, programManager);
+            String message = new StringExpressionVisitor(programManager, true).visit(messageContext);
+            if (message == null) {
+                throw new PrintException();
+            }
         } catch(SemanticException e) {
             notifyErrorListeners(e);
         }
@@ -25,14 +30,9 @@ public class PrintStatement extends Statement {
     @Override
     public void execute() {
         tryExecution();
-        try {
-            ProgramManager programManager = getProgramManager();
-            String message = ExpressionEvaluator
-                    .evaluateValue(messageContext, programManager).toString();
-            PrintEvent evt = new PrintEvent(this, message);
-            programManager.getNotificationManager().notifyPrintListeners(evt);
-        } catch(SemanticException e) {
-            System.err.println("unexpected " + e.getMessage() + " at runtime");
-        }
+        ProgramManager programManager = getProgramManager();
+        String message = new StringExpressionVisitor(programManager, true).visit(messageContext);
+        PrintEvent evt = new PrintEvent(this, message);
+        programManager.getNotificationManager().notifyPrintListeners(evt);
     }
 }
