@@ -88,35 +88,31 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
     public String visitAdditiveExpression(PseudocodeParser.AdditiveExpressionContext ctx) {
         PseudocodeParser.MultiplicativeExpressionContext left = ctx.multiplicativeExpression(0);
         PseudocodeParser.MultiplicativeExpressionContext right = ctx.multiplicativeExpression(1);
+
         String sum = visit(left);
-        if (!ctx.PlusPlus().isEmpty() || !ctx.MinusMinus().isEmpty()) {
+
+        if(!ctx.PlusPlus().isEmpty() || !ctx.MinusMinus().isEmpty()){
             return null;
         }
-        for (int i = 2; right != null; i++) {
-            if (ctx.Plus(i - 2) == null) {
-                sum -= visit(right);
+
+        for (int i = 2; right != null; i++){
+            if (ctx.Plus(i - 2) == null){
+                return null;
             } else {
-                sum += visit(right);
+                sum.concat(visit(right));
             }
-            right = ctx.multiplicativeExpression(i);
         }
+
         return sum;
     }
 
     @Override
     public String visitMultiplicativeExpression(PseudocodeParser.MultiplicativeExpressionContext ctx) {
-        PseudocodeParser.UnaryExpressionContext left = ctx.unaryExpression(0);
-        PseudocodeParser.UnaryExpressionContext right = ctx.unaryExpression(1);
-        String product = visit(left);
-        for (int i = 2; right != null; i++) {
-            if (ctx.Star(i - 2) == null) {
-                product /= visit(right);
-            } else {
-                product *= visit(right);
-            }
-            right = ctx.unaryExpression(i);
+        String value = super.visitMultiplicativeExpression(ctx);
+        if (ctx.unaryExpression().size() > 1) {
+            return null;
         }
-        return product;
+        return value;
     }
 
     @Override
@@ -171,24 +167,19 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
             Integer index = integerExpressionVisitor.visitExpression(ctx.expression());
             if (index == null)
                 throw new ArrayIndexException();
-            try {
-                Variable variable = variableManager.getVariable(identifier);
-                if (variable.getType() != Storage.Type.STRING) {
-                    return null;
-                }
-                if (variable instanceof Array) {
-                    Array array = (Array) variable;
-                    if (isCompiling) {
-                        return (String) Storage.getRandomValueOfType(array.getType());
-                    } else {
-                        return (String) array.get(index);
-                    }
-                } else {
-                    throw new NotArrayException(variable);
-                }
-            } catch (SemanticException e) {
-                notificationManager.notifyErrorListeners(new SemanticErrorEvent(this, e, lineNumber));
+            Variable variable = variableManager.getVariable(identifier);
+            if (variable.getType() != Storage.Type.STRING) {
                 return null;
+            }
+            if (variable instanceof Array) {
+                Array array = (Array) variable;
+                if (isCompiling) {
+                    return (String) Storage.getRandomValueOfType(array.getType());
+                } else {
+                    return (String) array.get(index);
+                }
+            } else {
+                throw new NotArrayException(variable);
             }
         } catch (SemanticException e) {
             notificationManager.notifyErrorListeners(new SemanticErrorEvent(this, e, lineNumber));
