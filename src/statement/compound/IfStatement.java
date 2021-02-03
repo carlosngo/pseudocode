@@ -74,4 +74,11 @@ public class IfStatement extends CompoundStatement {
         }
 
     }
+
+    @Override
+    public String toString() {
+        return "if (" + condition.getText() +
+                "), " + "negativeStatements=" + negativeStatements +
+                ", inPositive=" + inPositive;
+    }
 }

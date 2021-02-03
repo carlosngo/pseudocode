@@ -55,4 +55,13 @@ public class CompoundStatement extends Statement {
             executionManager.exitBlock();
         }
     }
+
+    @Override
+    public String toString() {
+        return "CompoundStatement{" +
+                "statements=" + statements +
+                ", localVariables=" + localVariables +
+                ", breakFlag=" + breakFlag +
+                '}';
+    }
 }
