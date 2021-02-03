@@ -29,6 +29,7 @@ public abstract class IterationStatement extends CompoundStatement {
     }
 
     protected void beginIteration(int initialValue, int destinationValue) {
+        System.out.println("iterating from initial value = " + initialValue + " to " + destinationValue);
         if (isCountDown()) {
             while (initialValue >= destinationValue && !hasBroken()) {
                 executeOneIteration();

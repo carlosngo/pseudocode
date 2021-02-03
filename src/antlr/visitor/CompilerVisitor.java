@@ -16,6 +16,7 @@ import storage.Array;
 import storage.Function;
 import storage.Storage;
 import storage.Variable;
+import util.Keyword;
 
 import java.util.ArrayList;
 
@@ -130,9 +131,10 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
 
     @Override
     public Void visitScanStatement(PseudocodeParser.ScanStatementContext ctx) {
+        String s = ctx.StringLiteral().getText();
         compilationManager.addStatement(new ScanStatement(
                 programManager,
-                ctx.StringLiteral().getText(),
+                s.substring(1, s.length() - 1),
                 ctx.Identifier().getText(),
                 ctx.getStart().getLine()
         ));
@@ -193,7 +195,11 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
             compilationManager.enterNegative();
             visit(ctx.elseStatement().compoundStatement());
         }
-        compilationManager.exitCompoundStatement();
+        if (ctx.elseIfStatement().isEmpty()) {
+            compilationManager.exitCompoundStatement();
+        } else {
+            compilationManager.popStatementStack();
+        }
         return null;
     }
 
@@ -212,10 +218,12 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
                         , lineNumber);
         compilationManager.enterCompoundStatement(forStatement);
         if (ctx.iterationInit().variableSpecifier() != null) {
-            Storage.Type varType = Storage.parseType(ctx.iterationInit().variableSpecifier().getText());
+            String varType = ctx.iterationInit().variableSpecifier().getText();
             DeclarationStatement declarationStatement =
                     new DeclarationStatement(programManager
-                            , new Variable(false, varType, initVarName)
+                            , false
+                            , varType
+                            , initVarName
                             , lineNumber);
 
             compilationManager.addStatement(declarationStatement);
@@ -278,12 +286,11 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
     public Void visitVariableDeclaration(PseudocodeParser.VariableDeclarationContext ctx) {
         int lineNumber = ctx.getStart().getLine();
         boolean isFinal = ctx.variableSpecifier().Const() != null;
-        Storage.Type variableType = Storage.parseType(ctx.variableSpecifier().typeSpecifier().getText());
+        String variableType = ctx.variableSpecifier().typeSpecifier().getText();
         for (PseudocodeParser.InitDeclaratorContext c : ctx.initDeclaratorList().initDeclarator()) {
             String variableName = c.Identifier().getText();
-            Variable variable = new Variable(isFinal, variableType, variableName);
             compilationManager.addStatement(
-                    new DeclarationStatement(programManager, variable, lineNumber));
+                    new DeclarationStatement(programManager, isFinal, variableType, variableName, lineNumber));
             if (c.initializer() != null) { // initialize
                 compilationManager.addStatement(
                         new AssignmentStatement(programManager, variableName, c.initializer().expression(), lineNumber)
@@ -297,7 +304,8 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
     public Void visitArrayDeclaration(PseudocodeParser.ArrayDeclarationContext ctx) {
         int lineNumber = ctx.getStart().getLine();
         boolean isFinal = ctx.arraySpecifier().Const() != null;
-        Storage.Type arrayType = Storage.parseType(ctx.arraySpecifier().typeSpecifier().getText());
+        String arrayTypeStr = ctx.arraySpecifier().typeSpecifier().getText();
+        Storage.Type arrayType = Storage.parseType(arrayTypeStr);
         String arrayName = ctx.Identifier().getText();
         PseudocodeParser.ExpressionContext sizeContext = ctx.createExpression().expression();
         Storage.Type createType = Storage.parseType(ctx.createExpression().typeSpecifier().getText());
@@ -313,7 +321,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
             }
             Array array = new Array(isFinal, arrayType, arrayName, size);
             compilationManager.addStatement(
-                    new DeclarationStatement(programManager, array, lineNumber));
+                    new DeclarationStatement(programManager, isFinal, arrayTypeStr, arrayName, size, lineNumber));
 
         } catch (SemanticException e) {
             notificationManager.notifyErrorListeners(new SemanticErrorEvent(this, e, lineNumber));

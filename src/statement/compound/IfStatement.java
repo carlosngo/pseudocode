@@ -58,7 +58,7 @@ public class IfStatement extends CompoundStatement {
     @Override
     public void execute() {
         tryExecution();
-        Boolean value = new BooleanExpressionVisitor(getProgramManager(), true)
+        Boolean value = new BooleanExpressionVisitor(getProgramManager(), false)
                 .visit(condition);
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
         executionManager.enterBlock(this);
@@ -77,8 +77,17 @@ public class IfStatement extends CompoundStatement {
 
     @Override
     public String toString() {
-        return "if (" + condition.getText() +
-                "), " + "negativeStatements=" + negativeStatements +
-                ", inPositive=" + inPositive;
+        StringBuilder sb = new StringBuilder("if (" + condition.getText() + ") {\n");
+        for (Statement statement : getStatements()) {
+            sb.append(statement.toString());
+            sb.append("\n");
+        }
+        sb.append("} else {\n");
+        for (Statement statement : negativeStatements) {
+            sb.append(statement.toString());
+            sb.append("\n");
+        }
+        sb.append("}");
+        return sb.toString();
     }
 }

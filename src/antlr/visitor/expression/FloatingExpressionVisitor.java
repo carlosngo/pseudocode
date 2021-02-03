@@ -28,9 +28,15 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
             , boolean isCompiling) {
         this.programManager = programManager;
         functionManager = programManager.getFunctionManager();
-        variableManager = programManager
-                .getCompilationManager()
-                .getCurrentLocalVariables();
+        if (isCompiling) {
+            variableManager = programManager
+                    .getCompilationManager()
+                    .getCurrentLocalVariables();
+        } else {
+            variableManager = programManager
+                    .getExecutionManager()
+                    .getCurrentLocalVariables();
+        }
         notificationManager = programManager.getNotificationManager();
         this.isCompiling = isCompiling;
     }
@@ -41,13 +47,6 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
         return visit(ctx.logicalOrExpression());
     }
 
-    /** if there is an boolean operator in the expression, the resulting expression will have a boolean value.
-     * If there is a boolean value in the expression, it cannot be typecasted to boolean
-     * Therefore, visit normally but return null
-     *
-     * @param ctx
-     * @return
-     */
     @Override
     public Float visitLogicalOrExpression(PseudocodeParser.LogicalOrExpressionContext ctx)  {
         Float value = super.visitLogicalOrExpression(ctx);
@@ -160,10 +159,14 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
             return null;
         }
         if (isCompiling) {
-            return (Float) Storage.getRandomValueOfType(returnType);
+            return (Float) Storage.getRandomValueOfType(Storage.Type.FLOAT);
         } else {
             statement.execute();
-            return (Float) statement.getReturnValue();
+            Object value = statement.getReturnValue();
+            if (value instanceof Integer) {
+                return ((Integer) value).floatValue();
+            }
+            return (Float) value;
         }
     }
 
@@ -183,9 +186,13 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
             if (variable instanceof Array) {
                 Array array = (Array) variable;
                 if (isCompiling) {
-                    return (Float) Storage.getRandomValueOfType(array.getType());
+                    return (Float) Storage.getRandomValueOfType(Storage.Type.FLOAT);
                 } else {
-                    return (Float) array.get(index);
+                    Object value = array.get(index);
+                    if (value instanceof Integer) {
+                        return ((Integer) value).floatValue();
+                    }
+                    return (Float) value;
                 }
             } else {
                 throw new NotArrayException(variable);
@@ -210,9 +217,13 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
                     return null;
                 } else {
                     if (isCompiling) {
-                        return (Float) Storage.getRandomValueOfType(variable.getType());
+                        return (Float) Storage.getRandomValueOfType(Storage.Type.FLOAT);
                     } else {
-                        return (Float) variable.getValue();
+                        Object value = variable.getValue();
+                        if (value instanceof Integer) {
+                            return ((Integer) value).floatValue();
+                        }
+                        return (Float) value;
                     }
                 }
             } catch (SemanticException e) {

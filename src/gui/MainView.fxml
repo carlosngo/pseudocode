@@ -31,7 +31,7 @@
         </ScrollPane>
       <ScrollPane id="ioScrollPane" fx:id="ioScrollPane" layoutX="10.0" layoutY="10.0" minHeight="300.0" minWidth="500.0" pannable="true" prefHeight="300.0" prefWidth="500.0" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.rowSpan="2">
           <VBox minHeight="280.0" minWidth="480.0" prefHeight="280.0" prefWidth="480.0" spacing="20.0">
-                <Label id="ioLabel" fx:id="ioLabel" layoutX="52.0" layoutY="14.0" text="Header text here">
+                <Label id="ioLabel" fx:id="ioLabel" layoutX="52.0" layoutY="14.0" text="">
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                     </padding>

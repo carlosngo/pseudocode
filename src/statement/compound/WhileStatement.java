@@ -8,6 +8,7 @@ import manager.ExecutionManager;
 import manager.ProgramManager;
 import manager.VariableManager;
 import notification.event.SemanticErrorEvent;
+import statement.Statement;
 import storage.Storage;
 import util.evaluator.ExpressionEvaluator;
 
@@ -41,8 +42,9 @@ public class WhileStatement extends IterationStatement {
     public void execute() {
         tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
+        VariableManager variableManager = executionManager.getCurrentLocalVariables();
         try {
-            int initialValue = (int) getLocalVariables().getVariable(initVarName).getValue();
+            int initialValue = (int) variableManager.getVariable(initVarName).getValue();
             Integer destinationValue = new IntegerExpressionVisitor(
                     getProgramManager()
                     , false)
@@ -61,7 +63,12 @@ public class WhileStatement extends IterationStatement {
 
     @Override
     public String toString() {
-        return "While (" + initCtx.getText() +
-                ')';
+        StringBuilder sb = new StringBuilder("while " + initVarName + (isCountDown() ? " down " : " up ") + "to " + getBoundContext().getText() + " {\n");
+        for (Statement statement : getStatements()) {
+            sb.append(statement.toString());
+            sb.append("\n");
+        }
+        sb.append("}");
+        return sb.toString();
     }
 }

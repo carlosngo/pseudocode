@@ -27,9 +27,15 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
             , boolean isCompiling) {
         this.programManager = programManager;
         functionManager = programManager.getFunctionManager();
-        variableManager = programManager
-                .getCompilationManager()
-                .getCurrentLocalVariables();
+        if (isCompiling) {
+            variableManager = programManager
+                    .getCompilationManager()
+                    .getCurrentLocalVariables();
+        } else {
+            variableManager = programManager
+                    .getExecutionManager()
+                    .getCurrentLocalVariables();
+        }
         notificationManager = programManager.getNotificationManager();
         this.isCompiling = isCompiling;
     }
@@ -39,13 +45,6 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
         return visit(ctx.logicalOrExpression());
     }
 
-    /** if there is an boolean operator in the expression, the resulting expression will have a boolean value.
-     * If there is a boolean value in the expression, it cannot be typecasted to boolean
-     * Therefore, visit normally but return null
-     *
-     * @param ctx
-     * @return
-     */
     @Override
     public String visitLogicalOrExpression(PseudocodeParser.LogicalOrExpressionContext ctx)  {
         String value = super.visitLogicalOrExpression(ctx);
@@ -146,10 +145,10 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                 programManager, identifier, parameterContexts, lineNumber);
         Storage.Type returnType = statement.getFunctionSignature().getType();
         if (isCompiling) {
-            return (String) Storage.getRandomValueOfType(returnType);
+            return Storage.getRandomValueOfType(returnType).toString();
         } else {
             statement.execute();
-            return (String) statement.getReturnValue();
+            return statement.getReturnValue().toString();
         }
     }
 
@@ -166,9 +165,9 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
             if (variable instanceof Array) {
                 Array array = (Array) variable;
                 if (isCompiling) {
-                    return (String) Storage.getRandomValueOfType(array.getType());
+                    return Storage.getRandomValueOfType(array.getType()).toString();
                 } else {
-                    return (String) array.get(index);
+                    return array.get(index).toString();
                 }
             } else {
                 throw new NotArrayException(variable);
@@ -191,9 +190,9 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                     return null;
                 } else {
                     if (isCompiling) {
-                        return (String) Storage.getRandomValueOfType(variable.getType());
+                        return Storage.getRandomValueOfType(variable.getType()).toString();
                     } else {
-                        return (String) variable.getValue();
+                        return variable.getValue().toString();
                     }
                 }
             } catch (SemanticException e) {
@@ -208,6 +207,9 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
     public String visitLiteral(PseudocodeParser.LiteralContext ctx) {
         if (ctx.FloatingLiteral() != null) {
             return ctx.getText().substring(0, ctx.getText().length() - 1);
+        }
+        if (ctx.StringLiteral() != null) {
+            return ctx.getText().substring(1, ctx.getText().length() - 1);
         }
         return ctx.getText();
     }

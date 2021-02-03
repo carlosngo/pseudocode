@@ -4,7 +4,7 @@ import storage.Storage;
 
 public class Keyword {
     public static final String INT = "int";
-    public static final String BOOLEAN = "boolean";
+    public static final String BOOLEAN = "bool";
     public static final String FLOAT = "float";
     public static final String STRING = "String";
     public static final String VOID = "void";

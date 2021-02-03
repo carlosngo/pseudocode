@@ -39,5 +39,9 @@ public class ScanStatement extends Statement {
                 .notifyScanListeners(evt);
     }
 
+    @Override
+    public String toString() {
+        return "scan(" + message + ", " + identifier + ");";
+    }
 }
 

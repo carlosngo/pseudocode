@@ -50,6 +50,10 @@ public class CompilationManager implements Manager, CompileListener, SemanticErr
         addStatement(current);
     }
 
+    public void popStatementStack() {
+        statementStack.pop();
+    }
+
     public void enterPositive() {
         ((IfStatement) statementStack.peek()).enterPositive();
     }
@@ -86,16 +90,9 @@ public class CompilationManager implements Manager, CompileListener, SemanticErr
         parser.addErrorListener(pseudocodeErrorListener);
         parser.setErrorHandler(new PseudocodeErrorStrategy());
         ParseTree tree = parser.init();
-//        TreeViewer viewr = new TreeViewer(Arrays.asList(
-//                parser.getRuleNames()), tree);
-//        viewr.open();
-        System.out.println(tree.toStringTree(parser));
+
         CompilerVisitor visitor = new CompilerVisitor(programManager);
         visitor.visit(tree);
-//        IntegerExpressionVisitor visitor = new IntegerExpressionVisitor(programManager, true);
-//
-//        programManager.getFunctionManager().getCurrentFunction().getVariableManager()
-//        visitor.visit(tree);
 
 
         ArrayList<String> errorList = pseudocodeErrorListener.getErrorList();

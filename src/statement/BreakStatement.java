@@ -14,4 +14,9 @@ public class BreakStatement extends Statement {
         tryExecution();
         getProgramManager().getExecutionManager().triggerBreak();
     }
+
+    @Override
+    public String toString() {
+        return "break;";
+    }
 }

@@ -11,6 +11,7 @@ import statement.compound.IterationStatement;
 import storage.Storage;
 import storage.Variable;
 
+import java.util.ArrayList;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -118,16 +119,11 @@ public class ExecutionManager
 
     @Override
     public void run() {
-//        new FunctionCallStatement(
-//                programManager
-//                , "main"
-//                , new ArrayList<>()
-//                , 0)
-//                .execute();
+        new FunctionCallStatement(programManager, "main", new ArrayList<>(), 0).execute();
 
-//        programManager
-//                .getNotificationManager()
-//                .notifyExecuteListeners(new ExecuteSuccessEvent(this));
+        programManager
+                .getNotificationManager()
+                .notifyExecuteListeners(new ExecuteSuccessEvent(this));
     }
 
     @Override

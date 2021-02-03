@@ -58,10 +58,12 @@ public class CompoundStatement extends Statement {
 
     @Override
     public String toString() {
-        return "CompoundStatement{" +
-                "statements=" + statements +
-                ", localVariables=" + localVariables +
-                ", breakFlag=" + breakFlag +
-                '}';
+        StringBuilder sb = new StringBuilder("{\n");
+        for (Statement statement : getStatements()) {
+            sb.append(statement.toString());
+            sb.append("\n");
+        }
+        sb.append("}");
+        return sb.toString();
     }
 }

@@ -4,6 +4,7 @@ import antlr.PseudocodeErrorListener;
 import antlr.PseudocodeErrorStrategy;
 import antlr.PseudocodeLexer;
 import antlr.PseudocodeParser;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -90,7 +91,7 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
     @FXML
     private void initialize() {
         // initialize and save/edit data to FXML objects
-        setIOHeader("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
+//        setIOHeader("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
         ioLabel.setWrapText(true);
         /*
         * By default IO console should be hidden
@@ -138,7 +139,7 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
     }
 
     private void printToIOLabel (String text) {
-        ioLabel.setText(ioLabel.getText() + text);
+        ioLabel.setText(ioLabel.getText() + "\n" + text);
     }
 
     private void showIOConsole () {
@@ -181,13 +182,14 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
 
     @Override
     public void onPrint(PrintEvent e) {
-        printToIOLabel(e.getMessage());
+        System.out.println(e.getMessage());
+        Platform.runLater(() -> printToIOLabel(e.getMessage()));
     }
 
     @Override
     public void onScanStart(ScanStartEvent e) {
 //        showIOConsole();
-        printToIOLabel(e.getMessage());
+        Platform.runLater(() -> printToIOLabel(e.getMessage()));
     }
 
     @Override
@@ -216,7 +218,7 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
         sb.append("\n");
 
         errortext = sb.toString();
-        consoleLabel.setText(errortext);
+        Platform.runLater(() -> consoleLabel.setText(errortext));
 
     }
 
@@ -235,7 +237,7 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
         sb.append("\n");
 
         errortext = sb.toString();
-        consoleLabel.setText(errortext);
+        Platform.runLater(() -> consoleLabel.setText(errortext));
     }
 
 

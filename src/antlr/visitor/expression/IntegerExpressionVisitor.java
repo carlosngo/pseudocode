@@ -30,9 +30,15 @@ public class IntegerExpressionVisitor extends PseudocodeParserBaseVisitor<Intege
             , boolean isCompiling) {
         this.programManager = programManager;
         functionManager = programManager.getFunctionManager();
-        variableManager = programManager
-                .getCompilationManager()
-                .getCurrentLocalVariables();
+        if (isCompiling) {
+            variableManager = programManager
+                    .getCompilationManager()
+                    .getCurrentLocalVariables();
+        } else {
+            variableManager = programManager
+                    .getExecutionManager()
+                    .getCurrentLocalVariables();
+        }
         notificationManager = programManager.getNotificationManager();
         this.isCompiling = isCompiling;
     }
@@ -43,13 +49,6 @@ public class IntegerExpressionVisitor extends PseudocodeParserBaseVisitor<Intege
         return visit(ctx.logicalOrExpression());
     }
 
-    /** if there is an boolean operator in the expression, the resulting expression will have a boolean value.
-     * If there is a boolean value in the expression, it cannot be typecasted to boolean
-     * Therefore, visit normally but return null
-     *
-     * @param ctx
-     * @return
-     */
     @Override
     public Integer visitLogicalOrExpression(PseudocodeParser.LogicalOrExpressionContext ctx)  {
         Integer value = super.visitLogicalOrExpression(ctx);

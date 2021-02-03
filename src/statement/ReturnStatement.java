@@ -45,6 +45,11 @@ public class ReturnStatement extends Statement {
                 ExpressionVisitorFactory.getExpressionVisitor(
                         getProgramManager()
                         , currentFunction.getType()
-                        , true).visit(expressionContext));
+                        , false).visit(expressionContext));
+    }
+
+    @Override
+    public String toString() {
+        return "return " + expressionContext.getText() + ";";
     }
 }

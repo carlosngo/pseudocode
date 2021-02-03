@@ -28,9 +28,15 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
             , boolean isCompiling) {
         this.programManager = programManager;
         functionManager = programManager.getFunctionManager();
-        variableManager = programManager
-                .getCompilationManager()
-                .getCurrentLocalVariables();
+        if (isCompiling) {
+            variableManager = programManager
+                    .getCompilationManager()
+                    .getCurrentLocalVariables();
+        } else {
+            variableManager = programManager
+                    .getExecutionManager()
+                    .getCurrentLocalVariables();
+        }
         notificationManager = programManager.getNotificationManager();
         this.isCompiling = isCompiling;
     }
@@ -40,17 +46,13 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
         return visit(ctx.logicalOrExpression());
     }
 
-    /** if there is an boolean operator in the expression, the resulting expression will have a boolean value.
-     * If there is a boolean value in the expression, it cannot be typecasted to boolean
-     * Therefore, visit normally but return null
-     *
-     * @param ctx
-     * @return
-     */
     @Override
     public Boolean visitLogicalOrExpression(PseudocodeParser.LogicalOrExpressionContext ctx)  {
         super.visitLogicalOrExpression(ctx);
         PseudocodeParser.LogicalAndExpressionContext left = ctx.logicalAndExpression(0);
+        if (ctx.logicalAndExpression().size() == 1) {
+            return visit(ctx.logicalAndExpression(0));
+        }
         PseudocodeParser.LogicalAndExpressionContext right = ctx.logicalAndExpression(1);
         Boolean leftBoolean = visit(left);
         try {
@@ -72,6 +74,9 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
     public Boolean visitLogicalAndExpression(PseudocodeParser.LogicalAndExpressionContext ctx) {
         super.visitLogicalAndExpression(ctx);
         PseudocodeParser.EqualityExpressionContext left = ctx.equalityExpression(0);
+        if (ctx.equalityExpression().size() == 1) {
+            return visit(ctx.equalityExpression(0));
+        }
         PseudocodeParser.EqualityExpressionContext right = ctx.equalityExpression(1);
         Boolean leftBoolean = visit(left);
         try {
@@ -94,6 +99,9 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
     public Boolean visitEqualityExpression(PseudocodeParser.EqualityExpressionContext ctx) {
         super.visitEqualityExpression(ctx);
         PseudocodeParser.RelationalExpressionContext left = ctx.relationalExpression(0);
+        if (ctx.relationalExpression().size() == 1) {
+            return visit(ctx.relationalExpression(0));
+        }
         PseudocodeParser.RelationalExpressionContext right = ctx.relationalExpression(1);
         FloatingExpressionVisitor floatVisitor = new FloatingExpressionVisitor(programManager, isCompiling);
         StringExpressionVisitor stringVisitor = new StringExpressionVisitor(programManager, isCompiling);
@@ -140,6 +148,9 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
     public Boolean visitRelationalExpression(PseudocodeParser.RelationalExpressionContext ctx) {
         super.visitRelationalExpression(ctx);
         PseudocodeParser.AdditiveExpressionContext left = ctx.additiveExpression(0);
+        if (ctx.additiveExpression().size() == 1) {
+            return visit(ctx.additiveExpression(0));
+        }
         PseudocodeParser.AdditiveExpressionContext right = ctx.additiveExpression(1);
         FloatingExpressionVisitor floatVisitor = new FloatingExpressionVisitor(programManager, isCompiling);
         Float leftFloat = floatVisitor.visit(left);

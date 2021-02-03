@@ -33,6 +33,7 @@ public class AssignmentStatement extends Statement {
                     .getCompilationManager()
                     .getCurrentLocalVariables()
                     .getVariable(identifier);
+//            System.out.println(variable);
             PseudocodeParserBaseVisitor expressionVisitor
                     = ExpressionVisitorFactory
                         .getExpressionVisitor(programManager, variable.getType(), true);
@@ -105,5 +106,10 @@ public class AssignmentStatement extends Statement {
         } catch(SemanticException e) {
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());
         }
+    }
+
+    @Override
+    public String toString() {
+        return identifier + (indexCtx != null ? "[" + indexCtx.getText() + "]" : "") + " = " + valueCtx.getText() + ";";
     }
 }

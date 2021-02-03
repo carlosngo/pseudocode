@@ -13,6 +13,7 @@ import manager.VariableManager;
 import notification.event.SemanticErrorEvent;
 import statement.AssignmentStatement;
 import statement.DeclarationStatement;
+import statement.Statement;
 import storage.Storage;
 import storage.Variable;
 import util.evaluator.ExpressionEvaluator;
@@ -45,7 +46,7 @@ public class ForStatement extends IterationStatement {
 
     public void setInitDeclaration(DeclarationStatement initDeclaration) {
         this.initDeclaration = initDeclaration;
-        if (initDeclaration.getVariable().getType() != Storage.Type.INT) {
+        if (initDeclaration.getType() != Storage.Type.INT) {
             notifyErrorListeners(new BoundException(null));
         }
     }
@@ -58,18 +59,24 @@ public class ForStatement extends IterationStatement {
     public void execute() {
         tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
+        VariableManager variableManager = executionManager.getCurrentLocalVariables();
         try {
-//            int initialValue = (int) ExpressionEvaluator.evaluateValue(initCtx, getProgramManager());
-            int destinationValue = (int) ExpressionEvaluator
-                    .evaluateValue(getBoundContext(), getProgramManager());
             executionManager.enterBlock(this);
-//            do {
-//
-//                initialValue = initialValue + (isCountDown() ? -1 : 1);
-//            } while (initialValue != destinationValue);
-
-            executionManager.exitBlock();
-            getProgramManager().getExecutionManager().triggerBreak();
+            if (initDeclaration != null) {
+                initDeclaration.execute();
+            }
+            if (initAssignment != null) {
+                initAssignment.execute();
+            }
+            int initialValue = (int) variableManager.getVariable(initVarName).getValue();
+            Integer destinationValue = new IntegerExpressionVisitor(
+                    getProgramManager()
+                    , false)
+                    .visit(getBoundContext());
+            beginIteration(initialValue, destinationValue);
+            if (!hasBroken()) {
+                executionManager.triggerBreak();
+            }
         } catch(SemanticException e) {
             System.err.println(e.getMessage());
         }
@@ -77,8 +84,12 @@ public class ForStatement extends IterationStatement {
 
     @Override
     public String toString() {
-        return "ForStatement{" +
-                "boundCtx=" + boundCtx.getText() +
-                '}';
+        StringBuilder sb = new StringBuilder("for " + initVarName + (isCountDown() ? " down " : " up ") + "to " + getBoundContext().getText() + " {\n");
+        for (Statement statement : getStatements()) {
+            sb.append(statement.toString());
+            sb.append("\n");
+        }
+        sb.append("}");
+        return sb.toString();
     }
 }

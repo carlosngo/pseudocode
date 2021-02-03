@@ -8,6 +8,7 @@ import manager.ExecutionManager;
 import manager.ProgramManager;
 import manager.VariableManager;
 import notification.event.SemanticErrorEvent;
+import statement.Statement;
 import storage.Storage;
 import util.evaluator.ExpressionEvaluator;
 
@@ -40,8 +41,9 @@ public class DoWhileStatement extends IterationStatement {
     public void execute() {
         tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
+        VariableManager variableManager = executionManager.getCurrentLocalVariables();
         try {
-            int initialValue = (int) getLocalVariables().getVariable(initVarName).getValue();
+            int initialValue = (int) variableManager.getVariable(initVarName).getValue();
             Integer destinationValue = new IntegerExpressionVisitor(
                     getProgramManager()
                     , false)
@@ -59,8 +61,13 @@ public class DoWhileStatement extends IterationStatement {
 
     @Override
     public String toString() {
-        return "DoWhileStatement{" +
-                "initCtx=" + initCtx.getText() +
-                '}';
+        StringBuilder sb = new StringBuilder("do { ");
+        for (Statement statement : getStatements()) {
+            sb.append(statement.toString());
+            sb.append("\n");
+        }
+        sb.append("}");
+        sb.append("while " + initVarName + (isCountDown() ? " down " : " up ") + "to " + getBoundContext().getText() + ";");
+        return sb.toString();
     }
 }

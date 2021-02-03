@@ -31,8 +31,13 @@ public class PrintStatement extends Statement {
     public void execute() {
         tryExecution();
         ProgramManager programManager = getProgramManager();
-        String message = new StringExpressionVisitor(programManager, true).visit(messageContext);
+        String message = new StringExpressionVisitor(programManager, false).visit(messageContext);
         PrintEvent evt = new PrintEvent(this, message);
         programManager.getNotificationManager().notifyPrintListeners(evt);
+    }
+
+    @Override
+    public String toString() {
+        return "print(" + messageContext.getText() + ");";
     }
 }
