@@ -1,9 +1,9 @@
 main()
 {
     
-    string firstName;
-    string middleName;
-    string lastName;
+    String firstName;
+    String middleName;
+    String lastName;
 
     scan("First Name: ", firstName);
     
