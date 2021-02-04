@@ -42,6 +42,8 @@ public class DoWhileStatement extends IterationStatement {
         tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
         VariableManager variableManager = executionManager.getCurrentLocalVariables();
+        setLocalVariables(new VariableManager(variableManager));
+        variableManager = getLocalVariables();
         try {
             int initialValue = (int) variableManager.getVariable(initVarName).getValue();
             Integer destinationValue = new IntegerExpressionVisitor(
@@ -51,7 +53,7 @@ public class DoWhileStatement extends IterationStatement {
             executionManager.enterBlock(this);
             executeOneIteration();
             setLocalVariables(new VariableManager(variableManager));
-            beginIteration(variableManager, initialValue, destinationValue);
+            beginIteration(variableManager, initVarName, initialValue, destinationValue);
             if (!hasBroken()) {
                 executionManager.triggerBreak();
             }

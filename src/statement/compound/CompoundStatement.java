@@ -46,6 +46,7 @@ public class CompoundStatement extends Statement {
 
     protected void executeOneIteration() {
         for (int i = 0; i < statements.size() && !hasBroken(); i++) {
+            System.out.println("executing: " + getStatements().get(i));
             getStatements().get(i).execute();
         }
     }

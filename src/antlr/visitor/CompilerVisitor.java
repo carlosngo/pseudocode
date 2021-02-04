@@ -76,7 +76,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
 
     @Override
     public Void visitCompoundStatement(PseudocodeParser.CompoundStatementContext ctx) {
-        System.out.println("visiting compound statement");
+//        System.out.println("visiting compound statement");
         int lineNumber = ctx.getStart().getLine();
         if (ctx.parent instanceof PseudocodeParser.StatementContext) {
             compilationManager.enterCompoundStatement(
@@ -90,7 +90,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
             return null;
         }
         if (ctx.statementSeq() != null) {
-            System.out.println("going to visit statementSeq");
+//            System.out.println("going to visit statementSeq");
             visit(ctx.statementSeq());
         }
         return null;
@@ -346,7 +346,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
         visit(ctx);
         compilationManager.exitCompoundStatement();
         functionManager.exitFunction();
-        System.out.println(function);
+//        System.out.println(function);
         boolean hasReturn = false;
         for (Statement statement : function.getStatements()) {
             if (statement instanceof ReturnStatement) {

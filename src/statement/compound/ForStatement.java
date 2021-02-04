@@ -57,23 +57,27 @@ public class ForStatement extends IterationStatement {
 
     @Override
     public void execute() {
+
         tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
-        VariableManager variableManager = executionManager.getCurrentLocalVariables();
+        setLocalVariables(new VariableManager(executionManager.getCurrentLocalVariables()));
         try {
             executionManager.enterBlock(this);
+            System.out.println("before init: " + executionManager.getCurrentLocalVariables());
             if (initDeclaration != null) {
                 initDeclaration.execute();
             }
             if (initAssignment != null) {
                 initAssignment.execute();
             }
+            System.out.println("after init: " + executionManager.getCurrentLocalVariables());
+            VariableManager variableManager = executionManager.getCurrentLocalVariables();
             int initialValue = (int) variableManager.getVariable(initVarName).getValue();
             Integer destinationValue = new IntegerExpressionVisitor(
                     getProgramManager()
                     , false)
                     .visit(getBoundContext());
-            beginIteration(executionManager.getCurrentLocalVariables(), initialValue, destinationValue);
+            beginIteration(variableManager, initVarName, initialValue, destinationValue);
             if (!hasBroken()) {
                 executionManager.triggerBreak();
             }

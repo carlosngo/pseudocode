@@ -1,6 +1,7 @@
 package statement.compound;
 
 import antlr.PseudocodeParser.ExpressionContext;
+import exception.SemanticException;
 import manager.ProgramManager;
 import manager.VariableManager;
 import statement.Statement;
@@ -28,20 +29,31 @@ public abstract class IterationStatement extends CompoundStatement {
         return countDown;
     }
 
-    protected void beginIteration(VariableManager originalVariables, int initialValue, int destinationValue) {
+    protected void beginIteration(VariableManager originalVariables, String identifier, int initialValue, int destinationValue) {
+
         System.out.println("iterating from initial value = " + initialValue + " to " + destinationValue);
-        if (isCountDown()) {
-            while (initialValue >= destinationValue && !hasBroken()) {
-                setLocalVariables(new VariableManager(originalVariables));
-                executeOneIteration();
-                initialValue--;
+        try {
+            if (isCountDown()) {
+                while (initialValue >= destinationValue && !hasBroken()) {
+                    System.out.println("iterating initValue = " + initialValue);
+                    setLocalVariables(new VariableManager(originalVariables));
+                    System.out.println("variable manager = " + getLocalVariables());
+                    executeOneIteration();
+                    initialValue--;
+                    getLocalVariables().getVariable(identifier).setValue(initialValue);
+                }
+            } else {
+                while (initialValue <= destinationValue && !hasBroken()) {
+                    System.out.println("iterating initValue = " + initialValue);
+                    setLocalVariables(new VariableManager(originalVariables));
+                    System.out.println("variable manager = " + getLocalVariables());
+                    executeOneIteration();
+                    initialValue++;
+                    getLocalVariables().getVariable(identifier).setValue(initialValue);
+                }
             }
-        } else {
-            while (initialValue <= destinationValue && !hasBroken()) {
-                setLocalVariables(new VariableManager(originalVariables));
-                executeOneIteration();
-                initialValue++;
-            }
+        } catch (SemanticException e) {
+            e.printStackTrace();
         }
     }
 
