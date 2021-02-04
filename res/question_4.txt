@@ -3,11 +3,11 @@ main () {
     float DIVIDER = 1.5f;
     float finalValue;
 
-    int x = 0, y = 0, z = 0;
+    int x = -1, y = -2, z = -3;
 
-    x += 4;
-    y += 5;
-    z += 6;
+    x += -1;
+    y += -2;
+    z += -3;
 
     finalValue = (((x + y) * MULTIPLIER) / DIVIDER + x + y) - y * MULTIPLIER;
     print("Value is: " +(finalValue * MULTIPLIER * MULTIPLIER));

@@ -79,44 +79,117 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
     public Float visitAdditiveExpression(PseudocodeParser.AdditiveExpressionContext ctx) {
         PseudocodeParser.MultiplicativeExpressionContext left = ctx.multiplicativeExpression(0);
         PseudocodeParser.MultiplicativeExpressionContext right = ctx.multiplicativeExpression(1);
-        Float sum = visit(left);
-        if (!ctx.PlusPlus().isEmpty() || !ctx.MinusMinus().isEmpty()) {
-            return null;
-        }
+        IntegerExpressionVisitor intVisitor = new IntegerExpressionVisitor(programManager, isCompiling);
+        Float leftFloat = visit(left);
+        Integer leftInt = intVisitor.visit(left);
         for (int i = 2; right != null; i++) {
+            Float rightFloat = visit(right);
+            Integer rightInt = intVisitor.visit(right);
             try {
-                if (ctx.Plus(i - 2) == null) {
-                    sum -= visit(right);
+                if (leftFloat != null && rightFloat != null) {
+                    if (ctx.Plus(i - 2) != null) {
+                        leftFloat = leftFloat + rightFloat;
+                    } else if (ctx.Minus(i - 2) != null){
+                        leftFloat = leftFloat - rightFloat;
+                    }
+                    leftInt = null;
+                } else if (leftInt != null && rightInt != null) {
+                    if (ctx.Plus(i - 2) != null) {
+                        leftInt = leftInt + rightInt;
+                    } else if (ctx.Minus(i - 2) != null){
+                        leftInt = leftInt - rightInt;
+                    }
+                    leftFloat = null;
+                } else if (leftFloat != null) {
+                    if (ctx.Plus(i - 2) != null) {
+                        leftFloat = leftFloat + rightInt;
+                    } else if (ctx.Minus(i - 2) != null){
+                        leftFloat = leftFloat - rightInt;
+                    }
+                    leftInt = null;
                 } else {
-                    sum += visit(right);
+                    if (ctx.Plus(i - 2) != null) {
+                        leftFloat = leftInt + rightFloat;
+                    } else if (ctx.Minus(i - 2) != null){
+                        leftFloat = leftInt - rightFloat;
+                    }
+                    leftInt = null;
                 }
-            } catch (NullPointerException e) { }
+
+            } catch (NullPointerException e) {
+                return null;
+            }
             right = ctx.multiplicativeExpression(i);
         }
-        return sum;
+        if (leftFloat != null) {
+            return leftFloat;
+        } else if (leftInt != null) {
+            return leftInt.floatValue();
+        }
+        return null;
     }
 
     @Override
     public Float visitMultiplicativeExpression(PseudocodeParser.MultiplicativeExpressionContext ctx) {
-        super.visitMultiplicativeExpression(ctx);
         PseudocodeParser.UnaryExpressionContext left = ctx.unaryExpression(0);
         PseudocodeParser.UnaryExpressionContext right = ctx.unaryExpression(1);
-        Float product = visit(left);
+        IntegerExpressionVisitor intVisitor = new IntegerExpressionVisitor(programManager, isCompiling);
+        Float leftFloat = visit(left);
+        Integer leftInt = intVisitor.visit(left);
         for (int i = 2; right != null; i++) {
+            Float rightFloat = visit(right);
+            Integer rightInt = intVisitor.visit(right);
             try {
-                if (ctx.Star(i - 2) != null) {
-                    product *= visit(right);
-                } else if (ctx.Div(i - 2) != null){
-                    product /= visit(right);
+                if (leftFloat != null && rightFloat != null) {
+                    if (ctx.Star(i - 2) != null) {
+                        leftFloat = leftFloat * rightFloat;
+                    } else if (ctx.Div(i - 2) != null){
+                        leftFloat = leftFloat / rightFloat;
+                    } else {
+                        return null;
+                    }
+                    leftInt = null;
+                } else if (leftInt != null && rightInt != null) {
+                    if (ctx.Star(i - 2) != null) {
+                        leftInt = leftInt * rightInt;
+                    } else if (ctx.Div(i - 2) != null){
+                        leftInt = leftInt / rightInt;
+                    } else if (ctx.Mod(i - 2) != null) {
+                        leftInt = leftInt % rightInt;
+                    }
+                    leftFloat = null;
+                } else if (leftFloat != null) {
+                    if (ctx.Star(i - 2) != null) {
+                        leftFloat = leftFloat * rightInt;
+                    } else if (ctx.Div(i - 2) != null){
+                        leftFloat = leftFloat / rightInt;
+                    } else {
+                        return null;
+                    }
+                    leftInt = null;
                 } else {
-                    return null;
+                    if (ctx.Star(i - 2) != null) {
+                        leftFloat = leftInt * rightFloat;
+                    } else if (ctx.Div(i - 2) != null){
+                        leftFloat = leftInt / rightFloat;
+                    } else {
+                        return null;
+                    }
+                    leftInt = null;
                 }
+
             } catch (NullPointerException e) {
                 return null;
             }
             right = ctx.unaryExpression(i);
         }
-        return product;
+        if (leftFloat != null) {
+            return leftFloat;
+        } else if (leftInt != null) {
+            return leftInt.floatValue();
+        }
+
+        return null;
     }
 
     @Override
@@ -124,6 +197,9 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
         Float value = super.visitUnaryExpression(ctx);
         if (ctx.Not() != null || ctx.binaryOperator() != null) {
             return null;
+        }
+        if (ctx.Minus() != null && value != null) {
+            return -value;
         }
         return value;
     }

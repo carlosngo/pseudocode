@@ -123,6 +123,9 @@ public class IntegerExpressionVisitor extends PseudocodeParserBaseVisitor<Intege
         if (ctx.Not() != null || ctx.binaryOperator() != null) {
             return null;
         }
+        if (ctx.Minus() != null && value != null) {
+            return -value;
+        }
         return value;
     }
 

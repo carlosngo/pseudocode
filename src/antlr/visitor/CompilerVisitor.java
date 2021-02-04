@@ -104,6 +104,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
         }
         int lineNumber = ctx.getStart().getLine();
         String identifier;
+        String operator = ctx.assignmentOperator().getText();
         PseudocodeParser.ExpressionContext valueCtx = ctx.expression();
         AssignmentStatement assignmentStatement;
         if (ctx.variableName() != null) {
@@ -111,6 +112,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
             assignmentStatement = new AssignmentStatement(
                     programManager
                     , identifier
+                    , operator
                     , valueCtx
                     , lineNumber);
         } else {
@@ -120,6 +122,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
                     programManager
                     , identifier
                     , indexCtx
+                    , operator
                     , valueCtx
                     , lineNumber);
         }
@@ -252,6 +255,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
                     new AssignmentStatement(
                             programManager
                             , initVarName
+                            , "="
                             , ctx.iterationInit().initDeclarator().initializer().expression()
                             , lineNumber);
             forStatement.setInitAssignment(assignmentStatement);
@@ -310,7 +314,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
                     new DeclarationStatement(programManager, isFinal, variableType, variableName, lineNumber));
             if (c.initializer() != null) { // initialize
                 compilationManager.addStatement(
-                        new AssignmentStatement(programManager, variableName, c.initializer().expression(), lineNumber)
+                        new AssignmentStatement(programManager, variableName, "=", c.initializer().expression(), lineNumber)
                 );
             }
         }

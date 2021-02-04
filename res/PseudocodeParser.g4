@@ -57,7 +57,8 @@ multiplicativeExpression:
 unaryExpression:
 	postfixExpression
 	| Not unaryExpression
-	| binaryOperator unaryExpression { notifyErrorListeners("redundant binary operator: '" + $binaryOperator.text + "'"); }
+	| Minus unaryExpression
+//	| binaryOperator unaryExpression { notifyErrorListeners("redundant binary operator: '" + $binaryOperator.text + "'"); }
 	| unaryExpression binaryOperator { notifyErrorListeners("redundant binary operator: '" + $binaryOperator.text + "'"); }
 	;
 
