@@ -7,6 +7,7 @@ main() {
     int i = 0;
 
     for i up to numbersToEnter - 1 {
+        int temp;
 		scan("Enter number: ", temp);
         numbers[i] = temp;
         sum = sum + temp;
@@ -22,9 +23,10 @@ main() {
         scan("Enter character: ", cTemp);
         characters[i] = cTemp;
     }
-
+    String line = "Characters to print: ";
     i = 0;
     for i up to sum - 1 {
-        print(characters[i]);
+        line = line + characters[i];
     }
+    print(line);
 }

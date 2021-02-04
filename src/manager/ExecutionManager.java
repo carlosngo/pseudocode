@@ -115,6 +115,7 @@ public class ExecutionManager
                     .getLocalVariables()
                     .getVariable(awaitingScanStatement.getIdentifier());
             variable.setValue(Storage.convertFromString(evt.getInput(), variable.getType()));
+            System.err.println(variable.getValue());
         } catch(SemanticException e) {
             System.err.println("unexpected " + e.getMessage() + " at runtime");
         }

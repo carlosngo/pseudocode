@@ -28,6 +28,7 @@ public class AssignmentStatement extends Statement {
         this.identifier = identifier;
         this.valueCtx = valueCtx;
         indexCtx = null;
+        System.out.println("called from line " + lineNumber);
         try {
             Variable variable = programManager
                     .getCompilationManager()

@@ -4,6 +4,7 @@ import storage.Storage;
 
 public class Keyword {
     public static final String INT = "int";
+    public static final String CHAR = "char";
     public static final String BOOLEAN = "bool";
     public static final String FLOAT = "float";
     public static final String STRING = "String";
@@ -22,6 +23,8 @@ public class Keyword {
                 return Keyword.BOOLEAN;
             case INT:
                 return Keyword.INT;
+            case CHAR:
+                return Keyword.CHAR;
             case FLOAT:
                 return Keyword.FLOAT;
             case STRING:

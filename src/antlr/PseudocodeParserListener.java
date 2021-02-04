@@ -228,6 +228,16 @@ public interface PseudocodeParserListener extends ParseTreeListener {
 	 */
 	void exitBadExpression(PseudocodeParser.BadExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PseudocodeParser#functionCallStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionCallStatement(PseudocodeParser.FunctionCallStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PseudocodeParser#functionCallStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionCallStatement(PseudocodeParser.FunctionCallStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PseudocodeParser#assignmentStatement}.
 	 * @param ctx the parse tree
 	 */

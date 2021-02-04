@@ -8,6 +8,7 @@ public abstract class Storage {
         UNKNOWN,
         BOOLEAN,
         INT,
+        CHAR,
         FLOAT,
         STRING,
         VOID
@@ -33,6 +34,8 @@ public abstract class Storage {
                 return Type.INT;
             case Keyword.BOOLEAN:
                 return Type.BOOLEAN;
+            case Keyword.CHAR:
+                return Type.CHAR;
             case Keyword.FLOAT:
                 return Type.FLOAT;
             case Keyword.STRING:
@@ -50,6 +53,8 @@ public abstract class Storage {
             return Type.BOOLEAN;
         } else if (value instanceof Integer) {
             return Type.INT;
+        } else if (value instanceof Character) {
+            return Type.CHAR;
         } else if (value instanceof Float) {
             return Type.FLOAT;
         } else if (value instanceof String) {
@@ -64,6 +69,8 @@ public abstract class Storage {
                 return Boolean.TRUE;
             case INT:
                 return 100;
+            case CHAR:
+                return 'a';
             case FLOAT:
                 return 100.0f;
             case STRING:
@@ -78,6 +85,10 @@ public abstract class Storage {
                 return Boolean.parseBoolean(value);
             case INT:
                 return Integer.parseInt(value);
+            case CHAR:
+                if (value.length() == 1) {
+                    return value.charAt(0);
+                }
             case FLOAT:
                 return Float.parseFloat(value);
             case STRING:
@@ -86,32 +97,5 @@ public abstract class Storage {
         return null;
     }
 
-    public static Type getResultingType(
-            Type leftOperand
-            , String operator
-            , Type rightOperand) throws ExpressionEvaluationException {
-
-
-        switch(operator) {
-            case Keyword.PLUS:
-                if (leftOperand == Type.STRING || rightOperand == Type.STRING) {
-                    return Type.STRING;
-                }
-
-                break;
-            case Keyword.MINUS:
-                if (leftOperand == Type.STRING || rightOperand == Type.STRING) {
-                    // cannot do String - String
-                    throw new ExpressionEvaluationException(leftOperand, operator, rightOperand);
-                }
-                break;
-            case Keyword.TIMES:
-                break;
-            case Keyword.DIVIDE:
-                break;
-
-        }
-        return Type.UNKNOWN;
-    }
 
 }

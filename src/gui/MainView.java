@@ -139,7 +139,7 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
     }
 
     private void printToIOLabel (String text) {
-        ioLabel.setText(ioLabel.getText() + "\n" + text);
+        ioLabel.setText(ioLabel.getText() + text);
     }
 
     private void showIOConsole () {
@@ -183,17 +183,18 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
     @Override
     public void onPrint(PrintEvent e) {
         System.out.println(e.getMessage());
-        Platform.runLater(() -> printToIOLabel(e.getMessage()));
+        Platform.runLater(() -> printToIOLabel(e.getMessage() + "\n"));
     }
 
     @Override
     public void onScanStart(ScanStartEvent e) {
 //        showIOConsole();
-        Platform.runLater(() -> printToIOLabel(e.getMessage()));
+        Platform.runLater(() -> printToIOLabel(e.getMessage() + " "));
     }
 
     @Override
     public void onScanEnd(ScanEndEvent e) {
+        Platform.runLater(() -> printToIOLabel(e.getInput() + "\n"));
         // make frontend do something after scanning
     }
 

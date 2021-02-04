@@ -20,6 +20,7 @@ import storage.Variable;
 import util.Keyword;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
     private final ProgramManager programManager;
@@ -124,6 +125,17 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
         }
         compilationManager.addStatement(assignmentStatement);
         return null;
+    }
+
+    @Override
+    public Void visitFunctionCallStatement(PseudocodeParser.FunctionCallStatementContext ctx) {
+        String identifier = ctx.functionCall().Identifier().getText();
+        System.out.println("found function call for " + identifier);
+        List<PseudocodeParser.ExpressionContext> parameterContexts = ctx.functionCall().expressionList().expression();
+        int lineNumber = ctx.getStart().getLine();
+        compilationManager.addStatement(new FunctionCallStatement(
+                programManager, identifier, parameterContexts, lineNumber, true));
+        return super.visitFunctionCallStatement(ctx);
     }
 
     @Override

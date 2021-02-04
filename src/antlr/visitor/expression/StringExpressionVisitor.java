@@ -84,16 +84,19 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
         BooleanExpressionVisitor boolVisitor = new BooleanExpressionVisitor(programManager, isCompiling);
         FloatingExpressionVisitor floatVisitor = new FloatingExpressionVisitor(programManager, isCompiling);
         IntegerExpressionVisitor intVisitor = new IntegerExpressionVisitor(programManager, isCompiling);
+        CharExpressionVisitor charVisitor = new CharExpressionVisitor(programManager, isCompiling);
         Boolean leftBoolean = boolVisitor.visit(left);
         Float leftFloat = floatVisitor.visit(left);
         Integer leftInt = intVisitor.visit(left);
         String leftString = visit(left);
+        Character leftCharacter = charVisitor.visit(left);
         try {
             for (int i = 2; right != null; i++) {
                 Boolean rightBoolean = boolVisitor.visit(right);
                 Float rightFloat = floatVisitor.visit(right);
                 String rightString = visit(right);
                 Integer rightInt = intVisitor.visit(right);
+                Character rightCharacter = charVisitor.visit(right);
 
 //                System.out.println("left =" + left.getText());
 //                System.out.println("right =" + right.getText());
@@ -116,6 +119,7 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                     leftBoolean = null;
                     leftInt = null;
                     leftString = null;
+                    leftCharacter = null;
                 } else if (leftInt != null && rightInt != null) {
                     if (ctx.Plus(i - 2) != null) {
                         leftInt = leftInt + rightInt;
@@ -126,6 +130,7 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                     leftBoolean = null;
                     leftString = null;
                     leftFloat = null;
+                    leftCharacter = null;
                 } else if (leftString != null && rightString != null) {
                     if (ctx.Plus(i - 2) != null) {
                         leftString = leftString.concat(rightString);
@@ -140,6 +145,8 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                             leftString = leftString.concat(rightBoolean.toString());
                         } else if (rightInt != null) {
                             leftString = leftString.concat(rightInt.toString());
+                        } else if (rightCharacter != null) {
+                            leftString = leftString.concat(rightCharacter.toString());
                         } else {
                             return null;
                         }
@@ -149,6 +156,7 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                     leftFloat = null;
                     leftBoolean = null;
                     leftInt = null;
+                    leftCharacter = null;
                 } else if (rightString != null) {
                     if (ctx.Plus(i - 2) != null) {
                         if (leftFloat != null) {
@@ -157,6 +165,8 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                             leftString = leftBoolean.toString().concat(rightString);
                         } else if (leftInt != null) {
                             leftString = leftInt.toString().concat(rightString);
+                        } else if (leftCharacter != null) {
+                            leftString = leftCharacter.toString().concat(rightString);
                         } else {
                             return null;
                         }
@@ -166,6 +176,7 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                     leftFloat = null;
                     leftBoolean = null;
                     leftInt = null;
+                    leftCharacter = null;
                 } else {
                     return null;
                 }
@@ -179,6 +190,8 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                 return leftBoolean.toString();
             } else if (leftInt != null) {
                 return leftInt.toString();
+            } else if (leftCharacter != null) {
+                return leftCharacter.toString();
             }
         } catch (NullPointerException e) { }
 
@@ -251,6 +264,9 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
             } else {
                 variable = executionManager.getCurrentLocalVariables().getVariable(identifier);
             }
+            if (variable.getType() != Storage.Type.STRING) {
+                return null;
+            }
             if (variable instanceof Array) {
                 Array array = (Array) variable;
                 if (isCompiling) {
@@ -281,7 +297,9 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                     variable = executionManager.getCurrentLocalVariables().getVariable(identifier);
 //                    System.out.println("currentVariableManager = " + executionManager.getCurrentLocalVariables());
                 }
-
+                if (variable.getType() != Storage.Type.STRING) {
+                    return null;
+                }
 //                System.out.println("evaluated " + variable);
                 if (variable instanceof Array) {
                     return null;
@@ -302,13 +320,10 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
 
     @Override
     public String visitLiteral(PseudocodeParser.LiteralContext ctx) {
-        if (ctx.FloatingLiteral() != null) {
-            return ctx.getText().substring(0, ctx.getText().length() - 1);
-        }
         if (ctx.StringLiteral() != null) {
             return ctx.getText().substring(1, ctx.getText().length() - 1);
         }
-        return ctx.getText();
+        return null;
     }
 
 }

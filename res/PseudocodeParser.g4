@@ -139,6 +139,7 @@ statement:
     | printStatement
     | scanStatement
 	| simpleDeclaration
+	| functionCallStatement
 	| expressionStatement
 	;
 
@@ -148,6 +149,10 @@ expressionStatement:
 
 badExpression:
     expression { notifyErrorListeners("unknown operation, expected assignment statement."); }
+    ;
+
+functionCallStatement:
+    functionCall Semi
     ;
 
 assignmentStatement:

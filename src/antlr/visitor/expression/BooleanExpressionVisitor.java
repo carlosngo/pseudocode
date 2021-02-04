@@ -96,16 +96,32 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
         FloatingExpressionVisitor floatVisitor = new FloatingExpressionVisitor(programManager, isCompiling);
         StringExpressionVisitor stringVisitor = new StringExpressionVisitor(programManager, isCompiling);
         IntegerExpressionVisitor intVisitor = new IntegerExpressionVisitor(programManager, isCompiling);
+        CharExpressionVisitor charVisitor = new CharExpressionVisitor(programManager, isCompiling);
         Boolean leftBoolean = visit(left);
         Float leftFloat = floatVisitor.visit(left);
         String leftString = stringVisitor.visit(left);
         Integer leftInt = intVisitor.visit(left);
+        Character leftChar = charVisitor.visit(left);
         try {
             for (int i = 2; right != null; i++) {
                 Boolean rightBoolean = visit(right);
                 Float rightFloat = floatVisitor.visit(right);
                 String rightString = stringVisitor.visit(right);
                 Integer rightInt = intVisitor.visit(right);
+                Character rightChar = charVisitor.visit(right);
+                System.out.println("left =" + left.getText());
+                System.out.println("right =" + right.getText());
+                System.out.println("leftBoolean = " + leftBoolean);
+                System.out.println("leftFloat = " + leftFloat);
+                System.out.println("leftString = " + leftString);
+                System.out.println("leftInt = " + leftInt);
+                System.out.println("leftChar = " + leftChar);
+
+                System.out.println("rightBoolean = " + rightBoolean);
+                System.out.println("rightFloat = " + rightFloat);
+                System.out.println("rightString = " + rightString);
+                System.out.println("rightInt = " + rightInt);
+                System.out.println("rightChar = " + rightChar);
                 if (leftFloat != null && rightFloat != null) {
                     if (ctx.Equal(i - 2) != null) {
                         leftBoolean = leftFloat.equals(rightFloat);
@@ -130,10 +146,17 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
                     } else {
                         leftBoolean = !leftInt.equals(rightInt);
                     }
+                } else if (leftChar != null && rightChar != null) {
+                    if (ctx.Equal(i - 2) != null) {
+                        leftBoolean = leftChar.equals(rightChar);
+                    } else {
+                        leftBoolean = !leftChar.equals(rightChar);
+                    }
                 }
                 leftFloat = null;
                 leftString = null;
                 leftInt = null;
+                leftChar = null;
                 right = ctx.relationalExpression(i);
             }
             return leftBoolean;

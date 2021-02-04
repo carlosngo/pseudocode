@@ -18,6 +18,8 @@ public class ExpressionVisitorFactory {
                 return new FloatingExpressionVisitor(programManager, isCompiling);
             case STRING:
                 return new StringExpressionVisitor(programManager, isCompiling);
+            case CHAR:
+                return new CharExpressionVisitor(programManager, isCompiling);
         }
         return null;
     }
