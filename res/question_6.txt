@@ -1,0 +1,22 @@
+main() {
+	int i, j, tableSize;
+    int temp;
+    String line = "  ";
+    scan("Enter table size: ", tableSize);
+    for i = 1 up to tableSize {
+        line = line + i + " ";    
+    }
+    print(line);
+    for i = 1 up to tableSize {
+        line = "" + i + " ";
+        for j = 1 up to tableSize {
+            if  (j <= tableSize - 1) then {
+                line = line + (i * j) + " ";
+            }
+            else then {
+                line = line + (i * j) + " ";
+            }
+        }
+        print(line);
+    }
+}

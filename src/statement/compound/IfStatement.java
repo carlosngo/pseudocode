@@ -61,10 +61,14 @@ public class IfStatement extends CompoundStatement {
         Boolean value = new BooleanExpressionVisitor(getProgramManager(), false)
                 .visit(condition);
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
+        setLocalVariables(new VariableManager(executionManager.getCurrentLocalVariables()));
         executionManager.enterBlock(this);
-        if (value) {
+        System.out.println("condition value = " + value);
+        if (value.booleanValue()) {
+            System.out.println("condition is true");
             executeOneIteration();
         } else {
+            System.out.println("condition is false");
             for (int i = 0; i < negativeStatements.size() && !hasBroken(); i++) {
                 negativeStatements.get(i).execute();
             }

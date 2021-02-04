@@ -5,10 +5,7 @@ import antlr.PseudocodeParserBaseVisitor;
 import exception.ArrayIndexException;
 import exception.NotArrayException;
 import exception.SemanticException;
-import manager.FunctionManager;
-import manager.NotificationManager;
-import manager.ProgramManager;
-import manager.VariableManager;
+import manager.*;
 import notification.event.SemanticErrorEvent;
 import statement.compound.FunctionCallStatement;
 import storage.Array;
@@ -18,24 +15,16 @@ import java.util.List;
 
 public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String> {
     private final ProgramManager programManager;
-    private final VariableManager variableManager;
-    private final FunctionManager functionManager;
+    private final CompilationManager compilationManager;
+    private final ExecutionManager executionManager;
     private final NotificationManager notificationManager;
     private final boolean isCompiling;
 
     public StringExpressionVisitor(ProgramManager programManager
             , boolean isCompiling) {
         this.programManager = programManager;
-        functionManager = programManager.getFunctionManager();
-        if (isCompiling) {
-            variableManager = programManager
-                    .getCompilationManager()
-                    .getCurrentLocalVariables();
-        } else {
-            variableManager = programManager
-                    .getExecutionManager()
-                    .getCurrentLocalVariables();
-        }
+        compilationManager = programManager.getCompilationManager();
+        executionManager = programManager.getExecutionManager();
         notificationManager = programManager.getNotificationManager();
         this.isCompiling = isCompiling;
     }
@@ -101,6 +90,15 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                 Boolean rightBoolean = boolVisitor.visit(right);
                 Float rightFloat = floatVisitor.visit(right);
                 String rightString = visit(right);
+
+//                System.out.println("left =" + left.getText());
+//                System.out.println("right =" + right.getText());
+//                System.out.println("leftBoolean = " + leftBoolean);
+//                System.out.println("leftFloat = " + leftFloat);
+//                System.out.println("leftString = " + leftString);
+//                System.out.println("rightBoolean = " + rightBoolean);
+//                System.out.println("rightFloat = " + rightFloat);
+//                System.out.println("rightString = " + rightString);
                 if (leftFloat != null && rightFloat != null) {
                     if (ctx.Plus(i - 2) != null) {
                         leftFloat = leftFloat + rightFloat;
@@ -119,7 +117,14 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                 } else if (leftString != null) {
                     if (ctx.Plus(i - 2) != null) {
                         if (rightFloat != null) {
-                            leftString = leftString.concat(rightFloat.toString());
+
+                            if (rightFloat.equals(new Float(Math.floor(rightFloat)))) {
+
+                                leftString = leftString.concat(rightFloat.intValue() + "");
+                            } else {
+                                leftString = leftString.concat(rightFloat.toString());
+                            }
+
                         } else if (rightBoolean != null) {
                             leftString = leftString.concat(rightBoolean.toString());
                         } else {
@@ -133,7 +138,12 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                 } else if (rightString != null) {
                     if (ctx.Plus(i - 2) != null) {
                         if (leftFloat != null) {
-                            leftString = leftFloat.toString().concat(rightString);
+                            if (leftFloat.equals(new Float(Math.floor(leftFloat)))) {
+                                leftString = leftFloat.intValue() + rightString;
+                            } else {
+                                leftString = leftFloat.toString().concat(rightString);
+                            }
+
                         } else if (leftBoolean != null) {
                             leftString = leftBoolean.toString().concat(rightString);
                         } else {
@@ -219,7 +229,12 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
             Integer index = integerExpressionVisitor.visitExpression(ctx.expression());
             if (index == null)
                 throw new ArrayIndexException();
-            Variable variable = variableManager.getVariable(identifier);
+            Variable variable;
+            if (isCompiling) {
+                variable = compilationManager.getCurrentLocalVariables().getVariable(identifier);
+            } else {
+                variable = executionManager.getCurrentLocalVariables().getVariable(identifier);
+            }
             if (variable instanceof Array) {
                 Array array = (Array) variable;
                 if (isCompiling) {
@@ -243,7 +258,15 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
         if (ctx.Identifier() != null) {
             String identifier = ctx.Identifier().getText();
             try {
-                Variable variable = variableManager.getVariable(identifier);
+                Variable variable;
+                if (isCompiling) {
+                    variable = compilationManager.getCurrentLocalVariables().getVariable(identifier);
+                } else {
+                    variable = executionManager.getCurrentLocalVariables().getVariable(identifier);
+//                    System.out.println("currentVariableManager = " + executionManager.getCurrentLocalVariables());
+                }
+
+//                System.out.println("evaluated " + variable);
                 if (variable instanceof Array) {
                     return null;
                 } else {

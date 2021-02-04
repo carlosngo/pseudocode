@@ -79,7 +79,7 @@ public class ForStatement extends IterationStatement {
                     .visit(getBoundContext());
             beginIteration(variableManager, initVarName, initialValue, destinationValue);
             if (!hasBroken()) {
-                executionManager.triggerBreak();
+                executionManager.exitBlock();
             }
         } catch(SemanticException e) {
             e.printStackTrace();

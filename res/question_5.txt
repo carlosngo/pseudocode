@@ -1,0 +1,30 @@
+main() {
+	int numbersToEnter;
+    scan("How many numbers do you want to enter?: ", numbersToEnter);
+
+    int[] numbers = create int[numbersToEnter];
+    int sum = 0;
+    int i = 0;
+
+    for i up to numbersToEnter - 1 {
+		scan("Enter number: ", temp);
+        numbers[i] = temp;
+        sum = sum + temp;
+    }
+
+    print("You have an array of characters with size of " +sum + "!");
+
+    char[] characters = create char[sum];
+    char cTemp;
+
+    i = 0;
+    for i up to sum - 1 {
+        scan("Enter character: ", cTemp);
+        characters[i] = cTemp;
+    }
+
+    i = 0;
+    for i up to sum - 1 {
+        print(characters[i]);
+    }
+}

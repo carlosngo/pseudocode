@@ -31,9 +31,10 @@ public abstract class IterationStatement extends CompoundStatement {
 
     protected void beginIteration(VariableManager originalVariables, String identifier, int initialValue, int destinationValue) {
 
-        System.out.println("iterating from initial value = " + initialValue + " to " + destinationValue);
+
         try {
             if (isCountDown()) {
+                System.out.println("iterating from initial value = " + initialValue + " down to " + destinationValue);
                 while (initialValue >= destinationValue && !hasBroken()) {
                     System.out.println("iterating initValue = " + initialValue);
                     setLocalVariables(new VariableManager(originalVariables));
@@ -43,6 +44,7 @@ public abstract class IterationStatement extends CompoundStatement {
                     getLocalVariables().getVariable(identifier).setValue(initialValue);
                 }
             } else {
+                System.out.println("iterating from initial value = " + initialValue + " up to " + destinationValue);
                 while (initialValue <= destinationValue && !hasBroken()) {
                     System.out.println("iterating initValue = " + initialValue);
                     setLocalVariables(new VariableManager(originalVariables));
