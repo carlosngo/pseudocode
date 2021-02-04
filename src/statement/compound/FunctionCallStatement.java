@@ -106,11 +106,12 @@ public class FunctionCallStatement extends CompoundStatement {
                 expectedParameter.setValue(parameterValue);
                 localVariables.addVariable(expectedParameter);
             }
-
+            System.out.println("function local variables: " + localVariables);
             // execute function
             executionManager.enterBlock(this);
             ArrayList<Statement> statements = function.getStatements();
             for (int i = 0; i < statements.size() && !hasBroken(); i++) {
+                System.out.println("at line " + statements.get(i).getLineNumber() + ", function local variables: " + localVariables);
                 statements.get(i).execute();
             }
 

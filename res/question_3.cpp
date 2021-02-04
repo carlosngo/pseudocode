@@ -11,6 +11,4 @@ main()
     for int i = 4 down to 0 {
         print(arr[i]);
     }
-
-    return 0;
 }

@@ -43,6 +43,8 @@ public class WhileStatement extends IterationStatement {
         tryExecution();
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
         VariableManager variableManager = executionManager.getCurrentLocalVariables();
+        setLocalVariables(new VariableManager(variableManager));
+        variableManager = getLocalVariables();
         try {
             int initialValue = (int) variableManager.getVariable(initVarName).getValue();
             Integer destinationValue = new IntegerExpressionVisitor(
@@ -50,7 +52,7 @@ public class WhileStatement extends IterationStatement {
                     , false)
                     .visit(getBoundContext());
             executionManager.enterBlock(this);
-            beginIteration(variableManager, initialValue, destinationValue);
+            beginIteration(variableManager, initVarName, initialValue, destinationValue);
 
             // if condition is false and no break statement was called, automatically break
             if (!hasBroken()) {

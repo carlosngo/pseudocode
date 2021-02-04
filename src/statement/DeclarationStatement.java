@@ -63,6 +63,7 @@ public class DeclarationStatement extends Statement {
     public void execute() {
         tryExecution();
         try {
+            System.out.println("declaring " + identifier + " at line " + getLineNumber());
             if (size == null) {
                 getProgramManager()
                         .getExecutionManager()
@@ -74,7 +75,9 @@ public class DeclarationStatement extends Statement {
                         .getCurrentLocalVariables()
                         .addVariable(new Array(isFinal, Storage.parseType(type), identifier, size));
             }
+            System.out.println("declared " + identifier + " at line " + getLineNumber());
         } catch (SemanticException e) {
+            System.err.println("error from " + this);
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());
         }
     }

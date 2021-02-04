@@ -4,6 +4,7 @@ import exception.SemanticException;
 import notification.event.*;
 import notification.listener.ExecuteListener;
 import notification.listener.ScanListener;
+import statement.AssignmentStatement;
 import statement.ScanStatement;
 import statement.compound.CompoundStatement;
 import statement.compound.FunctionCallStatement;
@@ -70,7 +71,7 @@ public class ExecutionManager
     }
 
     public VariableManager getCurrentLocalVariables() {
-        return callStack.peek().getLocalVariables();
+        return controlStack.peek().getLocalVariables();
     }
 
     public void tryExecution() throws InterruptedException {

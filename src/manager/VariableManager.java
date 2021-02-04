@@ -54,4 +54,15 @@ public class VariableManager implements Manager {
     public void reset() {
         variables.clear();
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("{\n");
+        for (String varName : variables.keySet()) {
+            sb.append(variables.get(varName));
+            sb.append("\n");
+        }
+        sb.append("}");
+    ;    return sb.toString();
+    }
 }
