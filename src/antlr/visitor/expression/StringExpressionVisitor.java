@@ -95,17 +95,17 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                 String rightString = visit(right);
                 Integer rightInt = intVisitor.visit(right);
 
-                System.out.println("left =" + left.getText());
-                System.out.println("right =" + right.getText());
-                System.out.println("leftBoolean = " + leftBoolean);
-                System.out.println("leftFloat = " + leftFloat);
-                System.out.println("leftString = " + leftString);
-                System.out.println("leftInt = " + leftInt);
-
-                System.out.println("rightBoolean = " + rightBoolean);
-                System.out.println("rightFloat = " + rightFloat);
-                System.out.println("rightString = " + rightString);
-                System.out.println("rightInt = " + rightInt);
+//                System.out.println("left =" + left.getText());
+//                System.out.println("right =" + right.getText());
+//                System.out.println("leftBoolean = " + leftBoolean);
+//                System.out.println("leftFloat = " + leftFloat);
+//                System.out.println("leftString = " + leftString);
+//                System.out.println("leftInt = " + leftInt);
+//
+//                System.out.println("rightBoolean = " + rightBoolean);
+//                System.out.println("rightFloat = " + rightFloat);
+//                System.out.println("rightString = " + rightString);
+//                System.out.println("rightInt = " + rightInt);
                 if (leftFloat != null && rightFloat != null) {
                     if (ctx.Plus(i - 2) != null) {
                         leftFloat = leftFloat + rightFloat;

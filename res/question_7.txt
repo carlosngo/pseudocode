@@ -1,37 +1,37 @@
 main() {
-	int numberOfNumbers;
-    scan("How many numbers? ", numberOfNumbers);
+    int n;
+    scan("How many numbers? ", n);
 
-    int[] arr = create int[numberOfNumbers];
+    int[] arr = create int[n];
     int i = 0;
     int temp;
 
-    for i up to numberOfNumbers - 1 {
-		scan("Enter number: ", temp);
+    for i up to n - 1 {
+        scan("Enter number: ", temp);
         arr[i] = temp;
     }
-    insertionSort(arr, numberOfNumbers);
-    print("Sorted: ");
-    printArray(arr, numberOfNumbers);
-}
 
-func void insertionSort(int[] arr, int n) {
-    int i, key, j;
+    int j, key;
     i = 1;
     for i up to n - 1 {
-        if (arr[j] > key) then {
-            arr[j + 1] = arr[j];  
+        key = arr[i];
+        j = i - 1;
+        int index = j;
+        while j down to 0 {
+            if (arr[index] > key) then {
+                arr[index + 1] = arr[index];  
+                index = index - 1;
+            } 
             j = j - 1;
-        } else then {
-            arr[j + 1] = key;
         }
+        arr[index + 1] = key;
     }
-} 
 
+    String line = "Sorted: ";
 
-func void printArray(int arr[], int n) {
-    int i = 0;
+    i = 0;
     for i up to n - 1 {
-        print(arr[i] + " ");
+        line = line + arr[i] + " ";
     }
+    print(line);
 }
