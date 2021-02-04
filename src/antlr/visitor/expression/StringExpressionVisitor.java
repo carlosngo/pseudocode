@@ -9,6 +9,7 @@ import manager.*;
 import notification.event.SemanticErrorEvent;
 import statement.compound.FunctionCallStatement;
 import storage.Array;
+import storage.Function;
 import storage.Storage;
 import storage.Variable;
 import java.util.List;
@@ -82,23 +83,29 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
         PseudocodeParser.MultiplicativeExpressionContext right = ctx.multiplicativeExpression(1);
         BooleanExpressionVisitor boolVisitor = new BooleanExpressionVisitor(programManager, isCompiling);
         FloatingExpressionVisitor floatVisitor = new FloatingExpressionVisitor(programManager, isCompiling);
+        IntegerExpressionVisitor intVisitor = new IntegerExpressionVisitor(programManager, isCompiling);
         Boolean leftBoolean = boolVisitor.visit(left);
         Float leftFloat = floatVisitor.visit(left);
+        Integer leftInt = intVisitor.visit(left);
         String leftString = visit(left);
         try {
             for (int i = 2; right != null; i++) {
                 Boolean rightBoolean = boolVisitor.visit(right);
                 Float rightFloat = floatVisitor.visit(right);
                 String rightString = visit(right);
+                Integer rightInt = intVisitor.visit(right);
 
-//                System.out.println("left =" + left.getText());
-//                System.out.println("right =" + right.getText());
-//                System.out.println("leftBoolean = " + leftBoolean);
-//                System.out.println("leftFloat = " + leftFloat);
-//                System.out.println("leftString = " + leftString);
-//                System.out.println("rightBoolean = " + rightBoolean);
-//                System.out.println("rightFloat = " + rightFloat);
-//                System.out.println("rightString = " + rightString);
+                System.out.println("left =" + left.getText());
+                System.out.println("right =" + right.getText());
+                System.out.println("leftBoolean = " + leftBoolean);
+                System.out.println("leftFloat = " + leftFloat);
+                System.out.println("leftString = " + leftString);
+                System.out.println("leftInt = " + leftInt);
+
+                System.out.println("rightBoolean = " + rightBoolean);
+                System.out.println("rightFloat = " + rightFloat);
+                System.out.println("rightString = " + rightString);
+                System.out.println("rightInt = " + rightInt);
                 if (leftFloat != null && rightFloat != null) {
                     if (ctx.Plus(i - 2) != null) {
                         leftFloat = leftFloat + rightFloat;
@@ -107,7 +114,18 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                         leftFloat = leftFloat - rightFloat;
                     }
                     leftBoolean = null;
+                    leftInt = null;
                     leftString = null;
+                } else if (leftInt != null && rightInt != null) {
+                    if (ctx.Plus(i - 2) != null) {
+                        leftInt = leftInt + rightInt;
+
+                    } else {
+                        leftInt = leftInt - rightInt;
+                    }
+                    leftBoolean = null;
+                    leftString = null;
+                    leftFloat = null;
                 } else if (leftString != null && rightString != null) {
                     if (ctx.Plus(i - 2) != null) {
                         leftString = leftString.concat(rightString);
@@ -117,16 +135,11 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                 } else if (leftString != null) {
                     if (ctx.Plus(i - 2) != null) {
                         if (rightFloat != null) {
-
-                            if (rightFloat.equals(new Float(Math.floor(rightFloat)))) {
-
-                                leftString = leftString.concat(rightFloat.intValue() + "");
-                            } else {
-                                leftString = leftString.concat(rightFloat.toString());
-                            }
-
+                            leftString = leftString.concat(rightFloat.toString());
                         } else if (rightBoolean != null) {
                             leftString = leftString.concat(rightBoolean.toString());
+                        } else if (rightInt != null) {
+                            leftString = leftString.concat(rightInt.toString());
                         } else {
                             return null;
                         }
@@ -135,17 +148,15 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                     }
                     leftFloat = null;
                     leftBoolean = null;
+                    leftInt = null;
                 } else if (rightString != null) {
                     if (ctx.Plus(i - 2) != null) {
                         if (leftFloat != null) {
-                            if (leftFloat.equals(new Float(Math.floor(leftFloat)))) {
-                                leftString = leftFloat.intValue() + rightString;
-                            } else {
-                                leftString = leftFloat.toString().concat(rightString);
-                            }
-
+                            leftString = leftFloat.toString().concat(rightString);
                         } else if (leftBoolean != null) {
                             leftString = leftBoolean.toString().concat(rightString);
+                        } else if (leftInt != null) {
+                            leftString = leftInt.toString().concat(rightString);
                         } else {
                             return null;
                         }
@@ -154,6 +165,7 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                     }
                     leftFloat = null;
                     leftBoolean = null;
+                    leftInt = null;
                 } else {
                     return null;
                 }
@@ -165,6 +177,8 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                 return leftFloat.toString();
             } else if (leftBoolean != null) {
                 return leftBoolean.toString();
+            } else if (leftInt != null) {
+                return leftInt.toString();
             }
         } catch (NullPointerException e) { }
 
@@ -208,10 +222,12 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
         String identifier = ctx.Identifier().getText();
         List<PseudocodeParser.ExpressionContext> parameterContexts = ctx.expressionList().expression();
         int lineNumber = ctx.getStart().getLine();
-        FunctionCallStatement statement
-                = new FunctionCallStatement(
-                programManager, identifier, parameterContexts, lineNumber);
+        FunctionCallStatement statement = new FunctionCallStatement(
+                programManager, identifier, parameterContexts, lineNumber, isCompiling);
         Storage.Type returnType = statement.getFunctionSignature().getType();
+        if (returnType != Storage.Type.STRING) {
+            return null;
+        }
         if (isCompiling) {
             return Storage.getRandomValueOfType(returnType).toString();
         } else {

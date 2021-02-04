@@ -9,6 +9,7 @@ import manager.*;
 import notification.event.SemanticErrorEvent;
 import statement.compound.FunctionCallStatement;
 import storage.Array;
+import storage.Function;
 import storage.Storage;
 import storage.Variable;
 
@@ -97,17 +98,22 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
 
     @Override
     public Float visitMultiplicativeExpression(PseudocodeParser.MultiplicativeExpressionContext ctx) {
+        super.visitMultiplicativeExpression(ctx);
         PseudocodeParser.UnaryExpressionContext left = ctx.unaryExpression(0);
         PseudocodeParser.UnaryExpressionContext right = ctx.unaryExpression(1);
         Float product = visit(left);
         for (int i = 2; right != null; i++) {
             try {
-                if (ctx.Star(i - 2) == null) {
+                if (ctx.Star(i - 2) != null) {
+                    product *= visit(right);
+                } else if (ctx.Div(i - 2) != null){
                     product /= visit(right);
                 } else {
-                    product *= visit(right);
+                    return null;
                 }
-            } catch (NullPointerException e) { }
+            } catch (NullPointerException e) {
+                return null;
+            }
             right = ctx.unaryExpression(i);
         }
         return product;
@@ -141,11 +147,10 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
         String identifier = ctx.Identifier().getText();
         List<PseudocodeParser.ExpressionContext> parameterContexts = ctx.expressionList().expression();
         int lineNumber = ctx.getStart().getLine();
-        FunctionCallStatement statement
-                = new FunctionCallStatement(
-                programManager, identifier, parameterContexts, lineNumber);
+        FunctionCallStatement statement = new FunctionCallStatement(
+                programManager, identifier, parameterContexts, lineNumber, isCompiling);
         Storage.Type returnType = statement.getFunctionSignature().getType();
-        if (returnType != Storage.Type.FLOAT && returnType != Storage.Type.INT) {
+        if (returnType != Storage.Type.FLOAT) {
             return null;
         }
         if (isCompiling) {
@@ -210,7 +215,7 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
                 } else {
                     variable = executionManager.getCurrentLocalVariables().getVariable(identifier);
                 }
-                if (variable.getType() != Storage.Type.FLOAT && variable.getType() != Storage.Type.INT) {
+                if (variable.getType() != Storage.Type.FLOAT) {
                     return null;
                 }
                 if (variable instanceof Array) {
@@ -238,9 +243,6 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
     public Float visitLiteral(PseudocodeParser.LiteralContext ctx) {
         if (ctx.FloatingLiteral() != null) {
             return Float.valueOf(ctx.FloatingLiteral().getText());
-        }
-        if (ctx.IntegerLiteral() != null) {
-            return Float.valueOf(ctx.IntegerLiteral().getText());
         }
         return null;
     }

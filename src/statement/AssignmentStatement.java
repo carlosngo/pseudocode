@@ -39,6 +39,7 @@ public class AssignmentStatement extends Statement {
                         .getExpressionVisitor(programManager, variable.getType(), true);
             Object value = expressionVisitor.visit(valueCtx);
             if (value == null) {
+                System.out.println(valueCtx.getText());
                 throw new AssignmentException(variable.getType(), null);
             }
             variable.setValue(value);

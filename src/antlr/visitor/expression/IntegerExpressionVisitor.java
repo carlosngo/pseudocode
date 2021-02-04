@@ -11,6 +11,7 @@ import manager.*;
 import notification.event.SemanticErrorEvent;
 import statement.compound.FunctionCallStatement;
 import storage.Array;
+import storage.Function;
 import storage.Storage;
 import storage.Variable;
 
@@ -103,10 +104,12 @@ public class IntegerExpressionVisitor extends PseudocodeParserBaseVisitor<Intege
         Integer product = visit(left);
         for (int i = 2; right != null; i++) {
             try {
-                if (ctx.Star(i - 2) == null) {
+                if (ctx.Star(i - 2) != null) {
+                    product *= visit(right);
+                } else if (ctx.Div(i - 2) != null){
                     product /= visit(right);
                 } else {
-                    product *= visit(right);
+                    product %= visit(right);
                 }
             } catch (NullPointerException e) { }
             right = ctx.unaryExpression(i);
@@ -140,11 +143,12 @@ public class IntegerExpressionVisitor extends PseudocodeParserBaseVisitor<Intege
     @Override
     public Integer visitFunctionCall(PseudocodeParser.FunctionCallContext ctx) {
         String identifier = ctx.Identifier().getText();
+        System.out.println("found function call for " + identifier);
         List<PseudocodeParser.ExpressionContext> parameterContexts = ctx.expressionList().expression();
         int lineNumber = ctx.getStart().getLine();
-        FunctionCallStatement statement
-                = new FunctionCallStatement(
-                        programManager, identifier, parameterContexts, lineNumber);
+        FunctionCallStatement statement = new FunctionCallStatement(
+                programManager, identifier, parameterContexts, lineNumber, isCompiling);
+
         Storage.Type returnType = statement.getFunctionSignature().getType();
         if (returnType != Storage.Type.INT) {
             return null;

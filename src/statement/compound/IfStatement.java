@@ -63,7 +63,6 @@ public class IfStatement extends CompoundStatement {
         ExecutionManager executionManager = getProgramManager().getExecutionManager();
         setLocalVariables(new VariableManager(executionManager.getCurrentLocalVariables()));
         executionManager.enterBlock(this);
-        System.out.println("condition value = " + value);
         if (value.booleanValue()) {
             System.out.println("condition is true");
             executeOneIteration();

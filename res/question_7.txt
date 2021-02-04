@@ -1,0 +1,37 @@
+main() {
+	int numberOfNumbers;
+    scan("How many numbers? ", numberOfNumbers);
+
+    int[] arr = create int[numberOfNumbers];
+    int i = 0;
+    int temp;
+
+    for i up to numberOfNumbers - 1 {
+		scan("Enter number: ", temp);
+        arr[i] = temp;
+    }
+    insertionSort(arr, numberOfNumbers);
+    print("Sorted: ");
+    printArray(arr, numberOfNumbers);
+}
+
+func void insertionSort(int[] arr, int n) {
+    int i, key, j;
+    i = 1;
+    for i up to n - 1 {
+        if (arr[j] > key) then {
+            arr[j + 1] = arr[j];  
+            j = j - 1;
+        } else then {
+            arr[j + 1] = key;
+        }
+    }
+} 
+
+
+func void printArray(int arr[], int n) {
+    int i = 0;
+    for i up to n - 1 {
+        print(arr[i] + " ");
+    }
+}

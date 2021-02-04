@@ -9,6 +9,7 @@ import manager.*;
 import notification.event.SemanticErrorEvent;
 import statement.compound.FunctionCallStatement;
 import storage.Array;
+import storage.Function;
 import storage.Storage;
 import storage.Variable;
 
@@ -94,14 +95,17 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
         PseudocodeParser.RelationalExpressionContext right = ctx.relationalExpression(1);
         FloatingExpressionVisitor floatVisitor = new FloatingExpressionVisitor(programManager, isCompiling);
         StringExpressionVisitor stringVisitor = new StringExpressionVisitor(programManager, isCompiling);
+        IntegerExpressionVisitor intVisitor = new IntegerExpressionVisitor(programManager, isCompiling);
         Boolean leftBoolean = visit(left);
         Float leftFloat = floatVisitor.visit(left);
         String leftString = stringVisitor.visit(left);
+        Integer leftInt = intVisitor.visit(left);
         try {
             for (int i = 2; right != null; i++) {
                 Boolean rightBoolean = visit(right);
                 Float rightFloat = floatVisitor.visit(right);
                 String rightString = stringVisitor.visit(right);
+                Integer rightInt = intVisitor.visit(right);
                 if (leftFloat != null && rightFloat != null) {
                     if (ctx.Equal(i - 2) != null) {
                         leftBoolean = leftFloat.equals(rightFloat);
@@ -120,11 +124,16 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
                     } else {
                         leftBoolean = !leftBoolean.equals(rightBoolean);
                     }
-                } else {
-                    return null;
+                } else if (leftInt != null && rightInt != null) {
+                    if (ctx.Equal(i - 2) != null) {
+                        leftBoolean = leftInt.equals(rightInt);
+                    } else {
+                        leftBoolean = !leftInt.equals(rightInt);
+                    }
                 }
                 leftFloat = null;
                 leftString = null;
+                leftInt = null;
                 right = ctx.relationalExpression(i);
             }
             return leftBoolean;
@@ -142,7 +151,10 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
         }
         PseudocodeParser.AdditiveExpressionContext right = ctx.additiveExpression(1);
         FloatingExpressionVisitor floatVisitor = new FloatingExpressionVisitor(programManager, isCompiling);
+        IntegerExpressionVisitor intVisitor = new IntegerExpressionVisitor(programManager, isCompiling);
+        Integer leftInt = intVisitor.visit(left);
         Float leftFloat = floatVisitor.visit(left);
+        Integer rightInt = intVisitor.visit(right);
         Float rightFloat = floatVisitor.visit(right);
         try {
             if (leftFloat != null && rightFloat != null) {
@@ -154,6 +166,16 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
                     return leftFloat >= rightFloat;
                 } else {
                     return leftFloat <= rightFloat;
+                }
+            } else if (leftInt != null && rightInt != null) {
+                if (ctx.Less(0) != null) {
+                    return leftInt < rightInt;
+                } else if (ctx.Greater(0) != null) {
+                    return leftInt > rightInt;
+                } else if (ctx.GreaterEqual(0) != null) {
+                    return leftInt >= rightInt;
+                } else {
+                    return leftInt <= rightInt;
                 }
             }
         } catch (NullPointerException e) { }
@@ -209,9 +231,9 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
         String identifier = ctx.Identifier().getText();
         List<PseudocodeParser.ExpressionContext> parameterContexts = ctx.expressionList().expression();
         int lineNumber = ctx.getStart().getLine();
-        FunctionCallStatement statement
-                = new FunctionCallStatement(
-                programManager, identifier, parameterContexts, lineNumber);
+        FunctionCallStatement statement = new FunctionCallStatement(
+                programManager, identifier, parameterContexts, lineNumber, isCompiling);
+
         Storage.Type returnType = statement.getFunctionSignature().getType();
         if (returnType != Storage.Type.BOOLEAN) {
             return null;
