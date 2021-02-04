@@ -97,6 +97,7 @@ public class PseudocodeErrorListener extends BaseErrorListener implements Semant
 
     @Override
     public void onSemanticError(SemanticErrorEvent evt) {
+        evt.getError().printStackTrace();
         errorList.add("semantic error: "
                 + evt.getError().getMessage()
                 + " at line "

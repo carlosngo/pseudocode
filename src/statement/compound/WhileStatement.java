@@ -50,7 +50,7 @@ public class WhileStatement extends IterationStatement {
                     , false)
                     .visit(getBoundContext());
             executionManager.enterBlock(this);
-            beginIteration(initialValue, destinationValue);
+            beginIteration(variableManager, initialValue, destinationValue);
 
             // if condition is false and no break statement was called, automatically break
             if (!hasBroken()) {

@@ -139,10 +139,24 @@ statement:
     | printStatement
     | scanStatement
 	| simpleDeclaration
+	| expressionStatement
 	;
+
+expressionStatement:
+    badExpression Semi
+    ;
+
+badExpression:
+    expression { notifyErrorListeners("unknown operation, expected assignment statement."); }
+    ;
 
 assignmentStatement:
     (variableName | arrayAccess) assignmentOperator expression Semi
+    | badAssignment Semi
+    ;
+
+badAssignment:
+    (variableName | arrayAccess) PlusPlus Plus { notifyErrorListeners("redundant +"); }
     ;
 
 printStatement:
@@ -194,10 +208,10 @@ selectionStatement:
     ifStatement elseIfStatement* elseStatement?;
 
 ifStatement:
-    If LeftParen expression RightParen Then compoundStatement
-    | If LeftParen+ expression Then compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
-    | If LeftParen expression RightParen RightParen+ Then compoundStatement { notifyErrorListeners("too many closing parenthesis"); }
-    | If LeftParen LeftParen+ expression RightParen Then compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
+    If LeftParen expression RightParen Then? compoundStatement
+    | If LeftParen+ expression Then? compoundStatement { notifyErrorListeners("expected closing parenthesis"); }
+    | If LeftParen expression RightParen RightParen+ Then? compoundStatement { notifyErrorListeners("too many closing parenthesis"); }
+    | If LeftParen LeftParen+ expression RightParen Then? compoundStatement { notifyErrorListeners("too many opening parenthesis"); }
     ;
 
 elseIfStatement:

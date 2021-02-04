@@ -208,6 +208,26 @@ public interface PseudocodeParserListener extends ParseTreeListener {
 	 */
 	void exitStatement(PseudocodeParser.StatementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PseudocodeParser#expressionStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpressionStatement(PseudocodeParser.ExpressionStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PseudocodeParser#expressionStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpressionStatement(PseudocodeParser.ExpressionStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PseudocodeParser#badExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBadExpression(PseudocodeParser.BadExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PseudocodeParser#badExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBadExpression(PseudocodeParser.BadExpressionContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PseudocodeParser#assignmentStatement}.
 	 * @param ctx the parse tree
 	 */
@@ -217,6 +237,16 @@ public interface PseudocodeParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAssignmentStatement(PseudocodeParser.AssignmentStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PseudocodeParser#badAssignment}.
+	 * @param ctx the parse tree
+	 */
+	void enterBadAssignment(PseudocodeParser.BadAssignmentContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PseudocodeParser#badAssignment}.
+	 * @param ctx the parse tree
+	 */
+	void exitBadAssignment(PseudocodeParser.BadAssignmentContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PseudocodeParser#printStatement}.
 	 * @param ctx the parse tree

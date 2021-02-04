@@ -4,12 +4,13 @@ import manager.ExecutionManager;
 import manager.ProgramManager;
 import manager.VariableManager;
 import statement.Statement;
+import storage.Variable;
 
 import java.util.ArrayList;
 
 public class CompoundStatement extends Statement {
     private final ArrayList<Statement> statements;
-    private final VariableManager localVariables;
+    private VariableManager localVariables;
     private boolean breakFlag;
 
     public CompoundStatement(ProgramManager programManager, VariableManager parentVariables, int lineNumber) {
@@ -21,6 +22,10 @@ public class CompoundStatement extends Statement {
 
     public VariableManager getLocalVariables() {
         return localVariables;
+    }
+
+    public void setLocalVariables(VariableManager localVariables) {
+        this.localVariables = localVariables;
     }
 
     public boolean hasBroken() {

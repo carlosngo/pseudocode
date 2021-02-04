@@ -40,9 +40,11 @@ public class CompilationManager implements Manager, CompileListener, SemanticErr
 
     public void enterCompoundStatement(CompoundStatement statement) {
         statementStack.push(statement);
+        System.out.println("pushed compound statement " + statement + " to stack");
     }
 
     public void exitCompoundStatement() {
+        System.out.println("called exit");
         CompoundStatement current = statementStack.pop();
         if (statementStack.isEmpty()) {
             return;

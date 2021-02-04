@@ -131,11 +131,29 @@ public interface PseudocodeParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStatement(PseudocodeParser.StatementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#expressionStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpressionStatement(PseudocodeParser.ExpressionStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#badExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBadExpression(PseudocodeParser.BadExpressionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#assignmentStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAssignmentStatement(PseudocodeParser.AssignmentStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PseudocodeParser#badAssignment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBadAssignment(PseudocodeParser.BadAssignmentContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PseudocodeParser#printStatement}.
 	 * @param ctx the parse tree

@@ -23,6 +23,9 @@ public class ReturnStatement extends Statement {
         try {
             FunctionManager functionManager = programManager.getFunctionManager();
             Function currentFunction = functionManager.getCurrentFunction();
+            if (currentFunction.getType() == Storage.Type.VOID) {
+                throw new ReturnException(Storage.Type.VOID, null);
+            }
             Object value = ExpressionVisitorFactory.getExpressionVisitor(
                     programManager
                     , currentFunction.getType()

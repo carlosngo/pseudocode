@@ -50,7 +50,8 @@ public class DoWhileStatement extends IterationStatement {
                     .visit(getBoundContext());
             executionManager.enterBlock(this);
             executeOneIteration();
-            beginIteration(initialValue, destinationValue);
+            setLocalVariables(new VariableManager(variableManager));
+            beginIteration(variableManager, initialValue, destinationValue);
             if (!hasBroken()) {
                 executionManager.triggerBreak();
             }

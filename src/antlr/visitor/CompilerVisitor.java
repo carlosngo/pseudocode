@@ -4,6 +4,7 @@ import antlr.PseudocodeParser;
 import antlr.PseudocodeParserBaseVisitor;
 import antlr.visitor.expression.IntegerExpressionVisitor;
 import exception.ArraySizeException;
+import exception.MissingReturnException;
 import exception.SemanticException;
 import exception.StorageRedeclarationException;
 import exception.type.AssignmentException;
@@ -46,7 +47,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
                 .getText());
         String functionName = ctx.Identifier().getText();
         ArrayList<Variable> variables = new ArrayList<>();
-        if (ctx.parametersAndQualifiers() != null) {
+        if (ctx.parametersAndQualifiers().parameterDeclarationClause() != null) {
 
             for (PseudocodeParser.ParameterDeclarationContext parameterContext : ctx.parametersAndQualifiers().parameterDeclarationClause().parameterDeclaration()) {
                 String parameterName = parameterContext.Identifier().getText();
@@ -75,6 +76,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
 
     @Override
     public Void visitCompoundStatement(PseudocodeParser.CompoundStatementContext ctx) {
+        System.out.println("visiting compound statement");
         int lineNumber = ctx.getStart().getLine();
         if (ctx.parent instanceof PseudocodeParser.StatementContext) {
             compilationManager.enterCompoundStatement(
@@ -88,6 +90,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
             return null;
         }
         if (ctx.statementSeq() != null) {
+            System.out.println("going to visit statementSeq");
             visit(ctx.statementSeq());
         }
         return null;
@@ -95,6 +98,9 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
 
     @Override
     public Void visitAssignmentStatement(PseudocodeParser.AssignmentStatementContext ctx) {
+        if (ctx.badAssignment() != null) {
+            return null;
+        }
         int lineNumber = ctx.getStart().getLine();
         String identifier;
         PseudocodeParser.ExpressionContext valueCtx = ctx.expression();
@@ -156,6 +162,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
 
     @Override
     public Void visitReturnStatement(PseudocodeParser.ReturnStatementContext ctx) {
+        System.out.println("foudn return statement for " + functionManager.getCurrentFunction());
         compilationManager.addStatement(new ReturnStatement(
                 programManager
                 , ctx.expression()
@@ -168,6 +175,7 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
     public Void visitSelectionStatement(PseudocodeParser.SelectionStatementContext ctx) {
         int lineNumber = ctx.getStart().getLine();
         PseudocodeParser.IfStatementContext ifCtx = ctx.ifStatement();
+        System.out.println("encountered if");
         VariableManager parentLocalVariables = compilationManager.getCurrentLocalVariables();
         IfStatement currentIf = new IfStatement(
                 programManager
@@ -225,8 +233,6 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
                             , varType
                             , initVarName
                             , lineNumber);
-
-            compilationManager.addStatement(declarationStatement);
             forStatement.setInitDeclaration(declarationStatement);
         }
         if (ctx.iterationInit().initDeclarator().initializer() != null) {
@@ -236,7 +242,6 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
                             , initVarName
                             , ctx.iterationInit().initDeclarator().initializer().expression()
                             , lineNumber);
-            compilationManager.addStatement(assignmentStatement);
             forStatement.setInitAssignment(assignmentStatement);
         }
         visit(ctx.compoundStatement());
@@ -342,5 +347,17 @@ public class CompilerVisitor extends PseudocodeParserBaseVisitor<Void> {
         compilationManager.exitCompoundStatement();
         functionManager.exitFunction();
         System.out.println(function);
+        boolean hasReturn = false;
+        for (Statement statement : function.getStatements()) {
+            if (statement instanceof ReturnStatement) {
+                hasReturn = true;
+            }
+        }
+        if (!hasReturn && function.getType() != Storage.Type.VOID) {
+            notificationManager.notifyErrorListeners(
+                    new SemanticErrorEvent(
+                           this, new MissingReturnException(), ctx.getStop().getLine())
+                    );
+        }
     }
 }

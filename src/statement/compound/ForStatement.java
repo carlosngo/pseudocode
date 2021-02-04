@@ -73,11 +73,12 @@ public class ForStatement extends IterationStatement {
                     getProgramManager()
                     , false)
                     .visit(getBoundContext());
-            beginIteration(initialValue, destinationValue);
+            beginIteration(executionManager.getCurrentLocalVariables(), initialValue, destinationValue);
             if (!hasBroken()) {
                 executionManager.triggerBreak();
             }
         } catch(SemanticException e) {
+            e.printStackTrace();
             System.err.println(e.getMessage());
         }
     }

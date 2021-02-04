@@ -64,9 +64,10 @@ public class AssignmentStatement extends Statement {
             if (!(variable instanceof Array)) {
                 throw new NotArrayException(variable);
             }
+            Array array = (Array) variable;
             PseudocodeParserBaseVisitor expressionVisitor
                     = ExpressionVisitorFactory
-                    .getExpressionVisitor(programManager, variable.getType(), true);
+                    .getExpressionVisitor(programManager, array.getType(), true);
             Integer index = new IntegerExpressionVisitor(
                     programManager, true).visit(indexCtx);
             if (index == null) {
@@ -74,9 +75,9 @@ public class AssignmentStatement extends Statement {
             }
             Object value = expressionVisitor.visit(valueCtx);
             if (value == null) {
-                throw new AssignmentException(variable.getType(), null);
+                throw new AssignmentException(array.getType(), null);
             }
-            variable.setValue(value);
+//            array.set(index, value);
         } catch(SemanticException e) {
             notifyErrorListeners(e);
         }
