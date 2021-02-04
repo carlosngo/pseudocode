@@ -2,6 +2,7 @@ package antlr.visitor.expression;
 
 import antlr.PseudocodeParser;
 import antlr.PseudocodeParserBaseVisitor;
+import exception.ArrayIndexException;
 import exception.NotArrayException;
 import exception.SemanticException;
 import manager.CompilationManager;
@@ -139,12 +140,14 @@ public class CharExpressionVisitor extends PseudocodeParserBaseVisitor<Character
     @Override
     public Character visitArrayAccess(PseudocodeParser.ArrayAccessContext ctx) {
         String identifier = ctx.Identifier().getText();
-        Character index = visit(ctx.expression());
         int lineNumber = ctx.getStart().getLine();
-        if (index == null) {
-            return null;
-        }
+        IntegerExpressionVisitor integerExpressionVisitor = new IntegerExpressionVisitor(programManager, isCompiling);
+        Integer index = integerExpressionVisitor.visitExpression(ctx.expression());
+
         try {
+            if (index == null) {
+                throw new ArrayIndexException();
+            }
             Variable variable;
             if (isCompiling) {
                 variable = compilationManager.getCurrentLocalVariables().getVariable(identifier);

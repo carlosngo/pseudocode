@@ -33,7 +33,7 @@ func void printT(int fontSize) {
     
     i = 0;
     for i up to fontSize - 2 {
-        line = "*";
+        line = "";
         j = 0;
         for j up to space {
             line = line + " ";

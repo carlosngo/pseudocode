@@ -109,19 +109,19 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
                 String rightString = stringVisitor.visit(right);
                 Integer rightInt = intVisitor.visit(right);
                 Character rightChar = charVisitor.visit(right);
-                System.out.println("left =" + left.getText());
-                System.out.println("right =" + right.getText());
-                System.out.println("leftBoolean = " + leftBoolean);
-                System.out.println("leftFloat = " + leftFloat);
-                System.out.println("leftString = " + leftString);
-                System.out.println("leftInt = " + leftInt);
-                System.out.println("leftChar = " + leftChar);
-
-                System.out.println("rightBoolean = " + rightBoolean);
-                System.out.println("rightFloat = " + rightFloat);
-                System.out.println("rightString = " + rightString);
-                System.out.println("rightInt = " + rightInt);
-                System.out.println("rightChar = " + rightChar);
+//                System.out.println("left =" + left.getText());
+//                System.out.println("right =" + right.getText());
+//                System.out.println("leftBoolean = " + leftBoolean);
+//                System.out.println("leftFloat = " + leftFloat);
+//                System.out.println("leftString = " + leftString);
+//                System.out.println("leftInt = " + leftInt);
+//                System.out.println("leftChar = " + leftChar);
+//
+//                System.out.println("rightBoolean = " + rightBoolean);
+//                System.out.println("rightFloat = " + rightFloat);
+//                System.out.println("rightString = " + rightString);
+//                System.out.println("rightInt = " + rightInt);
+//                System.out.println("rightChar = " + rightChar);
                 if (leftFloat != null && rightFloat != null) {
                     if (ctx.Equal(i - 2) != null) {
                         leftBoolean = leftFloat.equals(rightFloat);

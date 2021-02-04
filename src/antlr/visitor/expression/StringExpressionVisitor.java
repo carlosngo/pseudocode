@@ -76,12 +76,7 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
     @Override
     public String visitAdditiveExpression(PseudocodeParser.AdditiveExpressionContext ctx) {
         super.visitAdditiveExpression(ctx);
-        PseudocodeParser.MultiplicativeExpressionContext left = ctx.multiplicativeExpression(0);
-        if (ctx.multiplicativeExpression().size() == 1) {
-            return visit(ctx.multiplicativeExpression(0));
-        }
-        PseudocodeParser.MultiplicativeExpressionContext right = ctx.multiplicativeExpression(1);
-        BooleanExpressionVisitor boolVisitor = new BooleanExpressionVisitor(programManager, isCompiling);
+        PseudocodeParser.MultiplicativeExpressionContext left = ctx.multiplicativeExpression(0);BooleanExpressionVisitor boolVisitor = new BooleanExpressionVisitor(programManager, isCompiling);
         FloatingExpressionVisitor floatVisitor = new FloatingExpressionVisitor(programManager, isCompiling);
         IntegerExpressionVisitor intVisitor = new IntegerExpressionVisitor(programManager, isCompiling);
         CharExpressionVisitor charVisitor = new CharExpressionVisitor(programManager, isCompiling);
@@ -90,6 +85,21 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
         Integer leftInt = intVisitor.visit(left);
         String leftString = visit(left);
         Character leftCharacter = charVisitor.visit(left);
+        if (ctx.multiplicativeExpression().size() == 1) {
+            if (leftString != null) {
+                return leftString;
+            } else if (leftFloat != null) {
+                return leftFloat.toString();
+            } else if (leftBoolean != null) {
+                return leftBoolean.toString();
+            } else if (leftInt != null) {
+                return leftInt.toString();
+            } else if (leftCharacter != null) {
+                return leftCharacter.toString();
+            }
+        }
+        PseudocodeParser.MultiplicativeExpressionContext right = ctx.multiplicativeExpression(1);
+
         try {
             for (int i = 2; right != null; i++) {
                 Boolean rightBoolean = boolVisitor.visit(right);
@@ -98,17 +108,19 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                 Integer rightInt = intVisitor.visit(right);
                 Character rightCharacter = charVisitor.visit(right);
 
-//                System.out.println("left =" + left.getText());
-//                System.out.println("right =" + right.getText());
-//                System.out.println("leftBoolean = " + leftBoolean);
-//                System.out.println("leftFloat = " + leftFloat);
-//                System.out.println("leftString = " + leftString);
-//                System.out.println("leftInt = " + leftInt);
-//
-//                System.out.println("rightBoolean = " + rightBoolean);
-//                System.out.println("rightFloat = " + rightFloat);
-//                System.out.println("rightString = " + rightString);
-//                System.out.println("rightInt = " + rightInt);
+                System.out.println("left =" + left.getText());
+                System.out.println("right =" + right.getText());
+                System.out.println("leftBoolean = " + leftBoolean);
+                System.out.println("leftFloat = " + leftFloat);
+                System.out.println("leftString = " + leftString);
+                System.out.println("leftInt = " + leftInt);
+                System.out.println("leftChar = " + leftCharacter);
+
+                System.out.println("rightBoolean = " + rightBoolean);
+                System.out.println("rightFloat = " + rightFloat);
+                System.out.println("rightString = " + rightString);
+                System.out.println("rightInt = " + rightInt);
+                System.out.println("rightChar = " + rightCharacter);
                 if (leftFloat != null && rightFloat != null) {
                     if (ctx.Plus(i - 2) != null) {
                         leftFloat = leftFloat + rightFloat;

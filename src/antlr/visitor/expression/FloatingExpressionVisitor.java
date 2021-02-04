@@ -180,7 +180,7 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
             } else {
                 variable = executionManager.getCurrentLocalVariables().getVariable(identifier);
             }
-            if (variable.getType() != Storage.Type.FLOAT && variable.getType() != Storage.Type.INT) {
+            if (variable.getType() != Storage.Type.FLOAT) {
                 return null;
             }
             if (variable instanceof Array) {

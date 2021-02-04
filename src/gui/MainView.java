@@ -175,7 +175,11 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
 
     public void submitInput () {
         // linked to "OK" button
+
+//        Platform.runLater(() -> printToIOLabel(e.getInput() + "\n"));
+        printToIOLabel(tfUserInput.getText() + "\n");
         ScanEndEvent eInput = new ScanEndEvent(btnUserOk, tfUserInput.getText());
+        tfUserInput.setText("");
         manager.notifyScanListeners(eInput);
     }
 
@@ -194,14 +198,14 @@ public class MainView implements PrintListener, ScanListener, ExecuteListener, C
 
     @Override
     public void onScanEnd(ScanEndEvent e) {
-        Platform.runLater(() -> printToIOLabel(e.getInput() + "\n"));
         // make frontend do something after scanning
     }
 
     @Override
     public void onExecuteStart(ExecuteStartEvent e) {
         //
-
+        setIOHeader("");
+        consoleLabel.setText("");
     }
 
     @Override
