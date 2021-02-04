@@ -88,12 +88,12 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
         if (ctx.multiplicativeExpression().size() == 1) {
             if (leftString != null) {
                 return leftString;
+            } else if (leftInt != null) {
+                return leftInt.toString();
             } else if (leftFloat != null) {
                 return leftFloat.toString();
             } else if (leftBoolean != null) {
                 return leftBoolean.toString();
-            } else if (leftInt != null) {
-                return leftInt.toString();
             } else if (leftCharacter != null) {
                 return leftCharacter.toString();
             }
@@ -151,12 +151,12 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                     }
                 } else if (leftString != null) {
                     if (ctx.Plus(i - 2) != null) {
-                        if (rightFloat != null) {
+                        if (rightInt != null) {
+                            leftString = leftString.concat(rightInt.toString());
+                        } else if (rightFloat != null) {
                             leftString = leftString.concat(rightFloat.toString());
                         } else if (rightBoolean != null) {
                             leftString = leftString.concat(rightBoolean.toString());
-                        } else if (rightInt != null) {
-                            leftString = leftString.concat(rightInt.toString());
                         } else if (rightCharacter != null) {
                             leftString = leftString.concat(rightCharacter.toString());
                         } else {
@@ -171,12 +171,12 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
                     leftCharacter = null;
                 } else if (rightString != null) {
                     if (ctx.Plus(i - 2) != null) {
-                        if (leftFloat != null) {
+                        if (leftInt != null) {
+                            leftString = leftInt.toString().concat(rightString);
+                        } else if (leftFloat != null) {
                             leftString = leftFloat.toString().concat(rightString);
                         } else if (leftBoolean != null) {
                             leftString = leftBoolean.toString().concat(rightString);
-                        } else if (leftInt != null) {
-                            leftString = leftInt.toString().concat(rightString);
                         } else if (leftCharacter != null) {
                             leftString = leftCharacter.toString().concat(rightString);
                         } else {
@@ -196,12 +196,12 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
             }
             if (leftString != null) {
                 return leftString;
+            } else if (leftInt != null) {
+                return leftInt.toString();
             } else if (leftFloat != null) {
                 return leftFloat.toString();
             } else if (leftBoolean != null) {
                 return leftBoolean.toString();
-            } else if (leftInt != null) {
-                return leftInt.toString();
             } else if (leftCharacter != null) {
                 return leftCharacter.toString();
             }
