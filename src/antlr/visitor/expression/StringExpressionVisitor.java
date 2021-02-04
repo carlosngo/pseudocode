@@ -75,7 +75,6 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
 
     @Override
     public String visitAdditiveExpression(PseudocodeParser.AdditiveExpressionContext ctx) {
-        super.visitAdditiveExpression(ctx);
         PseudocodeParser.MultiplicativeExpressionContext left = ctx.multiplicativeExpression(0);BooleanExpressionVisitor boolVisitor = new BooleanExpressionVisitor(programManager, isCompiling);
         FloatingExpressionVisitor floatVisitor = new FloatingExpressionVisitor(programManager, isCompiling);
         IntegerExpressionVisitor intVisitor = new IntegerExpressionVisitor(programManager, isCompiling);

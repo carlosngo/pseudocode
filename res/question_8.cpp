@@ -12,6 +12,6 @@ main()
 {
     int n;
     scan("Enter number: ", n);
-
-    print("Number of 7's: " + count7(n));
+    int result = count7(n);
+    print("Number of 7's: " + result);
 }

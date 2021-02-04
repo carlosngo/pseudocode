@@ -38,7 +38,6 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
 
     @Override
     public Boolean visitLogicalOrExpression(PseudocodeParser.LogicalOrExpressionContext ctx)  {
-        super.visitLogicalOrExpression(ctx);
         PseudocodeParser.LogicalAndExpressionContext left = ctx.logicalAndExpression(0);
         if (ctx.logicalAndExpression().size() == 1) {
             return visit(ctx.logicalAndExpression(0));
@@ -62,7 +61,6 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
 
     @Override
     public Boolean visitLogicalAndExpression(PseudocodeParser.LogicalAndExpressionContext ctx) {
-        super.visitLogicalAndExpression(ctx);
         PseudocodeParser.EqualityExpressionContext left = ctx.equalityExpression(0);
         if (ctx.equalityExpression().size() == 1) {
             return visit(ctx.equalityExpression(0));
@@ -87,7 +85,6 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
 
     @Override
     public Boolean visitEqualityExpression(PseudocodeParser.EqualityExpressionContext ctx) {
-        super.visitEqualityExpression(ctx);
         PseudocodeParser.RelationalExpressionContext left = ctx.relationalExpression(0);
         if (ctx.relationalExpression().size() == 1) {
             return visit(ctx.relationalExpression(0));
@@ -167,7 +164,6 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
 
     @Override
     public Boolean visitRelationalExpression(PseudocodeParser.RelationalExpressionContext ctx) {
-        super.visitRelationalExpression(ctx);
         PseudocodeParser.AdditiveExpressionContext left = ctx.additiveExpression(0);
         if (ctx.additiveExpression().size() == 1) {
             return visit(ctx.additiveExpression(0));
