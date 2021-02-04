@@ -51,6 +51,7 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
         if (ctx.logicalAndExpression(1) != null) {
             return null;
         }
+
         return value;
 
     }
@@ -84,23 +85,80 @@ public class StringExpressionVisitor extends PseudocodeParserBaseVisitor<String>
 
     @Override
     public String visitAdditiveExpression(PseudocodeParser.AdditiveExpressionContext ctx) {
+        super.visitAdditiveExpression(ctx);
         PseudocodeParser.MultiplicativeExpressionContext left = ctx.multiplicativeExpression(0);
+        if (ctx.multiplicativeExpression().size() == 1) {
+            return visit(ctx.multiplicativeExpression(0));
+        }
         PseudocodeParser.MultiplicativeExpressionContext right = ctx.multiplicativeExpression(1);
-        String sum = visit(left);
-        if(!ctx.PlusPlus().isEmpty() || !ctx.MinusMinus().isEmpty()){
-            return null;
-        }
-        for (int i = 2; right != null; i++){
-            if (ctx.Plus(i - 2) == null){
-                return null;
-            } else {
-                try {
-                    sum = sum.concat(visit(right));
-                } catch (NullPointerException e) { }
+        BooleanExpressionVisitor boolVisitor = new BooleanExpressionVisitor(programManager, isCompiling);
+        FloatingExpressionVisitor floatVisitor = new FloatingExpressionVisitor(programManager, isCompiling);
+        Boolean leftBoolean = boolVisitor.visit(left);
+        Float leftFloat = floatVisitor.visit(left);
+        String leftString = visit(left);
+        try {
+            for (int i = 2; right != null; i++) {
+                Boolean rightBoolean = boolVisitor.visit(right);
+                Float rightFloat = floatVisitor.visit(right);
+                String rightString = visit(right);
+                if (leftFloat != null && rightFloat != null) {
+                    if (ctx.Plus(i - 2) != null) {
+                        leftFloat = leftFloat + rightFloat;
+
+                    } else {
+                        leftFloat = leftFloat - rightFloat;
+                    }
+                    leftBoolean = null;
+                    leftString = null;
+                } else if (leftString != null && rightString != null) {
+                    if (ctx.Plus(i - 2) != null) {
+                        leftString = leftString.concat(rightString);
+                    } else {
+                        return null;
+                    }
+                } else if (leftString != null) {
+                    if (ctx.Plus(i - 2) != null) {
+                        if (rightFloat != null) {
+                            leftString = leftString.concat(rightFloat.toString());
+                        } else if (rightBoolean != null) {
+                            leftString = leftString.concat(rightBoolean.toString());
+                        } else {
+                            return null;
+                        }
+                    } else {
+                        return null;
+                    }
+                    leftFloat = null;
+                    leftBoolean = null;
+                } else if (rightString != null) {
+                    if (ctx.Plus(i - 2) != null) {
+                        if (leftFloat != null) {
+                            leftString = leftFloat.toString().concat(rightString);
+                        } else if (leftBoolean != null) {
+                            leftString = leftBoolean.toString().concat(rightString);
+                        } else {
+                            return null;
+                        }
+                    } else {
+                        return null;
+                    }
+                    leftFloat = null;
+                    leftBoolean = null;
+                } else {
+                    return null;
+                }
+                right = ctx.multiplicativeExpression(i);
             }
-            right = ctx.multiplicativeExpression(i);
-        }
-        return sum;
+            if (leftString != null) {
+                return leftString;
+            } else if (leftFloat != null) {
+                return leftFloat.toString();
+            } else if (leftBoolean != null) {
+                return leftBoolean.toString();
+            }
+        } catch (NullPointerException e) { }
+
+        return null;
     }
 
     @Override

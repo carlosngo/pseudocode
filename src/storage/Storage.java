@@ -63,9 +63,9 @@ public abstract class Storage {
             case BOOLEAN:
                 return Boolean.TRUE;
             case INT:
-                return 0;
+                return 100;
             case FLOAT:
-                return 0.0f;
+                return 100.0f;
             case STRING:
                 return "";
         }
