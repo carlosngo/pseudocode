@@ -27,14 +27,17 @@ public class FunctionCallStatement extends CompoundStatement {
     public FunctionCallStatement(ProgramManager programManager
             , String functionName
             , List<ExpressionContext> parameterExpressions
-            , int lineNumber) {
+            , int lineNumber
+            , boolean isCompiling) {
         super(programManager, new VariableManager(), lineNumber);
+        if (!isCompiling) System.out.println("created function call statement at line " + lineNumber);
         try {
             FunctionManager functionManager = programManager.getFunctionManager();
             function = functionManager.getFunction(functionName);
             this.parameterExpressions = parameterExpressions;
             returnValue = null;
             ArrayList<Variable> expectedParameters = function.getParameters();
+
             if (parameterExpressions.size() > expectedParameters.size()) {
                 throw new ParameterException(null, Storage.Type.UNKNOWN);
             }
@@ -45,11 +48,12 @@ public class FunctionCallStatement extends CompoundStatement {
             for (int i = 0; i < parameterExpressions.size(); i++) {
                 Variable expectedParameter = expectedParameters.get(i);
                 PseudocodeParserBaseVisitor expressionVisitor = ExpressionVisitorFactory.getExpressionVisitor(programManager, expectedParameter.getType(), true);
-                if (expressionVisitor.visit(parameterExpressions.get(i)) == null) {
+                if (isCompiling && expressionVisitor.visit(parameterExpressions.get(i)) == null) {
                     throw new ParameterException(expectedParameter.getType(), Storage.Type.UNKNOWN);
                 }
                 getLocalVariables().addVariable(expectedParameter);
             }
+
         } catch(SemanticException e) {
             notifyErrorListeners(e);
         }
@@ -95,16 +99,17 @@ public class FunctionCallStatement extends CompoundStatement {
             ArrayList<Variable> functionParameters = function.getParameters();
             for (int i = 0; i < functionParameters.size(); i++) {
                 Variable expectedParameter = functionParameters.get(i);
+                System.out.println("expected parameter = " + expectedParameter);
                 Object parameterValue =
                         ExpressionVisitorFactory.getExpressionVisitor(
                                 getProgramManager()
                                 , expectedParameter.getType()
                                 , false)
                         .visit(parameterExpressions.get(i));
-
+                System.out.println("given value =" + parameterValue);
 
                 expectedParameter.setValue(parameterValue);
-                localVariables.addVariable(expectedParameter);
+//                localVariables.addVariable(expectedParameter);
             }
             System.out.println("function local variables: " + localVariables);
             // execute function
@@ -113,6 +118,9 @@ public class FunctionCallStatement extends CompoundStatement {
             for (int i = 0; i < statements.size() && !hasBroken(); i++) {
                 System.out.println("at line " + statements.get(i).getLineNumber() + ", function local variables: " + localVariables);
                 statements.get(i).execute();
+                if (hasBroken()) {
+                    System.out.println("at i = " + i + ", cancelling other commands ");
+                }
             }
 
             // return automatically if no return statement found
@@ -126,10 +134,12 @@ public class FunctionCallStatement extends CompoundStatement {
 
     @Override
     public String toString() {
-        return "FunctionCallStatement{" +
-                "function=" + function +
-                ", parameterExpressions=" + parameterExpressions +
-                ", returnValue=" + returnValue +
-                '}';
+        StringBuilder sb = new StringBuilder(function.getName() + "(");
+        for (ExpressionContext ctx : parameterExpressions) {
+            sb.append(ctx.getText());
+            sb.append(", ");
+        }
+        sb.append(")");
+        return sb.toString();
     }
 }

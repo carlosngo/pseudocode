@@ -5,13 +5,11 @@ import antlr.PseudocodeParserBaseVisitor;
 import exception.ArrayIndexException;
 import exception.NotArrayException;
 import exception.SemanticException;
-import manager.FunctionManager;
-import manager.NotificationManager;
-import manager.ProgramManager;
-import manager.VariableManager;
+import manager.*;
 import notification.event.SemanticErrorEvent;
 import statement.compound.FunctionCallStatement;
 import storage.Array;
+import storage.Function;
 import storage.Storage;
 import storage.Variable;
 
@@ -19,24 +17,17 @@ import java.util.List;
 
 public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float> {
     private final ProgramManager programManager;
-    private final VariableManager variableManager;
-    private final FunctionManager functionManager;
+    private final ExecutionManager executionManager;
+    private final CompilationManager compilationManager;
     private final NotificationManager notificationManager;
     private final boolean isCompiling;
 
     public FloatingExpressionVisitor(ProgramManager programManager
             , boolean isCompiling) {
         this.programManager = programManager;
-        functionManager = programManager.getFunctionManager();
-        if (isCompiling) {
-            variableManager = programManager
-                    .getCompilationManager()
-                    .getCurrentLocalVariables();
-        } else {
-            variableManager = programManager
-                    .getExecutionManager()
-                    .getCurrentLocalVariables();
-        }
+        this.executionManager = programManager.getExecutionManager();
+        compilationManager = programManager.getCompilationManager();
+
         notificationManager = programManager.getNotificationManager();
         this.isCompiling = isCompiling;
     }
@@ -107,17 +98,22 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
 
     @Override
     public Float visitMultiplicativeExpression(PseudocodeParser.MultiplicativeExpressionContext ctx) {
+        super.visitMultiplicativeExpression(ctx);
         PseudocodeParser.UnaryExpressionContext left = ctx.unaryExpression(0);
         PseudocodeParser.UnaryExpressionContext right = ctx.unaryExpression(1);
         Float product = visit(left);
         for (int i = 2; right != null; i++) {
             try {
-                if (ctx.Star(i - 2) == null) {
+                if (ctx.Star(i - 2) != null) {
+                    product *= visit(right);
+                } else if (ctx.Div(i - 2) != null){
                     product /= visit(right);
                 } else {
-                    product *= visit(right);
+                    return null;
                 }
-            } catch (NullPointerException e) { }
+            } catch (NullPointerException e) {
+                return null;
+            }
             right = ctx.unaryExpression(i);
         }
         return product;
@@ -151,11 +147,10 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
         String identifier = ctx.Identifier().getText();
         List<PseudocodeParser.ExpressionContext> parameterContexts = ctx.expressionList().expression();
         int lineNumber = ctx.getStart().getLine();
-        FunctionCallStatement statement
-                = new FunctionCallStatement(
-                programManager, identifier, parameterContexts, lineNumber);
+        FunctionCallStatement statement = new FunctionCallStatement(
+                programManager, identifier, parameterContexts, lineNumber, isCompiling);
         Storage.Type returnType = statement.getFunctionSignature().getType();
-        if (returnType != Storage.Type.FLOAT && returnType != Storage.Type.INT) {
+        if (returnType != Storage.Type.FLOAT) {
             return null;
         }
         if (isCompiling) {
@@ -179,7 +174,12 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
             Integer index = integerExpressionVisitor.visitExpression(ctx.expression());
             if (index == null)
                 throw new ArrayIndexException();
-            Variable variable = variableManager.getVariable(identifier);
+            Variable variable;
+            if (isCompiling) {
+                variable = compilationManager.getCurrentLocalVariables().getVariable(identifier);
+            } else {
+                variable = executionManager.getCurrentLocalVariables().getVariable(identifier);
+            }
             if (variable.getType() != Storage.Type.FLOAT && variable.getType() != Storage.Type.INT) {
                 return null;
             }
@@ -209,8 +209,13 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
         if (ctx.Identifier() != null) {
             String identifier = ctx.Identifier().getText();
             try {
-                Variable variable = variableManager.getVariable(identifier);
-                if (variable.getType() != Storage.Type.FLOAT && variable.getType() != Storage.Type.INT) {
+                Variable variable;
+                if (isCompiling) {
+                    variable = compilationManager.getCurrentLocalVariables().getVariable(identifier);
+                } else {
+                    variable = executionManager.getCurrentLocalVariables().getVariable(identifier);
+                }
+                if (variable.getType() != Storage.Type.FLOAT) {
                     return null;
                 }
                 if (variable instanceof Array) {
@@ -238,9 +243,6 @@ public class FloatingExpressionVisitor extends PseudocodeParserBaseVisitor<Float
     public Float visitLiteral(PseudocodeParser.LiteralContext ctx) {
         if (ctx.FloatingLiteral() != null) {
             return Float.valueOf(ctx.FloatingLiteral().getText());
-        }
-        if (ctx.IntegerLiteral() != null) {
-            return Float.valueOf(ctx.IntegerLiteral().getText());
         }
         return null;
     }

@@ -55,7 +55,7 @@ public class DoWhileStatement extends IterationStatement {
             setLocalVariables(new VariableManager(variableManager));
             beginIteration(variableManager, initVarName, initialValue, destinationValue);
             if (!hasBroken()) {
-                executionManager.triggerBreak();
+                executionManager.exitBlock();
             }
         } catch(SemanticException e) {
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());

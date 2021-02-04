@@ -39,6 +39,7 @@ public class AssignmentStatement extends Statement {
                         .getExpressionVisitor(programManager, variable.getType(), true);
             Object value = expressionVisitor.visit(valueCtx);
             if (value == null) {
+                System.out.println(valueCtx.getText());
                 throw new AssignmentException(variable.getType(), null);
             }
             variable.setValue(value);
@@ -94,6 +95,9 @@ public class AssignmentStatement extends Statement {
                     = ExpressionVisitorFactory
                     .getExpressionVisitor(getProgramManager(), variable.getType(), false);
             Object value = expressionVisitor.visit(valueCtx);
+            if (identifier.equals("line")) {
+                System.out.println("line is going to be " + value.toString());
+            }
             if (indexCtx != null) {
                 int index = new IntegerExpressionVisitor(
                         getProgramManager()

@@ -1,0 +1,56 @@
+main() {
+    char c;
+    int fontSize;
+    scan("Enter char: ", c);
+    if (c != 'F' && c != 'T' && c != 'L') then {
+        print("Please only enter characters F, T, or L\n");
+    } else then {
+        scan("Enter font size: ", fontSize);
+
+        if (fontSize < 5) then {
+            print("Font size must be 5 or greater\n");
+        } else then {
+            if (c == 'F') then {
+                printF(fontSize);
+            } else if (c == 'T') then {
+                printT(fontSize);
+            } else if (c == 'L') then {
+                printL(fontSize);
+            }
+        }
+
+    }
+} 
+
+func void printT(int fontSize) {
+    int space = fontSize/2 - 1;
+    int i, j;
+    i = 0;
+    for i up to fontSize - 1 {
+        print("*");
+    }
+
+    print("\n");;
+
+    i = 0;
+    for i up to fontSize - 2 {
+        print("*");
+        j = 0;
+        for j up to space {
+            print(" ");
+        }
+        print("*\n");
+    }
+} 
+
+func void printL(int fontSize) {
+    int i;
+    i = 0;
+    for i up to fontSize - 2 {
+        print("*\n");
+    }
+    i = 0;
+    for i up to fontSize - 1 {
+        print("*");
+    }
+} 

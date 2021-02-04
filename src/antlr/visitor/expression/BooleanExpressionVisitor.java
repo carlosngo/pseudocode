@@ -5,13 +5,11 @@ import antlr.PseudocodeParserBaseVisitor;
 import exception.ArrayIndexException;
 import exception.NotArrayException;
 import exception.SemanticException;
-import manager.FunctionManager;
-import manager.NotificationManager;
-import manager.ProgramManager;
-import manager.VariableManager;
+import manager.*;
 import notification.event.SemanticErrorEvent;
 import statement.compound.FunctionCallStatement;
 import storage.Array;
+import storage.Function;
 import storage.Storage;
 import storage.Variable;
 
@@ -19,24 +17,16 @@ import java.util.List;
 
 public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolean> {
     private final ProgramManager programManager;
-    private final VariableManager variableManager;
-    private final FunctionManager functionManager;
+    private final ExecutionManager executionManager;
+    private final CompilationManager compilationManager;
     private final NotificationManager notificationManager;
     private final boolean isCompiling;
 
     public BooleanExpressionVisitor(ProgramManager programManager
             , boolean isCompiling) {
         this.programManager = programManager;
-        functionManager = programManager.getFunctionManager();
-        if (isCompiling) {
-            variableManager = programManager
-                    .getCompilationManager()
-                    .getCurrentLocalVariables();
-        } else {
-            variableManager = programManager
-                    .getExecutionManager()
-                    .getCurrentLocalVariables();
-        }
+        executionManager = programManager.getExecutionManager();
+        compilationManager = programManager.getCompilationManager();
         notificationManager = programManager.getNotificationManager();
         this.isCompiling = isCompiling;
     }
@@ -105,14 +95,17 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
         PseudocodeParser.RelationalExpressionContext right = ctx.relationalExpression(1);
         FloatingExpressionVisitor floatVisitor = new FloatingExpressionVisitor(programManager, isCompiling);
         StringExpressionVisitor stringVisitor = new StringExpressionVisitor(programManager, isCompiling);
+        IntegerExpressionVisitor intVisitor = new IntegerExpressionVisitor(programManager, isCompiling);
         Boolean leftBoolean = visit(left);
         Float leftFloat = floatVisitor.visit(left);
         String leftString = stringVisitor.visit(left);
+        Integer leftInt = intVisitor.visit(left);
         try {
             for (int i = 2; right != null; i++) {
                 Boolean rightBoolean = visit(right);
                 Float rightFloat = floatVisitor.visit(right);
                 String rightString = stringVisitor.visit(right);
+                Integer rightInt = intVisitor.visit(right);
                 if (leftFloat != null && rightFloat != null) {
                     if (ctx.Equal(i - 2) != null) {
                         leftBoolean = leftFloat.equals(rightFloat);
@@ -131,11 +124,16 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
                     } else {
                         leftBoolean = !leftBoolean.equals(rightBoolean);
                     }
-                } else {
-                    return null;
+                } else if (leftInt != null && rightInt != null) {
+                    if (ctx.Equal(i - 2) != null) {
+                        leftBoolean = leftInt.equals(rightInt);
+                    } else {
+                        leftBoolean = !leftInt.equals(rightInt);
+                    }
                 }
                 leftFloat = null;
                 leftString = null;
+                leftInt = null;
                 right = ctx.relationalExpression(i);
             }
             return leftBoolean;
@@ -153,7 +151,10 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
         }
         PseudocodeParser.AdditiveExpressionContext right = ctx.additiveExpression(1);
         FloatingExpressionVisitor floatVisitor = new FloatingExpressionVisitor(programManager, isCompiling);
+        IntegerExpressionVisitor intVisitor = new IntegerExpressionVisitor(programManager, isCompiling);
+        Integer leftInt = intVisitor.visit(left);
         Float leftFloat = floatVisitor.visit(left);
+        Integer rightInt = intVisitor.visit(right);
         Float rightFloat = floatVisitor.visit(right);
         try {
             if (leftFloat != null && rightFloat != null) {
@@ -162,9 +163,19 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
                 } else if (ctx.Greater(0) != null) {
                     return leftFloat > rightFloat;
                 } else if (ctx.GreaterEqual(0) != null) {
-                    return leftFloat <= rightFloat;
-                } else {
                     return leftFloat >= rightFloat;
+                } else {
+                    return leftFloat <= rightFloat;
+                }
+            } else if (leftInt != null && rightInt != null) {
+                if (ctx.Less(0) != null) {
+                    return leftInt < rightInt;
+                } else if (ctx.Greater(0) != null) {
+                    return leftInt > rightInt;
+                } else if (ctx.GreaterEqual(0) != null) {
+                    return leftInt >= rightInt;
+                } else {
+                    return leftInt <= rightInt;
                 }
             }
         } catch (NullPointerException e) { }
@@ -220,9 +231,9 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
         String identifier = ctx.Identifier().getText();
         List<PseudocodeParser.ExpressionContext> parameterContexts = ctx.expressionList().expression();
         int lineNumber = ctx.getStart().getLine();
-        FunctionCallStatement statement
-                = new FunctionCallStatement(
-                programManager, identifier, parameterContexts, lineNumber);
+        FunctionCallStatement statement = new FunctionCallStatement(
+                programManager, identifier, parameterContexts, lineNumber, isCompiling);
+
         Storage.Type returnType = statement.getFunctionSignature().getType();
         if (returnType != Storage.Type.BOOLEAN) {
             return null;
@@ -244,7 +255,12 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
             Integer index = integerExpressionVisitor.visitExpression(ctx.expression());
             if (index == null)
                 throw new ArrayIndexException();
-            Variable variable = variableManager.getVariable(identifier);
+            Variable variable;
+            if (isCompiling) {
+                variable = compilationManager.getCurrentLocalVariables().getVariable(identifier);
+            } else {
+                variable = executionManager.getCurrentLocalVariables().getVariable(identifier);
+            }
             if (variable.getType() != Storage.Type.BOOLEAN) {
                 return null;
             }
@@ -270,7 +286,12 @@ public class BooleanExpressionVisitor extends PseudocodeParserBaseVisitor<Boolea
         if (ctx.Identifier() != null) {
             String identifier = ctx.Identifier().getText();
             try {
-                Variable variable = variableManager.getVariable(identifier);
+                Variable variable;
+                if (isCompiling) {
+                    variable = compilationManager.getCurrentLocalVariables().getVariable(identifier);
+                } else {
+                    variable = executionManager.getCurrentLocalVariables().getVariable(identifier);
+                }
                 if (variable.getType() != Storage.Type.BOOLEAN) {
                     return null;
                 }

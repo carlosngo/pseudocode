@@ -44,6 +44,8 @@ public class ExecutionManager
 
     public CompoundStatement exitBlock() {
         CompoundStatement statement = controlStack.pop();
+        System.out.println("popping: " + statement);
+
         if (statement instanceof FunctionCallStatement) {
             callStack.pop();
         }
@@ -51,6 +53,7 @@ public class ExecutionManager
     }
 
     public void triggerReturn(Object value) {
+
         while (!(controlStack.peek() instanceof FunctionCallStatement)) {
             exitBlock().stopExecution();
         }
@@ -120,7 +123,7 @@ public class ExecutionManager
 
     @Override
     public void run() {
-        new FunctionCallStatement(programManager, "main", new ArrayList<>(), 0).execute();
+        new FunctionCallStatement(programManager, "main", new ArrayList<>(), 0, false).execute();
 
         programManager
                 .getNotificationManager()

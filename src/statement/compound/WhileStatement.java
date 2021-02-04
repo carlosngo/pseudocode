@@ -56,7 +56,7 @@ public class WhileStatement extends IterationStatement {
 
             // if condition is false and no break statement was called, automatically break
             if (!hasBroken()) {
-                executionManager.triggerBreak();
+                executionManager.exitBlock();
             }
         } catch(SemanticException e) {
             System.err.println("unexpected compilation error during runtime: " + e.getMessage());
